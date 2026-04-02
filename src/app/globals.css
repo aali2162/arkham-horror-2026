@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+/* ─── Base ──────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+body {
+  @apply bg-ark-bg text-ark-text font-body antialiased;
+}
+
+/* ─── Glow effects ──────────────────────────── */
+.glow-blue {
+  box-shadow: 0 0 20px rgba(74, 158, 255, 0.12), 0 0 60px rgba(74, 158, 255, 0.05);
+}
+.glow-green {
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.12), 0 0 60px rgba(52, 211, 153, 0.05);
+}
+.glow-red {
+  box-shadow: 0 0 20px rgba(248, 113, 113, 0.12), 0 0 60px rgba(248, 113, 113, 0.05);
+}
+.glow-purple {
+  box-shadow: 0 0 20px rgba(167, 139, 250, 0.12), 0 0 60px rgba(167, 139, 250, 0.05);
+}
+
+/* ─── Cards ─────────────────────────────────── */
+.card {
+  @apply bg-ark-card border border-ark-border rounded-xl transition-all duration-300;
+}
+.card:hover {
+  @apply border-ark-border-light;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Definition Box ────────────────────────── */
+.definition-box {
+  @apply bg-ark-blue-glow border-l-4 border-ark-blue rounded-r-lg p-4 my-4;
+}
+
+/* ─── Example Box ───────────────────────────── */
+.example-box {
+  @apply bg-ark-green-glow border-l-4 border-ark-green rounded-r-lg p-4 my-4;
+}
+
+/* ─── Warning / Edge Case Box ───────────────── */
+.edge-case-box {
+  @apply bg-[rgba(251,191,36,0.08)] border-l-4 border-ark-amber rounded-r-lg p-4 my-3;
+}
+
+/* ─── Step indicator ────────────────────────── */
+.step-number {
+  @apply flex items-center justify-center w-10 h-10 rounded-full bg-ark-blue text-white font-bold text-lg flex-shrink-0;
+}
+
+/* ─── Staggered animation delays ────────────── */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* ─── Scrollbar ─────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-ark-bg;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-ark-border rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-ark-border-light;
+}
+
+/* ─── Selection ─────────────────────────────── */
+::selection {
+  @apply bg-ark-blue/30 text-white;
+}
