@@ -146,10 +146,8 @@ export default function HomePage() {
         {/* ── Play CTA ── */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-20">
           <Link href="/play" className="group block">
-            <div className="relative rounded-2xl overflow-hidden transition-all duration-300"
-              style={{ border: "1px solid #3d3020", background: "linear-gradient(135deg, #1a1410 0%, #120e09 100%)" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "#8b6914"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 40px rgba(0,0,0,0.6), 0 0 30px rgba(201,151,58,0.1)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "#3d3020"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}>
+            <div className="relative rounded-2xl overflow-hidden transition-all duration-300 group-hover:[border-color:#8b6914] group-hover:[box-shadow:0_8px_40px_rgba(0,0,0,0.6),0_0_30px_rgba(201,151,58,0.1)]"
+              style={{ border: "1px solid #3d3020", background: "linear-gradient(135deg, #1a1410 0%, #120e09 100%)" }}>
               {/* BG glow */}
               <div className="absolute inset-0 pointer-events-none"
                 style={{ background: "radial-gradient(ellipse at 30% 50%, rgba(201,151,58,0.05) 0%, transparent 60%)" }} />
