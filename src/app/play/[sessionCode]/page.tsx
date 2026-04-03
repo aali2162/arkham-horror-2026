@@ -237,7 +237,17 @@ export default function SessionPage() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // Who am I? — each player sets their name once to identify themselves
+  // Who am I? — identified by player UUID stored per-session in localStorage
+  // Key: ark_player_id_{sessionCode} → player.id (UUID)
+  // Falls back to old ark_player_name for backwards compat with existing sessions
+  const [myPlayerId, setMyPlayerId] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const code = (window.location.pathname.split("/").pop() ?? "").toUpperCase();
+      return localStorage.getItem(`ark_player_id_${code}`) ?? "";
+    }
+    return "";
+  });
+  // Legacy name-based identity (kept for backwards compat + name picker modal)
   const [myPlayerName, setMyPlayerName] = useState<string>(() => {
     if (typeof window !== "undefined") return localStorage.getItem("ark_player_name") ?? "";
     return "";
@@ -332,19 +342,40 @@ export default function SessionPage() {
     return () => { unsubPlayers(); unsubSession(); };
   }, [session]);
 
-  // Identity onboarding
+  // Auto-rejoin: if we have a saved player UUID that still exists, silently re-claim them
   useEffect(() => {
-    if (!loading && players.length > 0 && !myPlayerName) {
+    if (!loading && myPlayerId && players.length > 0) {
+      const matched = players.find(p => p.id === myPlayerId);
+      if (matched && matched.player_name !== myPlayerName) {
+        setMyPlayerName(matched.player_name);
+      }
+    }
+  }, [loading, myPlayerId, players]);
+
+  // Identity onboarding — only show picker if no UUID AND no name are known yet
+  useEffect(() => {
+    if (!loading && players.length > 0 && !myPlayerName && !myPlayerId) {
       setShowNamePicker(true);
     }
-  }, [loading, players.length, myPlayerName]);
+  }, [loading, players.length, myPlayerName, myPlayerId]);
 
   // ── Derived values ────────────────────────────────────────
   const currentPlayer = players[turnState.currentPlayerIdx] ?? null;
   const leadPlayer = players[turnState.leadInvestigatorIdx] ?? null;
-  const myPlayer = players.find(p => p.player_name === myPlayerName) ?? null;
+  const myPlayer = players.find(p => p.id === myPlayerId)
+    ?? players.find(p => p.player_name === myPlayerName)
+    ?? null;
   const isMyTurn = myPlayer && currentPlayer && myPlayer.id === currentPlayer.id;
   const isLead = myPlayer && leadPlayer && myPlayer.id === leadPlayer.id;
+
+  // YOUR TURN auto-takeover: snap to full-screen takeover whenever this device's turn starts
+  useEffect(() => {
+    if (isMyTurn && turnState.phase === "investigation") {
+      setViewBoardMode(false);
+      setSelectedAction(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMyTurn, turnState.phase]);
   const doomPct = Math.min((turnState.doom / Math.max(1, turnState.doomThreshold)) * 100, 100);
   const doomDanger = turnState.doom >= turnState.doomThreshold;
   const currentPhase = PHASES.find(p => p.id === turnState.phase)!;
@@ -627,7 +658,19 @@ export default function SessionPage() {
   }));
 
   // ── Name identification ───────────────────────────────────
+  // Primary identity: bind this device to a specific player UUID (per-session)
+  const claimPlayer = useCallback((player: GamePlayer) => {
+    setMyPlayerId(player.id);
+    setMyPlayerName(player.player_name);
+    localStorage.setItem(`ark_player_id_${sessionCode}`, player.id);
+    localStorage.setItem("ark_player_name", player.player_name);
+    setShowNamePicker(false);
+  }, [sessionCode]);
+
+  // Legacy fallback — used by the name picker modal for backwards compat
   const handleSetName = (name: string) => {
+    const p = players.find(x => x.player_name === name);
+    if (p) { claimPlayer(p); return; }
     setMyPlayerName(name);
     localStorage.setItem("ark_player_name", name);
     setShowNamePicker(false);
@@ -916,7 +959,7 @@ export default function SessionPage() {
       if (!session || !joiningName.trim()) return;
       setJoiningPlayer(true);
       const newP = await addPlayer(session.id, joiningName.trim(), joiningInvestigator);
-      if (newP) handleSetName(joiningName.trim());
+      if (newP) claimPlayer(newP);
       setJoiningPlayer(false);
     };
 
@@ -942,7 +985,7 @@ export default function SessionPage() {
                   const inv = investigators.find(i => i.name === p.investigator);
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
                   return (
-                    <button key={p.id} onClick={() => handleSetName(p.player_name)}
+                    <button key={p.id} onClick={() => claimPlayer(p)}
                       className="w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left active:scale-98"
                       style={{ background: cls.bg, border: `1px solid ${cls.border}` }}>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
@@ -1436,7 +1479,7 @@ export default function SessionPage() {
                   const inv = investigators.find(i => i.name === p.investigator);
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
                   return (
-                    <button key={p.id} onClick={() => handleSetName(p.player_name)}
+                    <button key={p.id} onClick={() => claimPlayer(p)}
                       className="w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left"
                       style={{ background: cls.bg, border: `1px solid ${cls.border}` }}>
                       <div className="w-9 h-9 rounded-lg flex items-center justify-center font-bold" style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }}>
