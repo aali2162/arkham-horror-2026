@@ -1,11 +1,11 @@
 interface StepCardProps {
   number: number;
   title: string;
-  description: string;
+  detail: string;
   note?: string;
 }
 
-export default function StepCard({ number, title, description, note }: StepCardProps) {
+export default function StepCard({ number, title, detail, note }: StepCardProps) {
   return (
     <div className="flex gap-4 py-5 transition-all duration-200 group"
       style={{ borderBottom: "1px solid #2e2318" }}>
@@ -15,7 +15,7 @@ export default function StepCard({ number, title, description, note }: StepCardP
           style={{ color: "#e8dcc8" }}>
           {title}
         </h3>
-        <p className="text-ark-text-dim text-sm leading-relaxed">{description}</p>
+        <p className="text-ark-text-dim text-sm leading-relaxed">{detail}</p>
         {note && (
           <p className="mt-2 text-xs italic" style={{ color: "#8a6030" }}>{note}</p>
         )}
