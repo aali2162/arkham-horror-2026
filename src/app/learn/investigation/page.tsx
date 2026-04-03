@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import BackButton from "@/components/learn/BackButton";
+import PhaseNav from "@/components/learn/PhaseNav";
 import StepCard from "@/components/learn/StepCard";
 import DefinitionBox from "@/components/learn/DefinitionBox";
 import ExampleBox from "@/components/learn/ExampleBox";
@@ -16,6 +17,7 @@ export default function InvestigationPage() {
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <BackButton href="/" label="All Topics" />
+        <PhaseNav />
 
         {/* Header */}
         <div className="mb-8 opacity-0 animate-fade-in">
@@ -33,6 +35,26 @@ export default function InvestigationPage() {
           <p className="text-ark-text-dim text-base leading-relaxed">
             {phase.description}
           </p>
+        </div>
+
+        {/* Critical Rule: Engaged Enemy AoO */}
+        <div className="bg-ark-red/10 border border-ark-red/40 rounded-xl p-4 mb-8">
+          <p className="font-bold text-ark-red text-sm mb-2 flex items-center gap-2">
+            <span>⚔️</span> Critical Rule — Engaged with an Enemy?
+          </p>
+          <p className="text-ark-text-dim text-sm leading-relaxed mb-3">
+            If you are <strong className="text-ark-text">engaged with an enemy</strong>, taking any action other than <strong className="text-ark-text">Fight, Evade, Parley, or Resign</strong> triggers an immediate <strong className="text-ark-red">Attack of Opportunity</strong> — the enemy deals its full damage/horror to you for free, without exhausting.
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-ark-green/10 border border-ark-green/30 rounded-lg px-3 py-2 text-xs">
+              <p className="text-ark-green font-bold mb-1">✓ Safe (no AoO)</p>
+              <p className="text-ark-text-dim">Fight · Evade · Parley · Resign</p>
+            </div>
+            <div className="bg-ark-red/10 border border-ark-red/30 rounded-lg px-3 py-2 text-xs">
+              <p className="text-ark-red font-bold mb-1">⚠ Triggers AoO</p>
+              <p className="text-ark-text-dim">Move · Investigate · Draw · Play Card · etc.</p>
+            </div>
+          </div>
         </div>
 
         {/* Steps */}
@@ -57,7 +79,7 @@ export default function InvestigationPage() {
         {/* 10 Actions Grid */}
         <section className="mb-10">
           <h2 className="font-display font-bold text-xl text-ark-text mb-2">
-            Your 10 Actions
+            Your 11 Actions
           </h2>
           <p className="text-ark-text-dim text-sm mb-6">
             Tap any action to see its full detail page — step-by-step process, examples, edge cases, and strategy tips.

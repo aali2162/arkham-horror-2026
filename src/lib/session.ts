@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { GameSession, GamePlayer } from "@/types";
+import { GameSession, GamePlayer, TurnState, ActionLogEntry } from "@/types";
 
 // Generate a session code like AHCG-A3X7K
 function generateSessionCode(): string {
@@ -11,13 +11,30 @@ function generateSessionCode(): string {
   return `AHCG-${code}`;
 }
 
+const DEFAULT_TURN_STATE: TurnState = {
+  currentPlayerIdx: 0,
+  actionsUsed: 0,
+  round: 1,
+  phase: "investigation",
+  leadInvestigatorIdx: 0,
+  doom: 0,
+  doomThreshold: 3,
+  agendaName: "Past Curfew",
+  actName: "Where There Is Smoke…",
+  cluesRequired: 2,
+};
+
 // ─── Session CRUD ────────────────────────────────────────────
 
 export async function createSession(): Promise<GameSession | null> {
   const code = generateSessionCode();
   const { data, error } = await supabase
     .from("game_sessions")
-    .insert({ session_code: code })
+    .insert({
+      session_code: code,
+      turn_state: DEFAULT_TURN_STATE,
+      action_log: [],
+    })
     .select()
     .single();
 
@@ -40,6 +57,59 @@ export async function getSessionByCode(code: string): Promise<GameSession | null
     return null;
   }
   return data;
+}
+
+// ─── Turn State ──────────────────────────────────────────────
+
+export async function updateTurnState(
+  sessionId: string,
+  turnState: TurnState
+): Promise<boolean> {
+  const { error } = await supabase
+    .from("game_sessions")
+    .update({ turn_state: turnState, updated_at: new Date().toISOString() })
+    .eq("id", sessionId);
+
+  if (error) {
+    console.error("Error updating turn state:", error);
+    return false;
+  }
+  return true;
+}
+
+export async function appendActionLog(
+  sessionId: string,
+  currentLog: ActionLogEntry[],
+  entry: ActionLogEntry
+): Promise<boolean> {
+  // Keep last 100 entries to avoid JSONB bloat
+  const newLog = [entry, ...currentLog].slice(0, 100);
+  const { error } = await supabase
+    .from("game_sessions")
+    .update({ action_log: newLog, updated_at: new Date().toISOString() })
+    .eq("id", sessionId);
+
+  if (error) {
+    console.error("Error appending action log:", error);
+    return false;
+  }
+  return true;
+}
+
+export async function updateActionLog(
+  sessionId: string,
+  log: ActionLogEntry[]
+): Promise<boolean> {
+  const { error } = await supabase
+    .from("game_sessions")
+    .update({ action_log: log, updated_at: new Date().toISOString() })
+    .eq("id", sessionId);
+
+  if (error) {
+    console.error("Error updating action log:", error);
+    return false;
+  }
+  return true;
 }
 
 // ─── Player CRUD ─────────────────────────────────────────────
@@ -71,7 +141,10 @@ export async function addPlayer(
       investigator,
       damage: 0,
       horror: 0,
-      resources: 5, // standard starting resources
+      resources: 5,
+      clues: 0,
+      xp: 0,
+      is_lead: false,
     })
     .select()
     .single();
@@ -98,7 +171,7 @@ export async function removePlayer(playerId: string): Promise<boolean> {
 
 export async function updatePlayerStat(
   playerId: string,
-  field: "damage" | "horror" | "resources",
+  field: "damage" | "horror" | "resources" | "clues" | "xp",
   value: number
 ): Promise<boolean> {
   const { error } = await supabase
@@ -107,7 +180,7 @@ export async function updatePlayerStat(
     .eq("id", playerId);
 
   if (error) {
-    console.error("Error updating player:", error);
+    console.error("Error updating player stat:", error);
     return false;
   }
   return true;
@@ -130,13 +203,33 @@ export function subscribeToPlayers(
         filter: `session_id=eq.${sessionId}`,
       },
       () => {
-        // Re-fetch all players on any change for consistency
         getPlayers(sessionId).then(onUpdate);
       }
     )
     .subscribe();
 
-  return () => {
-    supabase.removeChannel(channel);
-  };
+  return () => { supabase.removeChannel(channel); };
+}
+
+export function subscribeToSession(
+  sessionId: string,
+  onUpdate: (session: GameSession) => void
+) {
+  const channel = supabase
+    .channel(`session-${sessionId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "game_sessions",
+        filter: `id=eq.${sessionId}`,
+      },
+      (payload) => {
+        onUpdate(payload.new as GameSession);
+      }
+    )
+    .subscribe();
+
+  return () => { supabase.removeChannel(channel); };
 }

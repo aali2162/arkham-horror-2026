@@ -28,26 +28,25 @@ function PlayIcon({ active }: { active: boolean }) {
   );
 }
 
-// Art Deco eye of providence / sigil for logo
-function ArkhamSigil() {
+// Game Train logo mark — stylised "GT" monogram
+function GameTrainLogo() {
   return (
     <svg viewBox="0 0 36 36" className="w-9 h-9" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Outer octagon */}
-      <path d="M13 3 L23 3 L33 13 L33 23 L23 33 L13 33 L3 23 L3 13 Z"
-        stroke="#c9973a" strokeWidth="1" strokeOpacity="0.5" fill="rgba(201,151,58,0.04)"/>
-      {/* Inner circle */}
-      <circle cx="18" cy="18" r="8" stroke="#c9973a" strokeWidth="0.8" strokeOpacity="0.4" fill="none"/>
-      {/* Eye */}
-      <path d="M8 18 Q18 10 28 18 Q18 26 8 18Z"
-        stroke="#c9973a" strokeWidth="1" strokeOpacity="0.7" fill="rgba(201,151,58,0.05)"/>
-      {/* Pupil */}
-      <circle cx="18" cy="18" r="3" fill="rgba(201,151,58,0.5)" stroke="#c9973a" strokeWidth="0.8"/>
-      <circle cx="18" cy="18" r="1.2" fill="#c9973a"/>
-      {/* Corner rays */}
-      <line x1="18" y1="4" x2="18" y2="7" stroke="#c9973a" strokeWidth="0.8" strokeOpacity="0.4"/>
-      <line x1="18" y1="29" x2="18" y2="32" stroke="#c9973a" strokeWidth="0.8" strokeOpacity="0.4"/>
-      <line x1="4" y1="18" x2="7" y2="18" stroke="#c9973a" strokeWidth="0.8" strokeOpacity="0.4"/>
-      <line x1="29" y1="18" x2="32" y2="18" stroke="#c9973a" strokeWidth="0.8" strokeOpacity="0.4"/>
+      {/* Outer square with rounded corners */}
+      <rect x="3" y="3" width="30" height="30" rx="7"
+        stroke="#c9973a" strokeWidth="1" strokeOpacity="0.5" fill="rgba(201,151,58,0.05)"/>
+      {/* G */}
+      <text x="5" y="25" fontFamily="serif" fontSize="18" fontWeight="700"
+        fill="url(#gtGrad)" opacity="0.9">G</text>
+      {/* T */}
+      <text x="18" y="25" fontFamily="serif" fontSize="18" fontWeight="700"
+        fill="url(#gtGrad)" opacity="0.9">T</text>
+      <defs>
+        <linearGradient id="gtGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#e8dcc8"/>
+          <stop offset="100%" stopColor="#c9973a"/>
+        </linearGradient>
+      </defs>
     </svg>
   );
 }
@@ -60,7 +59,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b"
       style={{
-        background: "rgba(10, 8, 5, 0.92)",
+        background: "rgba(10, 8, 5, 0.95)",
         backdropFilter: "blur(20px)",
         borderColor: "rgba(61,48,32,0.5)",
         boxShadow: "0 4px 24px rgba(0,0,0,0.5)"
@@ -70,17 +69,17 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <ArkhamSigil />
+            <GameTrainLogo />
             <div className="flex flex-col leading-tight">
-              <span className="font-decorative font-bold text-sm tracking-wide"
+              <span className="font-sans font-bold text-sm tracking-wide"
                 style={{
                   background: "linear-gradient(135deg, #e8dcc8 0%, #c9973a 100%)",
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text"
                 }}>
-                Arkham Horror
+                Game Train
               </span>
-              <span className="text-[9px] uppercase tracking-[0.25em] font-medium" style={{ color: "#4a3828" }}>
-                2026 · Learning Companion
+              <span className="text-[9px] uppercase tracking-[0.2em] font-medium" style={{ color: "#6b5840" }}>
+                Arkham Horror · 2026
               </span>
             </div>
           </Link>
@@ -107,7 +106,7 @@ export default function Navbar() {
 function NavTab({ href, label, active, icon }: { href: string; label: string; active: boolean; icon: React.ReactNode }) {
   return (
     <Link href={href}
-      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 font-decorative tracking-wide ${
+      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 font-sans tracking-wide ${
         active ? "text-[#0a0805]" : "text-ark-text-muted hover:text-ark-text"
       }`}
       style={active ? {

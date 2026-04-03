@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Arkham Horror 2026 — Interactive Learning Companion",
+  title: "Game Train — Board Game Learning Platform",
   description:
-    "Learn Arkham Horror: The Card Game (2026 Edition) with interactive guides, turn-by-turn play tracking, and real-time session sync.",
+    "Game Train makes board games easy to learn and play. Interactive rules, real-time session tracking, and step-by-step guides. Starting with Arkham Horror: The Card Game.",
   openGraph: {
-    title: "Arkham Horror 2026 — Interactive Learning Companion",
-    description: "Interactive rules and real-time session tracking for Arkham Horror: The Card Game.",
+    title: "Game Train — Board Game Learning Platform",
+    description: "Game Train makes board games easy to learn and play. Interactive rules, real-time session tracking, and step-by-step guides. Starting with Arkham Horror: The Card Game.",
     type: "website",
   },
 };

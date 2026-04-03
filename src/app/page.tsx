@@ -286,34 +286,28 @@ export default function HomePage() {
 
             <div className="relative max-w-4xl mx-auto px-4 sm:px-6 pt-16 pb-32 text-center">
 
-              {/* Eyebrow badge */}
-              <div className="opacity-0 animate-fade-in mb-6">
-                <span className="inline-flex items-center gap-2 text-xs font-decorative tracking-[0.2em] uppercase px-4 py-1.5 rounded-full border"
-                  style={{ color: "#c9973a", borderColor: "rgba(201,151,58,0.3)", background: "rgba(201,151,58,0.06)" }}>
-                  <span className="live-dot" />
-                  Arkham Horror: The Card Game — 2026 Edition
+              {/* Platform label */}
+              <div className="opacity-0 animate-fade-in mb-5">
+                <span className="inline-flex items-center gap-2 text-[10px] font-sans font-semibold tracking-[0.25em] uppercase px-4 py-1.5 rounded-full border"
+                  style={{ color: "#8b7050", borderColor: "rgba(61,48,32,0.7)", background: "rgba(16,12,8,0.8)" }}>
+                  Game Train — Interactive Board Game Companion
                 </span>
               </div>
 
-              {/* Title */}
+              {/* Game title */}
               <div className="opacity-0 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-                <h1 className="font-decorative font-bold leading-tight mb-4" style={{ fontSize: "clamp(2rem, 6vw, 3.5rem)" }}>
+                <p className="text-xs font-sans font-semibold uppercase tracking-[0.3em] mb-3" style={{ color: "#6b5840" }}>Now available</p>
+                <h1 className="font-sans font-bold leading-tight mb-3" style={{ fontSize: "clamp(2rem, 6vw, 3.8rem)" }}>
                   <span style={{
                     background: "linear-gradient(135deg, #f0deb0 0%, #c9973a 55%, #8b6914 100%)",
                     WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text"
                   }}>
-                    Your companion for learning
-                  </span>
-                  <br />
-                  <span style={{
-                    background: "linear-gradient(135deg, #e8dcc8 0%, #b8a090 100%)",
-                    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text"
-                  }}>
-                    Arkham Horror 2026.
+                    Arkham Horror
                   </span>
                 </h1>
-                <p className="text-base sm:text-lg leading-relaxed max-w-lg mx-auto" style={{ color: "#7a6a58" }}>
-                  Pick a topic and start reading. Every mechanic explained step by step — no assumed knowledge.
+                <p className="text-sm font-sans font-medium mb-3" style={{ color: "#8b7050" }}>The Card Game · 2026 Edition</p>
+                <p className="text-base sm:text-lg leading-relaxed max-w-md mx-auto font-sans" style={{ color: "#6a5a4a" }}>
+                  Learn the rules. Track your game. Play with confidence.
                 </p>
               </div>
 
@@ -321,7 +315,7 @@ export default function HomePage() {
               <div className="opacity-0 animate-slide-up mt-8" style={{ animationDelay: "0.2s" }}>
                 <div className="inline-flex flex-wrap justify-center items-center gap-1 px-4 py-2.5 rounded-xl"
                   style={{ background: "rgba(16,12,8,0.85)", border: "1px solid rgba(61,48,32,0.8)", backdropFilter: "blur(8px)" }}>
-                  <span className="text-[10px] font-decorative text-ark-text-muted tracking-[0.15em] uppercase mr-2">Each round:</span>
+                  <span className="text-[10px] font-sans text-ark-text-muted tracking-[0.15em] uppercase mr-2">Each round:</span>
                   {phases.map((p, i) => (
                     <div key={p.label} className="flex items-center gap-1">
                       {p.skip && i === 0 && (
@@ -330,7 +324,7 @@ export default function HomePage() {
                           skip R1
                         </span>
                       )}
-                      <span className="text-xs font-semibold font-decorative" style={{ color: p.color }}>{p.label}</span>
+                      <span className="text-xs font-semibold font-sans" style={{ color: p.color }}>{p.label}</span>
                       {i < phases.length - 1 && <span className="text-ark-text-muted text-xs mx-0.5">→</span>}
                     </div>
                   ))}
@@ -352,7 +346,7 @@ export default function HomePage() {
                   <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="#c9973a" strokeWidth="1.8" strokeLinecap="round">
                     <path d="M8 1 L8 15 M1 8 L8 1 L15 8" />
                   </svg>
-                  <span className="text-xs font-decorative tracking-[0.15em] uppercase" style={{ color: "#c9973a" }}>
+                  <span className="text-xs font-sans font-semibold tracking-[0.15em] uppercase" style={{ color: "#c9973a" }}>
                     New? Start Here
                   </span>
                 </div>
@@ -384,7 +378,7 @@ export default function HomePage() {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <h3 className="font-decorative font-semibold text-sm leading-snug transition-colors group-hover:text-ark-gold-bright"
+                        <h3 className="font-sans font-semibold text-sm leading-snug transition-colors group-hover:text-ark-gold-bright"
                           style={{ color: "#e8dcc8" }}>
                           {step.title}
                         </h3>
@@ -393,7 +387,7 @@ export default function HomePage() {
                           {step.tag}
                         </span>
                       </div>
-                      <p className="text-xs leading-relaxed" style={{ color: "#5a4a38" }}>{step.desc}</p>
+                      <p className="text-xs leading-relaxed font-sans" style={{ color: "#8a8278" }}>{step.desc}</p>
                     </div>
                     {/* Arrow */}
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -411,7 +405,7 @@ export default function HomePage() {
           {/* ── Divider ───────────────────────────────────── */}
           <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-8">
             <div className="deco-divider deco-divider-gold">
-              <span className="text-xs font-decorative tracking-widest text-ark-text-muted uppercase">All Topics</span>
+              <span className="text-xs font-sans tracking-widest text-ark-text-muted uppercase">All Topics</span>
             </div>
           </div>
 
@@ -444,7 +438,7 @@ export default function HomePage() {
                       <path d="M22 21v-1.5a3 3 0 00-3-3"/>
                     </svg>
                   </div>
-                  <h2 className="font-decorative font-bold text-base" style={{ color: "#e8dcc8" }}>
+                  <h2 className="font-sans font-bold text-base" style={{ color: "#e8dcc8" }}>
                     The 5 Investigators
                   </h2>
                   <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, rgba(93,74,40,0.6), transparent)" }} />
@@ -464,15 +458,15 @@ export default function HomePage() {
                         border: `1px solid ${inv.color}30`
                       }}>
                       {/* Class badge */}
-                      <div className="text-[10px] font-decorative font-semibold tracking-widest uppercase" style={{ color: inv.color }}>
+                      <div className="text-[10px] font-sans font-semibold tracking-widest uppercase" style={{ color: inv.color }}>
                         {inv.class}
                       </div>
                       {/* Name */}
-                      <div className="font-display text-xs font-semibold leading-tight" style={{ color: "#e8dcc8" }}>
+                      <div className="font-sans text-xs font-semibold leading-tight" style={{ color: "#e8dcc8" }}>
                         {inv.name}
                       </div>
                       {/* Stats */}
-                      <div className="text-[10px] leading-relaxed" style={{ color: "#5a4838" }}>
+                      <div className="text-[10px] leading-relaxed font-sans" style={{ color: "#8a8278" }}>
                         {inv.stats}
                       </div>
                       {/* HP / Sanity */}
@@ -519,15 +513,15 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <div className="flex-1 text-center sm:text-left">
-                    <h3 className="font-decorative font-bold text-xl mb-1" style={{ color: "#e8dcc8" }}>
+                    <h3 className="font-sans font-bold text-xl mb-1" style={{ color: "#e8dcc8" }}>
                       Ready to play?
                     </h3>
-                    <p className="text-sm leading-relaxed" style={{ color: "#6b5840" }}>
+                    <p className="text-sm leading-relaxed font-sans" style={{ color: "#8a8278" }}>
                       Track damage, horror, and resources for your whole group. Share a session code — everyone syncs in real time.
                     </p>
                   </div>
                   <div className="flex-shrink-0">
-                    <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold font-decorative transition-all group-hover:brightness-110"
+                    <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold font-sans transition-all group-hover:brightness-110"
                       style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#0a0805",
                         boxShadow: "0 2px 12px rgba(201,151,58,0.3)" }}>
                       Open Play
@@ -539,6 +533,25 @@ export default function HomePage() {
                 </div>
               </div>
             </Link>
+          </section>
+
+          {/* ── Platform footer ───────────────────────────── */}
+          <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-10">
+            <div className="rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4"
+              style={{ background: "rgba(16,12,8,0.7)", border: "1px solid rgba(61,48,32,0.5)" }}>
+              <div>
+                <p className="text-xs font-sans font-semibold tracking-widest uppercase mb-0.5" style={{ color: "#c9973a" }}>Game Train</p>
+                <p className="text-xs font-sans" style={{ color: "#6b5840" }}>
+                  Interactive board game companions — learn faster, play smarter.
+                </p>
+              </div>
+              <div className="flex items-center gap-3 text-xs font-sans" style={{ color: "#5a4838" }}>
+                <span className="px-2.5 py-1 rounded-full" style={{ background: "rgba(201,151,58,0.08)", border: "1px solid rgba(201,151,58,0.2)", color: "#c9973a" }}>
+                  Arkham Horror ✓
+                </span>
+                <span className="px-2.5 py-1 rounded-full" style={{ background: "rgba(26,20,16,0.5)", border: "1px solid #3d3020" }}>More games coming</span>
+              </div>
+            </div>
           </section>
 
         </div>

@@ -8,8 +8,8 @@ const config: Config = {
         ark: {
           // Core backgrounds — deep ink black, aged paper
           bg: "#0a0805",
-          surface: "#120e09",
-          card: "#1a1410",
+          surface: "#161209",
+          card: "#1e1810",
           "card-hover": "#221c16",
           border: "#3d3020",
           "border-light": "#5c4a2a",
@@ -48,10 +48,10 @@ const config: Config = {
           horror: "#4a8080",
           "horror-dim": "#2d5050",
 
-          // Text — parchment tones
-          text: "#e8dcc8",
-          "text-dim": "#a89878",
-          "text-muted": "#6b5840",
+          // Text — clean readable tones
+          text: "#f0eee8",
+          "text-dim": "#c4bdb0",
+          "text-muted": "#8a8278",
           "text-gold": "#c9973a",
 
           // Sepia tones for variety
@@ -60,10 +60,12 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['"Playfair Display"', "Georgia", "serif"],
-        body: ['"Source Sans 3"', '"Source Sans Pro"', "system-ui", "sans-serif"],
+        sans: ['"Inter"', "system-ui", "sans-serif"],
+        display: ['"Inter"', "system-ui", "sans-serif"],
+        decorative: ['"Inter"', "system-ui", "sans-serif"],
+        body: ['"Inter"', "system-ui", "sans-serif"],
         mono: ['"JetBrains Mono"', "Consolas", "monospace"],
-        decorative: ['"Cinzel"', '"Playfair Display"', "Georgia", "serif"],
+        serif: ['"Crimson Text"', "Georgia", "serif"],
       },
       animation: {
         "fade-in": "fadeIn 0.6s ease-out forwards",

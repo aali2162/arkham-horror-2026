@@ -15,40 +15,70 @@
 
 ---
 
-## CURRENT STATUS (Updated: April 2, 2026 — DEPLOYED)
+## CURRENT STATUS (Updated: April 3, 2026 — Session 8 IN PROGRESS)
 
 ### Live URL: https://arkham-horror-2026.vercel.app
+### Last commit: `650aa5e` — "feat: 6 UX fixes — lobby/start game, turn order setup, view board toggle, Game Train rebrand, Inter font overhaul, improved text contrast"
+### Session 8 changes (pending deploy):
+- Latecomer join screen: game started + not in session → clean "Join the Game" screen (not overwhelmed by board)
+- Undo last action button next to End Turn on YOUR TURN screen
+- Advance Scenario button (alongside Advance Act) — only shown when a campaign is selected
+- Brethren of Ash scenarios fixed: Spreading Flames / Smoke and Mirrors / Queen of Ash with corrected doom thresholds
+- Log management: delete individual log entries (✕ hover on each entry)
+- Clue tracker checkpoint in doom bar: shows total clues across party vs cluesRequired, pulses when ready to advance act
+- Editable round number (lead only) — click to fix incorrect round number
+- Investigator stat preview (HP, SAN, WIL, INT, COM, AGI) shown when adding player in lobby or join screen
+- `updateActionLog()` added to session.ts for direct log overwriting
+- `gameStarted` flag added to DEFAULT_TURN_STATE (already existed in TurnState type)
 
 ### ✅ COMPLETED
-- [x] Full Next.js 14 + TypeScript + Tailwind CSS codebase (39 files)
+- [x] Full Next.js 14 + TypeScript + Tailwind CSS codebase
+- [x] **Session 6 UX overhaul:**
+  - Lobby/setup screen — add up to 4 players, set turn order BEFORE game starts
+  - Start Game button — game only begins when lead clicks it, no accidental takeover
+  - View Board toggle on YOUR TURN overlay — can peek at full board mid-turn, then return
+  - Game Train rebranding — site is the platform, Arkham Horror is the first game within it
+  - Font overhaul: replaced Playfair Display with Inter across all pages (cleaner, more readable)
+  - Improved text contrast: muted text brightened from #5a4a38 → #8a8278
 - [x] All 4 phase detail pages (Mythos, Investigation, Enemy, Upkeep)
-- [x] All 10 action detail pages (Draw, Gain Resource, Investigate, Move, Fight, Evade, Engage, Play Card, Activate Ability, Resign)
+- [x] All 11 action detail pages (Draw, Gain Resource, Investigate, Move, Fight, Evade, Engage, Play Card, Activate Ability, **Parley**, Resign)
 - [x] Skill Tests detail page (5-step process, all 12 chaos tokens)
 - [x] Damage/Horror/Trauma detail page with investigator reference
-- [x] Play Session hub (create/join sessions)
-- [x] Real-time player tracker (damage/horror/resources with +/- buttons)
+- [x] PhaseNav component — smooth in-page phase switcher on all phase pages
+- [x] Full rules audit — AoO obligation, Aloof/Massive/Patrol/Elusive keywords, Treachery, Upkeep costs, all enemy movement rules
+- [x] Play Session hub (create/join sessions) — with session recovery (last session stored in localStorage, rejoin banner)
+- [x] **Multiplayer Play Session — complete overhaul (Session 4+5):**
+  - Per-device identity via localStorage (each player on their own phone)
+  - Real-time sync via Supabase (both `game_players` and `game_sessions`)
+  - YOUR TURN full-screen takeover with 3-action flow + End Turn button
+  - Action selection → confirmation modal → auto-log → advance action count
+  - **Learn links:** each action confirmation has "📖 Learn more →" link to `/learn/investigation/[action]` (new tab)
+  - Lead investigator manages Mythos/Enemy/Upkeep phases with quick-log buttons
+  - Doom tracker, agenda/act names, clue threshold (lead-only editable, free text)
+  - **Campaign/scenario picker:** lead selects Night of the Zealot or Brethren of Ash scenario — auto-fills doom threshold, agenda, act, clues
+  - **Act advancement tracker:** "Act 1/2/3" shown in Doom bar; lead has "Advance Act →" button
+  - **Turn order reordering:** lead toggles "⇅ Reorder Turn" to drag ↑/↓ player order; synced via `playerOrder` in TurnState
+  - **Identity onboarding:** pulsing amber "Tap to identify yourself →" banner auto-appears until player identifies
+  - Delete player functionality (✕ button with confirm)
+  - Clue + XP tracking per player
+  - Rulebook-accurate SVG symbols (ActionSymbol, skill icons, DoomIcon, ClueIcon, ResourceIcon)
+  - Enemy tracker tab with keyword guide, HP tracking, AoO warnings on player cards
+  - Action log tab (per-player, per-round, real-time)
+  - Reference tab (round structure, skill icons, token types, chaos bag, easily missed rules)
 - [x] Supabase project "Game Train" created (ca-central-1 region)
-- [x] Database schema applied (game_sessions + game_players tables)
+- [x] Database schema: game_sessions (with turn_state JSONB + action_log JSONB) + game_players
 - [x] Row Level Security + real-time replication enabled
-- [x] Local dev server confirmed working (localhost:3000)
-- [x] .env.local configured with Supabase credentials
-- [x] Pushed to GitHub (github.com/aali2162/arkham-horror-2026)
 - [x] Deployed to Vercel — https://arkham-horror-2026.vercel.app
-- [x] Build verified: 22 pages, 0 errors, all routes generated
+
+### TurnState fields (all synced via Supabase JSONB):
+`currentPlayerIdx`, `actionsUsed`, `round`, `phase`, `leadInvestigatorIdx`, `doom`, `doomThreshold`, `agendaName`, `actName`, `cluesRequired`, `campaignId?`, `scenarioId?`, `scenarioNumber?`, `playerOrder?`, `scenarioComplete?`
 
 ### 🔲 NOT YET DONE
-- [ ] Add Supabase env vars to Vercel project settings (NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY)
-- [ ] Test real-time sync across multiple browsers
-- [ ] Test session creation and player tracking end-to-end
+- [ ] Test real-time sync across multiple devices end-to-end
 - [ ] Mobile responsiveness testing
-- [ ] Test real-time sync across multiple browsers
-- [ ] Test session creation and player tracking end-to-end
-- [ ] Mobile responsiveness testing
-- [ ] Campaign/scenario tracking (Brethren of Ash: 3 scenarios)
+- [ ] End-of-scenario flow (record XP, advance to next scenario, export summary PDF)
 - [ ] Investigator detail pages (5 investigators with full abilities)
 - [ ] Chaos bag simulator / practice tool
-- [ ] Round tracker integration in Play session
-- [ ] XP tracking between scenarios
 - [ ] Polish: loading states, error boundaries, animations
 
 ---
@@ -218,8 +248,8 @@ C:\Users\alix4\Game Train\arkham-horror-2026\
 Phase 1 (Mythos) → Phase 2 (Investigation) → Phase 3 (Enemy) → Phase 4 (Upkeep) → repeat
 - Round 1 SKIPS Mythos Phase
 
-### 10 Investigation Actions
-1. Draw, 2. Gain Resource, 3. Investigate, 4. Move, 5. Fight, 6. Evade, 7. Engage, 8. Play Card, 9. Activate Ability, 10. Resign
+### 11 Investigation Actions
+1. Draw, 2. Gain Resource, 3. Investigate, 4. Move, 5. Fight, 6. Evade, 7. Engage, 8. Play Card, 9. Activate Ability, 10. Parley, 11. Resign
 
 ### Brethren of Ash Campaign (3 Scenarios)
 1. Spreading Flames — Your Friend's Room start
@@ -234,7 +264,7 @@ Phase 1 (Mythos) → Phase 2 (Investigation) → Phase 3 (Enemy) → Phase 4 (Up
 |-------|------|--------|
 | `/` | Homepage — hero + 6 topic cards | ✅ Built |
 | `/learn/mythos` | Phase 1: Mythos | ✅ Built |
-| `/learn/investigation` | Phase 2: Investigation + 10 action grid | ✅ Built |
+| `/learn/investigation` | Phase 2: Investigation + 11 action grid | ✅ Built |
 | `/learn/investigation/draw` | Action 1: Draw | ✅ Built |
 | `/learn/investigation/gain-resource` | Action 2: Gain Resource | ✅ Built |
 | `/learn/investigation/investigate` | Action 3: Investigate | ✅ Built |
@@ -244,7 +274,9 @@ Phase 1 (Mythos) → Phase 2 (Investigation) → Phase 3 (Enemy) → Phase 4 (Up
 | `/learn/investigation/engage` | Action 7: Engage | ✅ Built |
 | `/learn/investigation/play-card` | Action 8: Play Card | ✅ Built |
 | `/learn/investigation/activate-ability` | Action 9: Activate Ability | ✅ Built |
-| `/learn/investigation/resign` | Action 10: Resign | ✅ Built |
+| `/learn/investigation/parley` | Action 10: Parley | ✅ Built |
+| `/learn/investigation/resign` | Action 11: Resign | ✅ Built |
+
 | `/learn/enemy` | Phase 3: Enemy | ✅ Built |
 | `/learn/upkeep` | Phase 4: Upkeep | ✅ Built |
 | `/learn/skill-tests` | Skill Tests mechanic | ✅ Built |
@@ -333,3 +365,13 @@ cd "C:\Users\alix4\Game Train\arkham-horror-2026"
 - Walked through local setup on Windows (node v24.14.0)
 - Resolved file path issues (zip extracted to subfolder)
 - Confirmed local dev server running at localhost:3000
+
+**Chat 2 (April 3, 2026) — Rules Audit + Phase Nav + Play Overhaul:**
+- Created PhaseNav component (smooth in-page 4-tab phase navigator)
+- Added PhaseNav to all 4 phase pages (Mythos, Investigation, Enemy, Upkeep)
+- Full rulebook rules audit: AoO obligation (engage = must Fight/Evade/Parley/Resign), red warning banner on investigation page, Step 3 in phases.ts; Aloof/Massive/Patrol/Elusive enemy keywords; Treachery definition; Upkeep costs; non-Hunter enemy movement rule
+- Added Parley as Action 10 (full detail page content); Resign renumbered to 11
+- Updated action count references throughout (10 → 11)
+- Complete multiplayer Play Session overhaul: per-device identity, YOUR TURN takeover, action selection flow, Lead phase management, doom/clue tracking, delete player, rulebook SVG icons
+- Updated TurnState, ActionLogEntry, GameSession, GamePlayer types
+- Added updateTurnState, appendActionLog, subscribeToSession to session.ts

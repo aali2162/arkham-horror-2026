@@ -113,7 +113,7 @@ export default function TopicCard({ href, title, tagline, color, detail, difficu
             {icon}
           </div>
           {difficulty && (
-            <span className="text-[10px] font-decorative font-semibold tracking-wide uppercase px-2 py-0.5 rounded-full"
+            <span className="text-[10px] font-sans font-semibold tracking-wide uppercase px-2 py-0.5 rounded-full"
               style={{ background: `${c.bg}`, color: c.hex, border: `1px solid ${c.border}` }}>
               {difficulty}
             </span>
@@ -122,11 +122,11 @@ export default function TopicCard({ href, title, tagline, color, detail, difficu
 
         {/* Content */}
         <div className="flex-1">
-          <h3 className="font-decorative font-bold text-sm mb-1.5 transition-colors duration-200 group-hover:text-ark-gold-bright"
+          <h3 className="font-sans font-bold text-sm mb-1.5 transition-colors duration-200 group-hover:text-ark-gold-bright"
             style={{ color: "#e8dcc8" }}>
             {title}
           </h3>
-          <p className="text-xs leading-relaxed" style={{ color: "#5a4838" }}>{tagline}</p>
+          <p className="text-xs leading-relaxed font-sans" style={{ color: "#8a8278" }}>{tagline}</p>
         </div>
 
         {/* Footer detail + arrow */}

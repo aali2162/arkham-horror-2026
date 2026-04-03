@@ -31,7 +31,7 @@ export default function ActionDetailPage({ params }: Props) {
             <span className="text-3xl">{action.icon}</span>
             <div>
               <p className="text-ark-blue text-sm font-mono uppercase tracking-wider">
-                Action {action.number} of 10
+                Action {action.number} of 11
               </p>
               <h1 className="font-display font-extrabold text-3xl text-ark-text">
                 {action.name}
