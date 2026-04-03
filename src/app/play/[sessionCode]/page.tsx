@@ -269,6 +269,8 @@ export default function SessionPage() {
   // Action selection
   const [selectedAction, setSelectedAction] = useState<typeof ACTIONS[number] | null>(null);
   const [actionDetail, setActionDetail] = useState("");
+  // Shroud quick-pick for Investigate action
+  const [selectedShroud, setSelectedShroud] = useState<number | null>(null);
 
   // Tabs
   const [activeTab, setActiveTab] = useState<"board" | "enemies" | "log" | "reference">("board");
@@ -359,12 +361,20 @@ export default function SessionPage() {
     }
   }, [loading, myPlayerId, players]);
 
-  // Identity onboarding — only show picker if no UUID AND no name are known yet
+  // Identity onboarding:
+  // - Creator: auto-claimed in handleStartGame (no picker needed)
+  // - Non-creator: show picker when game starts and they have no identity yet
+  // - Legacy/fallback: show picker if they have no identity at all
   useEffect(() => {
-    if (!loading && players.length > 0 && !myPlayerName && !myPlayerId) {
+    if (loading) return;
+    if (isCreator) return;  // creator auto-claims in handleStartGame
+    if (myPlayerId || myPlayerName) return;  // already identified
+    if (players.length === 0) return;
+    // Show picker when game has started (transition moment) OR if already in-game
+    if (turnState.gameStarted) {
       setShowNamePicker(true);
     }
-  }, [loading, players.length, myPlayerName, myPlayerId]);
+  }, [loading, isCreator, myPlayerId, myPlayerName, players.length, turnState.gameStarted]);
 
   // ── Derived values ────────────────────────────────────────
   const currentPlayer = players[turnState.currentPlayerIdx] ?? null;
@@ -430,6 +440,7 @@ export default function SessionPage() {
     await pushTurnState(next);
     setSelectedAction(null);
     setActionDetail("");
+    setSelectedShroud(null);
   };
 
   const handleEndTurn = async () => {
@@ -616,6 +627,12 @@ export default function SessionPage() {
       leadInvestigatorIdx: lobbyLeadIdx,
     };
     await pushTurnState(next);
+    // Auto-claim the creator as the first player in the ordered list
+    // The creator set up the lobby and added themselves first
+    if (isCreator && !myPlayerId) {
+      const firstPlayer = players.find(p => p.id === orderedIds[0]) ?? players[0];
+      if (firstPlayer) claimPlayer(firstPlayer);
+    }
   };
 
   // ── Player management ─────────────────────────────────────
@@ -1441,6 +1458,34 @@ export default function SessionPage() {
             </div>
           )}
 
+          {/* ── Shroud picker for Investigate ── */}
+          {selectedAction.id === "investigate" && (
+            <div>
+              <label className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted block mb-2">
+                Location shroud (difficulty)
+              </label>
+              <div className="flex items-center gap-1.5">
+                {[1,2,3,4,5].map(n => (
+                  <button key={n} onClick={() => {
+                    setSelectedShroud(n);
+                    setActionDetail(`Shroud ${n} — testing Intellect`);
+                  }}
+                    className="flex-1 py-2 rounded-lg text-sm font-bold font-mono transition-all"
+                    style={selectedShroud === n
+                      ? { background: "rgba(106,171,247,0.25)", border: "2px solid #6aabf7", color: "#6aabf7", boxShadow: "0 0 8px rgba(106,171,247,0.3)" }
+                      : { background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020", color: "#8a7860" }}>
+                    {n}
+                  </button>
+                ))}
+              </div>
+              {selectedShroud && (
+                <p className="text-[10px] font-mono mt-1.5 text-center" style={{ color: selectedShroud <= 2 ? "#5bbf8a" : selectedShroud === 3 ? "#e8a84a" : "#d96b6b" }}>
+                  {selectedShroud <= 2 ? "Easy — low shroud" : selectedShroud === 3 ? "Moderate — be careful" : "Hard — high risk location"}
+                </p>
+              )}
+            </div>
+          )}
+
           <div>
             <label className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted block mb-2">
               {(["fight","evade","engage"].includes(selectedAction.id)) && enemies.length > 0
@@ -1453,6 +1498,7 @@ export default function SessionPage() {
                 selectedAction.id === "fight" ? `e.g. "Hit for 2 damage — 1 HP left"` :
                 selectedAction.id === "evade" ? `e.g. "Evaded — enemy exhausted"` :
                 selectedAction.id === "engage" ? `e.g. "Engaged — drew AoO"` :
+                selectedAction.id === "investigate" ? (selectedShroud ? `e.g. "Passed — collected a clue"` : `Tap a shroud above, then add outcome`) :
                 `e.g. "Investigated Library — passed +2"`
               }
               className="ark-input w-full px-3 py-2.5 rounded-lg text-sm" />
@@ -1698,33 +1744,48 @@ export default function SessionPage() {
           </div>
         </div>
 
-        {/* ── Name picker modal ── */}
+        {/* ── Identity picker modal — shown to non-creator devices on game start ── */}
         {showNamePicker && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}>
-            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#1a1410", border: "1px solid rgba(201,151,58,0.3)" }}>
-              <h3 className="font-decorative font-bold text-lg text-ark-text">Which investigator are you?</h3>
-              <p className="text-ark-text-muted text-sm">Select your name so the app knows when it&apos;s your turn.</p>
-              <div className="space-y-2">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.92)", backdropFilter: "blur(10px)" }}>
+            <div className="w-full max-w-sm rounded-2xl overflow-hidden" style={{ background: "#1a1410", border: "1px solid rgba(201,151,58,0.4)", boxShadow: "0 24px 80px rgba(0,0,0,0.9)" }}>
+              {/* Header */}
+              <div className="px-6 pt-6 pb-4" style={{ borderBottom: "1px solid rgba(201,151,58,0.15)" }}>
+                <div className="text-3xl mb-3">🕵️</div>
+                <h3 className="font-decorative font-bold text-xl text-ark-text mb-1">Who are you?</h3>
+                <p className="text-ark-text-muted text-sm leading-relaxed">The game has started. Tap your investigator so the app knows when it&apos;s your turn.</p>
+              </div>
+              {/* Player list */}
+              <div className="px-4 py-4 space-y-2">
                 {players.map(p => {
                   const inv = investigators.find(i => i.name === p.investigator);
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
+                  const alreadyClaimed = false; // future: could track claimed UUIDs
                   return (
                     <button key={p.id} onClick={() => claimPlayer(p)}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left"
-                      style={{ background: cls.bg, border: `1px solid ${cls.border}` }}>
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center font-bold" style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }}>
+                      className="w-full flex items-center gap-3 p-3.5 rounded-xl transition-all text-left active:scale-[0.98]"
+                      style={{ background: cls.bg, border: `1px solid ${cls.border}`, boxShadow: `0 0 0 0 ${cls.hex}` }}>
+                      <div className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-base flex-shrink-0"
+                        style={{ background: `${cls.hex}22`, border: `1px solid ${cls.border}`, color: cls.hex }}>
                         {p.investigator[0]}
                       </div>
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <p className="font-decorative font-bold text-sm text-ark-text">{p.player_name}</p>
-                        <p className="text-xs" style={{ color: cls.hex }}>{p.investigator}</p>
+                        <p className="text-xs truncate" style={{ color: cls.hex }}>{p.investigator}</p>
                       </div>
+                      <span className="text-xs font-mono shrink-0" style={{ color: cls.hex }}>→</span>
                     </button>
                   );
                 })}
+                {players.length === 0 && (
+                  <p className="text-ark-text-muted text-sm text-center py-4">No investigators in this session yet.</p>
+                )}
               </div>
-              {players.length === 0 && <p className="text-ark-text-muted text-sm text-center">No investigators yet — add them in the Board tab.</p>}
-              <button onClick={() => setShowNamePicker(false)} className="btn-ghost w-full py-2 text-sm rounded-lg">Close</button>
+              {/* Only show close if they somehow already have identity */}
+              {(myPlayerId || myPlayerName) && (
+                <div className="px-4 pb-4">
+                  <button onClick={() => setShowNamePicker(false)} className="btn-ghost w-full py-2 text-sm rounded-lg">Close</button>
+                </div>
+              )}
             </div>
           </div>
         )}
