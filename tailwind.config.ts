@@ -6,14 +6,14 @@ const config: Config = {
     extend: {
       colors: {
         ark: {
-          // ── Core backgrounds — warm deep sepia, like aged paper in candlelight
-          bg:           "#0e0b06",   // near-black with warm brown cast
-          surface:      "#16110a",   // slightly lighter sepia
-          card:         "#1e1710",   // card surface — dark parchment
-          "card-hover": "#261f14",
-          border:       "#3d2e18",   // warm brown border
-          "border-light":"5c4422",
-          "border-gold": "#9a7520",  // aged brass
+          // ── Core backgrounds — aged parchment / rulebook page
+          bg:           "#f2e8cc",   // warm parchment cream — the rulebook page
+          surface:      "#ecdcb0",   // slightly darker card surface
+          card:         "#ecdcb0",   // card background
+          "card-hover": "#e8d8a8",   // card hover — slightly deeper
+          border:       "#c8a860",   // warm gold border
+          "border-light":"#d4b870",
+          "border-gold": "#8a6820",  // dark gold accent
 
           // ── Gold — aged brass, candlelight
           gold:          "#c9973a",
@@ -57,11 +57,11 @@ const config: Config = {
           damage:        "#c03028",  // red heart token
           horror:        "#3868a8",  // blue brain token
 
-          // ── Text — warm parchment tones
-          text:          "#f0e8d8",  // warm white — aged parchment
-          "text-dim":    "#c8b898",  // mid parchment
-          "text-muted":  "#8a7860",  // dark parchment
-          "text-faint":  "#5a4830",  // very muted
+          // ── Text — dark sepia ink on parchment
+          text:          "#2a1808",  // dark ink — primary body text
+          "text-dim":    "#5a3a10",  // medium ink — secondary text
+          "text-muted":  "#8a7040",  // muted ink — tertiary / labels
+          "text-faint":  "#b89860",  // faint — placeholder / decorative
 
           // ── Sepia structural tones
           sepia:         "#2e2010",
