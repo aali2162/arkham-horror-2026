@@ -1,28 +1,37 @@
-# Game Train - Auto Deploy
-# Double-click DEPLOY.bat to run this
+# Game Train — One-click deploy
+# Double-click DEPLOY.bat on your desktop to run this silently.
+# Requirements: .github-token file in project root (one-time setup, already done if push works)
 
 Set-Location $PSScriptRoot
 
-$remote = "https://aali2162:$(Get-Content $PSScriptRoot\.github-token -Raw)@github.com/aali2162/arkham-horror-2026.git".Trim()
-git remote set-url origin $remote
+Write-Host ""
+Write-Host "=== Game Train Deploy ===" -ForegroundColor Cyan
 
-git add -A
-$changes = git status --porcelain
-if (-not $changes) {
-    Write-Host "Nothing to deploy." -ForegroundColor Yellow
-    exit 0
+# Use stored token for auth (avoids interactive prompts)
+$tokenFile = Join-Path $PSScriptRoot ".github-token"
+if (Test-Path $tokenFile) {
+    $token = (Get-Content $tokenFile -Raw).Trim()
+    $remote = "https://aali2162:$token@github.com/aali2162/arkham-horror-2026.git"
+    git remote set-url origin $remote
 }
 
-$timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
-git commit -m "Deploy: $timestamp"
+# Clear stale lock files
+".git\index.lock", ".git\HEAD.lock", ".git\refs\heads\main.lock" | ForEach-Object {
+    if (Test-Path $_) { Remove-Item $_ -Force }
+}
 
-# Pull remote changes first so push never gets rejected
-git pull --rebase --autostash origin main
-
-git push origin main
+# Push (commits are already prepared by Claude in the sandbox)
+git push origin main 2>&1
 
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "Live in ~30s: https://arkham-horror-2026.vercel.app" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "DEPLOYED. Live in ~60s:" -ForegroundColor Green
+    Write-Host "https://arkham-horror-2026.vercel.app" -ForegroundColor Cyan
+    Start-Process "https://arkham-horror-2026.vercel.app"
 } else {
-    Write-Host "Push failed." -ForegroundColor Red
+    Write-Host "Push failed — check output above." -ForegroundColor Red
 }
+
+Write-Host ""
+Write-Host "Press any key to close..."
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

@@ -10,6 +10,7 @@ import {
 } from "@/lib/session";
 import { GameSession, GamePlayer, TurnState, ActionLogEntry } from "@/types";
 import { investigators } from "@/data/investigators";
+import { actions as ACTION_DATA } from "@/data/actions";
 
 // ─── Campaigns & Scenarios ────────────────────────────────────────────────────
 const CAMPAIGNS = [
@@ -290,6 +291,14 @@ export default function SessionPage() {
   const [joiningInvestigator, setJoiningInvestigator] = useState(investigators[0].name);
   const [joiningPlayer, setJoiningPlayer] = useState(false);
 
+  // Lobby setup: lead + turn order must be confirmed before Start Game
+  const [lobbyLeadIdx, setLobbyLeadIdx] = useState(0);
+  const [lobbyOrderConfirmed, setLobbyOrderConfirmed] = useState(false);
+  const [lobbyLeadConfirmed, setLobbyLeadConfirmed] = useState(false);
+
+  // Inline learn modal
+  const [learnModalActionId, setLearnModalActionId] = useState<string | null>(null);
+
   // ── Data loading ──────────────────────────────────────────
   const loadSession = useCallback(async () => {
     if (!sessionCode) return;
@@ -547,8 +556,15 @@ export default function SessionPage() {
 
   const handleStartGame = async () => {
     if (!session || players.length === 0) return;
-    const order = turnState.playerOrder ?? players.map(p => p.id);
-    const next: TurnState = { ...turnState, gameStarted: true, currentPlayerIdx: 0, actionsUsed: 0, playerOrder: order };
+    const orderedIds = turnState.playerOrder ?? players.map(p => p.id);
+    const next: TurnState = {
+      ...turnState,
+      gameStarted: true,
+      currentPlayerIdx: 0,
+      actionsUsed: 0,
+      playerOrder: orderedIds,
+      leadInvestigatorIdx: lobbyLeadIdx,
+    };
     await pushTurnState(next);
   };
 
@@ -674,30 +690,17 @@ export default function SessionPage() {
             {copied ? "✓ Link copied!" : "📋 Copy invite link"}
           </button>
 
-          {/* Players list */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-xs font-decorative uppercase tracking-widest text-ark-text-muted">
-                Investigators ({players.length} / 4)
-              </h2>
-              {!reorderMode && players.length >= 2 && (
-                <button onClick={() => setReorderMode(true)}
-                  className="text-xs font-semibold font-mono px-3 py-1.5 rounded-lg transition-all"
-                  style={{ background: "rgba(91,191,138,0.08)", border: "1px solid rgba(91,191,138,0.25)", color: "#5bbf8a" }}>
-                  ⇅ Set Turn Order
-                </button>
-              )}
-              {reorderMode && (
-                <button onClick={() => setReorderMode(false)}
-                  className="text-xs font-semibold font-mono px-3 py-1.5 rounded-lg"
-                  style={{ background: "rgba(91,191,138,0.15)", border: "1px solid rgba(91,191,138,0.4)", color: "#5bbf8a" }}>
-                  ✓ Order Set
-                </button>
-              )}
+          {/* ── STEP 1: Investigators ── */}
+          <div className="mb-5">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
+                style={{ background: "rgba(201,151,58,0.2)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }}>1</div>
+              <h2 className="text-sm font-decorative font-bold text-ark-text">Add Investigators</h2>
+              <span className="text-xs text-ark-text-muted font-mono">({players.length} / 4)</span>
             </div>
 
             {players.length === 0 ? (
-              <div className="rounded-xl p-8 text-center" style={{ background: "rgba(26,20,16,0.5)", border: "1px dashed #3d3020" }}>
+              <div className="rounded-xl p-6 text-center" style={{ background: "rgba(26,20,16,0.5)", border: "1px dashed #3d3020" }}>
                 <p className="text-ark-text-muted text-sm">No investigators yet. Add the first one below.</p>
               </div>
             ) : (
@@ -708,7 +711,6 @@ export default function SessionPage() {
                   return (
                     <div key={player.id} className="flex items-center gap-3 rounded-xl p-3 transition-all"
                       style={{ background: "linear-gradient(135deg, #1a1410, #120e09)", border: `1px solid ${cls.border}` }}>
-                      {/* Turn order number */}
                       <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
                         style={{ background: "rgba(201,151,58,0.12)", border: "1px solid rgba(201,151,58,0.3)", color: "#c9973a" }}>
                         {idx + 1}
@@ -721,18 +723,6 @@ export default function SessionPage() {
                         <p className="font-decorative font-bold text-sm text-ark-text truncate">{player.player_name}</p>
                         <p className="text-xs" style={{ color: cls.hex }}>{player.investigator} · {inv?.class}</p>
                       </div>
-                      {reorderMode && (
-                        <div className="flex flex-col gap-1">
-                          <button onClick={() => handleReorderPlayer(player.id, "up")}
-                            disabled={orderedLobbyPlayers[0]?.id === player.id}
-                            className="w-6 h-6 rounded text-xs flex items-center justify-center disabled:opacity-30"
-                            style={{ background: "rgba(91,191,138,0.2)", border: "1px solid rgba(91,191,138,0.4)", color: "#5bbf8a" }}>↑</button>
-                          <button onClick={() => handleReorderPlayer(player.id, "down")}
-                            disabled={orderedLobbyPlayers[orderedLobbyPlayers.length - 1]?.id === player.id}
-                            className="w-6 h-6 rounded text-xs flex items-center justify-center disabled:opacity-30"
-                            style={{ background: "rgba(91,191,138,0.2)", border: "1px solid rgba(91,191,138,0.4)", color: "#5bbf8a" }}>↓</button>
-                        </div>
-                      )}
                       <button onClick={() => handleRemove(player)}
                         className="w-7 h-7 rounded-full text-xs flex items-center justify-center transition-all"
                         style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#d96b6b" }}>
@@ -744,6 +734,92 @@ export default function SessionPage() {
               </div>
             )}
           </div>
+
+          {/* ── STEP 2: Turn Order ── */}
+          {players.length >= 2 && (
+            <div className="mb-5 rounded-xl p-4" style={{ background: lobbyOrderConfirmed ? "rgba(91,191,138,0.06)" : "rgba(26,20,16,0.7)", border: `1px solid ${lobbyOrderConfirmed ? "rgba(91,191,138,0.4)" : "#3d3020"}` }}>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
+                  style={{ background: lobbyOrderConfirmed ? "rgba(91,191,138,0.3)" : "rgba(201,151,58,0.2)", border: `1px solid ${lobbyOrderConfirmed ? "rgba(91,191,138,0.6)" : "rgba(201,151,58,0.5)"}`, color: lobbyOrderConfirmed ? "#5bbf8a" : "#c9973a" }}>
+                  {lobbyOrderConfirmed ? "✓" : "2"}
+                </div>
+                <h2 className="text-sm font-decorative font-bold text-ark-text">Set Turn Order</h2>
+                {lobbyOrderConfirmed && <span className="text-xs font-mono" style={{ color: "#5bbf8a" }}>Confirmed</span>}
+              </div>
+              <div className="space-y-2 mb-3">
+                {orderedLobbyPlayers.map((player, idx) => {
+                  const inv = investigators.find(i => i.name === player.investigator);
+                  const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
+                  return (
+                    <div key={player.id} className="flex items-center gap-3 rounded-lg p-2.5"
+                      style={{ background: "rgba(10,8,5,0.4)", border: `1px solid ${cls.border}50` }}>
+                      <span className="font-mono font-bold text-sm w-5 text-center flex-shrink-0" style={{ color: "#c9973a" }}>{idx + 1}</span>
+                      <div className="w-7 h-7 rounded flex items-center justify-center font-bold text-xs flex-shrink-0"
+                        style={{ background: cls.bg, color: cls.hex }}>{player.investigator[0]}</div>
+                      <span className="flex-1 text-sm font-decorative text-ark-text truncate">{player.player_name}</span>
+                      <div className="flex flex-col gap-0.5">
+                        <button onClick={() => handleReorderPlayer(player.id, "up")}
+                          disabled={orderedLobbyPlayers[0]?.id === player.id}
+                          className="w-5 h-5 rounded text-[10px] flex items-center justify-center disabled:opacity-20"
+                          style={{ background: "rgba(91,191,138,0.2)", color: "#5bbf8a" }}>↑</button>
+                        <button onClick={() => handleReorderPlayer(player.id, "down")}
+                          disabled={orderedLobbyPlayers[orderedLobbyPlayers.length - 1]?.id === player.id}
+                          className="w-5 h-5 rounded text-[10px] flex items-center justify-center disabled:opacity-20"
+                          style={{ background: "rgba(91,191,138,0.2)", color: "#5bbf8a" }}>↓</button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <button onClick={() => setLobbyOrderConfirmed(true)}
+                className="w-full py-2 rounded-lg text-sm font-bold font-decorative transition-all"
+                style={{ background: lobbyOrderConfirmed ? "rgba(91,191,138,0.15)" : "rgba(91,191,138,0.2)", border: `1px solid rgba(91,191,138,0.5)`, color: "#5bbf8a" }}>
+                {lobbyOrderConfirmed ? "✓ Turn Order Confirmed" : "Confirm Turn Order →"}
+              </button>
+            </div>
+          )}
+
+          {/* ── STEP 3: Lead Investigator ── */}
+          {players.length >= 1 && (
+            <div className="mb-5 rounded-xl p-4" style={{ background: lobbyLeadConfirmed ? "rgba(201,151,58,0.06)" : "rgba(26,20,16,0.7)", border: `1px solid ${lobbyLeadConfirmed ? "rgba(201,151,58,0.4)" : "#3d3020"}` }}>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
+                  style={{ background: lobbyLeadConfirmed ? "rgba(201,151,58,0.3)" : "rgba(201,151,58,0.15)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }}>
+                  {lobbyLeadConfirmed ? "✓" : players.length >= 2 ? "3" : "2"}
+                </div>
+                <h2 className="text-sm font-decorative font-bold text-ark-text">Choose Lead Investigator</h2>
+                {lobbyLeadConfirmed && <span className="text-xs font-mono" style={{ color: "#c9973a" }}>Confirmed</span>}
+              </div>
+              <p className="text-[10px] text-ark-text-muted mb-3 leading-relaxed">The Lead Investigator manages Mythos, Enemy, and Upkeep phases for the group.</p>
+              <div className="space-y-1.5 mb-3">
+                {orderedLobbyPlayers.map((player, idx) => {
+                  const inv = investigators.find(i => i.name === player.investigator);
+                  const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
+                  const isSelected = lobbyLeadIdx === idx;
+                  return (
+                    <button key={player.id} onClick={() => { setLobbyLeadIdx(idx); setLobbyLeadConfirmed(false); }}
+                      className="w-full flex items-center gap-3 p-2.5 rounded-lg transition-all text-left"
+                      style={{ background: isSelected ? cls.bg : "rgba(10,8,5,0.4)", border: `1px solid ${isSelected ? cls.border : "#3d3020"}` }}>
+                      <div className="w-7 h-7 rounded flex items-center justify-center font-bold text-xs flex-shrink-0"
+                        style={{ background: cls.bg, color: cls.hex }}>{player.investigator[0]}</div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-decorative font-bold text-ark-text truncate">{player.player_name}</p>
+                        <p className="text-[10px]" style={{ color: cls.hex }}>{player.investigator}</p>
+                      </div>
+                      {isSelected && (
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded" style={{ background: "rgba(201,151,58,0.2)", color: "#c9973a" }}>★ LEAD</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              <button onClick={() => setLobbyLeadConfirmed(true)}
+                className="w-full py-2 rounded-lg text-sm font-bold font-decorative transition-all"
+                style={{ background: lobbyLeadConfirmed ? "rgba(201,151,58,0.15)" : "rgba(201,151,58,0.2)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }}>
+                {lobbyLeadConfirmed ? "✓ Lead Confirmed" : "Confirm Lead Investigator →"}
+              </button>
+            </div>
+          )}
 
           {/* Add player form */}
           {players.length < 4 && (
@@ -793,20 +869,35 @@ export default function SessionPage() {
             </div>
           )}
 
-          {/* Start Game */}
-          <button
-            onClick={handleStartGame}
-            disabled={players.length === 0}
-            className="w-full py-4 rounded-2xl font-decorative font-bold text-base tracking-wide transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{
-              background: players.length > 0 ? "linear-gradient(135deg, #c9973a, #a07828)" : "rgba(26,20,16,0.8)",
-              color: players.length > 0 ? "#0a0805" : "#5a4838",
-              border: "1px solid rgba(201,151,58,0.4)",
-              boxShadow: players.length > 0 ? "0 0 32px rgba(201,151,58,0.25)" : "none"
-            }}>
-            {players.length === 0 ? "Add investigators to start" : `Start Game — ${players.length} Investigator${players.length !== 1 ? "s" : ""}`}
-          </button>
-          <p className="text-center text-xs text-ark-text-muted mt-3">Round 1 skips the Mythos Phase — first investigator goes immediately.</p>
+          {/* ── STEP FINAL: Start Game ── */}
+          {(() => {
+            const needsOrderConfirm = players.length >= 2 && !lobbyOrderConfirmed;
+            const needsLeadConfirm = !lobbyLeadConfirmed;
+            const ready = players.length > 0 && !needsOrderConfirm && !needsLeadConfirm;
+            const blockReason = players.length === 0 ? "Add investigators first"
+              : needsOrderConfirm && needsLeadConfirm ? "Confirm turn order and lead investigator above"
+              : needsOrderConfirm ? "Confirm turn order above"
+              : needsLeadConfirm ? "Confirm lead investigator above"
+              : null;
+            return (
+              <>
+                <button onClick={handleStartGame} disabled={!ready}
+                  className="w-full py-4 rounded-2xl font-decorative font-bold text-base tracking-wide transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{
+                    background: ready ? "linear-gradient(135deg, #c9973a, #a07828)" : "rgba(26,20,16,0.8)",
+                    color: ready ? "#0a0805" : "#5a4838",
+                    border: "1px solid rgba(201,151,58,0.4)",
+                    boxShadow: ready ? "0 0 32px rgba(201,151,58,0.25)" : "none"
+                  }}>
+                  {ready ? `▶ Start Game — ${players.length} Investigator${players.length !== 1 ? "s" : ""}` : "Start Game"}
+                </button>
+                {blockReason && (
+                  <p className="text-center text-xs mt-2 font-mono" style={{ color: "#d96b6b" }}>⚠ {blockReason}</p>
+                )}
+                {ready && <p className="text-center text-xs text-ark-text-muted mt-2">Round 1 skips the Mythos Phase — first investigator goes immediately.</p>}
+              </>
+            );
+          })()}
 
         </main>
       </div>
@@ -814,91 +905,121 @@ export default function SessionPage() {
   }
 
   // ══════════════════════════════════════════════════════════
-  // ── LATECOMER JOIN SCREEN — game started but I'm not in it
+  // ── JOIN / IDENTIFY SCREEN — game started, device not identified
   // ══════════════════════════════════════════════════════════
-  if (turnState.gameStarted && !myPlayer && players.length < 4) {
+  if (turnState.gameStarted && !myPlayer) {
     const usedInvestigators = players.map(p => p.investigator);
     const availableInvestigators = investigators.filter(i => !usedInvestigators.includes(i.name));
+    const canAddNew = players.length < 4;
 
     const handleJoinGame = async () => {
       if (!session || !joiningName.trim()) return;
       setJoiningPlayer(true);
       const newP = await addPlayer(session.id, joiningName.trim(), joiningInvestigator);
-      if (newP) {
-        handleSetName(joiningName.trim());
-      }
+      if (newP) handleSetName(joiningName.trim());
       setJoiningPlayer(false);
     };
 
     return (
       <div className="min-h-screen flex flex-col" style={{ background: "#0c0f14" }}>
         <Navbar />
-        <main className="max-w-sm mx-auto px-4 py-12 w-full">
-          <div className="text-center mb-8">
+        <main className="max-w-sm mx-auto px-4 py-10 w-full">
+          <div className="text-center mb-7">
             <div className="inline-flex items-center gap-2 text-xs font-mono tracking-widest mb-4 px-3 py-1.5 rounded-full"
               style={{ background: "rgba(91,191,138,0.08)", border: "1px solid rgba(91,191,138,0.25)", color: "#5bbf8a" }}>
-              🎲 GAME IN PROGRESS · {sessionCode}
+              <span className="live-dot" /> GAME IN PROGRESS · {sessionCode}
             </div>
-            <h1 className="font-decorative font-bold text-2xl text-ark-text mb-2">Join the Game</h1>
-            <p className="text-ark-text-muted text-sm">A game is already in progress. Add yourself to join.</p>
+            <h1 className="font-decorative font-bold text-2xl text-ark-text mb-1">Who are you?</h1>
+            <p className="text-ark-text-muted text-sm">Select your investigator or join as a new player.</p>
           </div>
 
-          {/* Current players */}
+          {/* PATH A — That's me (pick existing) */}
           {players.length > 0 && (
-            <div className="mb-6 rounded-xl p-3" style={{ background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020" }}>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-2">Already playing</p>
-              <div className="space-y-1.5">
+            <div className="mb-5">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-2">I'm already in this game</p>
+              <div className="space-y-2">
                 {players.map(p => {
                   const inv = investigators.find(i => i.name === p.investigator);
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
                   return (
-                    <div key={p.id} className="flex items-center gap-2 text-xs">
-                      <div className="w-5 h-5 rounded flex items-center justify-center font-bold text-[10px]" style={{ background: cls.bg, color: cls.hex }}>{p.investigator[0]}</div>
-                      <span className="text-ark-text">{p.player_name}</span>
-                      <span className="text-ark-text-muted">— {p.investigator}</span>
-                    </div>
+                    <button key={p.id} onClick={() => handleSetName(p.player_name)}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left active:scale-98"
+                      style={{ background: cls.bg, border: `1px solid ${cls.border}` }}>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
+                        style={{ background: "rgba(10,8,5,0.4)", color: cls.hex, border: `1px solid ${cls.border}` }}>
+                        {p.investigator[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-decorative font-bold text-sm text-ark-text">{p.player_name}</p>
+                        <p className="text-xs" style={{ color: cls.hex }}>{p.investigator} · {inv?.class}</p>
+                      </div>
+                      <span className="text-xs font-bold font-mono" style={{ color: cls.hex }}>That&apos;s me →</span>
+                    </button>
                   );
                 })}
               </div>
             </div>
           )}
 
-          <div className="rounded-xl p-4 space-y-3" style={{ background: "rgba(26,20,16,0.8)", border: "1px solid rgba(201,151,58,0.2)" }}>
-            <input value={joiningName} onChange={e => setJoiningName(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && handleJoinGame()}
-              placeholder="Your name"
-              className="ark-input w-full px-3 py-2.5 rounded-lg text-sm" />
-            <select value={joiningInvestigator} onChange={e => setJoiningInvestigator(e.target.value)} className="ark-input w-full px-3 py-2.5 rounded-lg text-sm">
-              {(availableInvestigators.length > 0 ? availableInvestigators : investigators).map(inv => (
-                <option key={inv.name} value={inv.name}>{inv.name} ({inv.class})</option>
-              ))}
-            </select>
-            {/* Show selected investigator stats */}
-            {(() => {
-              const selInv = investigators.find(i => i.name === joiningInvestigator);
-              if (!selInv) return null;
-              const cls = CLASS_COLORS[selInv.class ?? "Guardian"];
-              return (
-                <div className="rounded-lg p-2.5 grid grid-cols-4 gap-2" style={{ background: `${cls.bg}`, border: `1px solid ${cls.border}` }}>
-                  {[
-                    { label: "HP", val: selInv.health, color: "#d96b6b" },
-                    { label: "SAN", val: selInv.sanity, color: "#a888e8" },
-                    { label: "WIL", val: selInv.willpower, color: "#a888e8" },
-                    { label: "INT", val: selInv.intellect, color: "#6aabf7" },
-                  ].map(s => (
-                    <div key={s.label} className="text-center">
-                      <div className="text-[9px] font-mono text-ark-text-muted">{s.label}</div>
-                      <div className="font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
-                    </div>
+          {/* Divider */}
+          {players.length > 0 && canAddNew && (
+            <div className="flex items-center gap-3 mb-5">
+              <div className="flex-1 h-px" style={{ background: "#3d3020" }} />
+              <span className="text-xs text-ark-text-muted font-mono">or</span>
+              <div className="flex-1 h-px" style={{ background: "#3d3020" }} />
+            </div>
+          )}
+
+          {/* PATH B — Join as new player */}
+          {canAddNew && (
+            <div>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-2">Join as a new player</p>
+              <div className="rounded-xl p-4 space-y-3" style={{ background: "rgba(26,20,16,0.8)", border: "1px solid rgba(201,151,58,0.2)" }}>
+                <input value={joiningName} onChange={e => setJoiningName(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && handleJoinGame()}
+                  placeholder="Your name"
+                  className="ark-input w-full px-3 py-2.5 rounded-lg text-sm" />
+                <select value={joiningInvestigator} onChange={e => setJoiningInvestigator(e.target.value)}
+                  className="ark-input w-full px-3 py-2.5 rounded-lg text-sm">
+                  {(availableInvestigators.length > 0 ? availableInvestigators : investigators).map(inv => (
+                    <option key={inv.name} value={inv.name}>{inv.name} ({inv.class})</option>
                   ))}
-                </div>
-              );
-            })()}
-            <button onClick={handleJoinGame} disabled={joiningPlayer || !joiningName.trim()}
-              className="btn-gold w-full py-3 text-sm rounded-xl font-bold disabled:opacity-40">
-              {joiningPlayer ? "Joining…" : "Join Game →"}
-            </button>
-          </div>
+                </select>
+                {(() => {
+                  const selInv = investigators.find(i => i.name === joiningInvestigator);
+                  if (!selInv) return null;
+                  const cls = CLASS_COLORS[selInv.class ?? "Guardian"];
+                  return (
+                    <div className="rounded-lg p-2.5 grid grid-cols-6 gap-1.5 text-center" style={{ background: cls.bg, border: `1px solid ${cls.border}` }}>
+                      {[
+                        { label: "HP", val: selInv.health, color: "#d96b6b" },
+                        { label: "SAN", val: selInv.sanity, color: "#a888e8" },
+                        { label: "WIL", val: selInv.willpower, color: "#a888e8" },
+                        { label: "INT", val: selInv.intellect, color: "#6aabf7" },
+                        { label: "COM", val: selInv.combat, color: "#d96b6b" },
+                        { label: "AGI", val: selInv.agility, color: "#5bbf8a" },
+                      ].map(s => (
+                        <div key={s.label}>
+                          <div className="text-[9px] font-mono text-ark-text-muted">{s.label}</div>
+                          <div className="font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+                <button onClick={handleJoinGame} disabled={joiningPlayer || !joiningName.trim()}
+                  className="btn-gold w-full py-3 text-sm rounded-xl font-bold disabled:opacity-40">
+                  {joiningPlayer ? "Joining…" : "Join Game →"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {!canAddNew && players.length > 0 && (
+            <div className="rounded-xl p-4 text-center text-xs font-mono" style={{ background: "rgba(192,57,43,0.08)", border: "1px solid rgba(192,57,43,0.3)", color: "#d96b6b" }}>
+              Game is full (4/4). Select your investigator above to identify yourself.
+            </div>
+          )}
         </main>
       </div>
     );
@@ -1050,11 +1171,11 @@ export default function SessionPage() {
             </div>
           )}
 
-          <a href={`/learn/investigation/${selectedAction.id}`} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all"
+          <button onClick={() => setLearnModalActionId(selectedAction.id)}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all w-full"
             style={{ background: `${selectedAction.color}10`, border: `1px solid ${selectedAction.color}30`, color: selectedAction.color }}>
             📖 Learn more about this action →
-          </a>
+          </button>
 
           <div>
             <label className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted block mb-2">Add detail (optional)</label>
@@ -1073,6 +1194,105 @@ export default function SessionPage() {
             </button>
           </div>
         </div>
+
+        {/* ── Inline Learn Modal ── */}
+        {learnModalActionId && (() => {
+          const actionData = ACTION_DATA.find(a => a.id === learnModalActionId);
+          const actionDef = ACTIONS.find(a => a.id === learnModalActionId);
+          if (!actionData) return null;
+          const color = actionDef?.color ?? "#c9973a";
+          return (
+            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+              style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)" }}
+              onClick={e => { if (e.target === e.currentTarget) setLearnModalActionId(null); }}>
+              <div className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col"
+                style={{ background: "#141008", border: `1px solid ${color}30`, maxHeight: "85vh" }}>
+                {/* Header */}
+                <div className="flex items-center gap-3 px-5 py-4 flex-shrink-0" style={{ borderBottom: `1px solid ${color}20`, background: `${color}08` }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: `${color}18`, border: `1px solid ${color}30` }}>
+                    {actionDef?.skill ? <SkillIcon skill={actionDef.skill} size={20} /> : <ActionSymbol size={20} />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-decorative font-bold text-lg text-ark-text">{actionData.name}</h3>
+                    <p className="text-xs text-ark-text-muted">{actionData.tagline}</p>
+                  </div>
+                  <button onClick={() => setLearnModalActionId(null)}
+                    className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-ark-text-muted hover:text-ark-text transition-colors"
+                    style={{ background: "rgba(255,255,255,0.05)" }}>✕</button>
+                </div>
+
+                {/* Scrollable body */}
+                <div className="overflow-y-auto flex-1 px-5 py-4 space-y-4">
+                  {/* Description */}
+                  <p className="text-sm text-ark-text leading-relaxed">{actionData.description}</p>
+
+                  {/* Steps */}
+                  {actionData.steps && actionData.steps.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-mono uppercase tracking-widest mb-2" style={{ color }}>How it works</p>
+                      <div className="space-y-1.5">
+                        {actionData.steps.map(step => (
+                          <div key={step.number} className="flex items-start gap-3 px-3 py-2.5 rounded-lg" style={{ background: `${color}08`, border: `1px solid ${color}18` }}>
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center font-mono font-bold text-[10px] flex-shrink-0 mt-0.5"
+                              style={{ background: `${color}25`, color }}>{step.number}</div>
+                            <p className="text-sm text-ark-text leading-snug">{step.instruction}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Example */}
+                  {actionData.example && (
+                    <div className="rounded-lg px-4 py-3" style={{ background: "rgba(91,191,138,0.07)", border: "1px solid rgba(91,191,138,0.25)" }}>
+                      <p className="text-[10px] font-mono uppercase tracking-widest mb-1.5" style={{ color: "#5bbf8a" }}>Example</p>
+                      <p className="text-xs text-ark-text leading-relaxed">{actionData.example.narrative}</p>
+                    </div>
+                  )}
+
+                  {/* Edge cases */}
+                  {actionData.edgeCases && actionData.edgeCases.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-mono uppercase tracking-widest mb-2" style={{ color: "#e8a84a" }}>Common questions</p>
+                      <div className="space-y-2">
+                        {actionData.edgeCases.map((ec, i) => (
+                          <div key={i} className="rounded-lg px-3 py-2.5" style={{ background: "rgba(232,168,74,0.06)", border: "1px solid rgba(232,168,74,0.2)" }}>
+                            <p className="text-[11px] font-bold mb-1" style={{ color: "#e8a84a" }}>{ec.question}</p>
+                            <p className="text-xs text-ark-text-muted leading-relaxed">{ec.answer}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* When to use */}
+                  {actionData.whenToUse && actionData.whenToUse.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-mono uppercase tracking-widest mb-2" style={{ color: "#6aabf7" }}>When to use this</p>
+                      <ul className="space-y-1">
+                        {actionData.whenToUse.map((tip, i) => (
+                          <li key={i} className="flex items-start gap-2 text-xs text-ark-text-muted">
+                            <span style={{ color: "#6aabf7" }}>·</span>{tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="px-5 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${color}20` }}>
+                  <button onClick={() => setLearnModalActionId(null)}
+                    className="w-full py-2.5 rounded-xl font-bold font-decorative text-sm transition-all"
+                    style={{ background: `linear-gradient(135deg, ${color}cc, ${color}88)`, color: "#0a0805" }}>
+                    Got it — back to my turn
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </div>
     );
   }
@@ -1236,73 +1456,87 @@ export default function SessionPage() {
           </div>
         )}
 
-        {/* ── Doom & Agenda Bar ── */}
-        <div className="rounded-xl p-4 mb-4" style={{ background: "linear-gradient(135deg, rgba(124,92,191,0.07), rgba(10,8,5,0.95))", border: `1px solid ${doomDanger ? "rgba(192,57,43,0.4)" : "rgba(124,92,191,0.3)"}` }}>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2">
-                  <DoomIcon size={14} color={doomDanger ? "#d96b6b" : "#a888e8"} />
-                  <span className="font-decorative font-bold text-xs uppercase tracking-wider" style={{ color: doomDanger ? "#d96b6b" : "#a888e8" }}>
-                    Doom — {turnState.agendaName}
-                  </span>
-                </div>
-                <span className="font-mono text-xs" style={{ color: doomDanger ? "#d96b6b" : "#a888e8" }}>{turnState.doom} / {turnState.doomThreshold}</span>
+        {/* ══ DOOM & ACT STATUS BAR — always prominent ══ */}
+        <div className="rounded-2xl mb-4 overflow-hidden" style={{ border: `2px solid ${doomDanger ? "rgba(192,57,43,0.5)" : "rgba(124,92,191,0.35)"}`, background: "linear-gradient(135deg, rgba(20,14,30,0.97), rgba(10,8,5,0.98))", boxShadow: doomDanger ? "0 0 24px rgba(192,57,43,0.15)" : "0 0 16px rgba(124,92,191,0.08)" }}>
+
+          {/* Top strip: Agenda + Act side by side */}
+          <div className="grid grid-cols-2" style={{ borderBottom: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "rgba(124,92,191,0.2)"}` }}>
+            {/* DOOM side */}
+            <div className="px-4 py-3" style={{ borderRight: `1px solid ${doomDanger ? "rgba(192,57,43,0.2)" : "rgba(124,92,191,0.15)"}` }}>
+              <div className="flex items-center gap-1.5 mb-1">
+                <DoomIcon size={12} color={doomDanger ? "#d96b6b" : "#a888e8"} />
+                <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: doomDanger ? "#d96b6b" : "#a888e8" }}>Agenda</span>
+                {doomDanger && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(192,57,43,0.2)", color: "#d96b6b" }}>ADVANCE!</span>}
               </div>
-              <div className="flex gap-1 mb-2 flex-wrap">
+              <p className="text-[11px] font-decorative font-bold text-ark-text truncate mb-1.5">{turnState.agendaName}</p>
+              {/* Doom pips */}
+              <div className="flex items-center gap-1 flex-wrap">
                 {Array.from({ length: turnState.doomThreshold }).map((_, i) => (
                   <button key={i}
                     onClick={() => isLead && pushTurnState({ ...turnState, doom: i < turnState.doom ? i : i + 1 })}
                     disabled={!isLead}
-                    className="w-7 h-7 rounded flex items-center justify-center transition-all duration-300"
+                    className="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200"
                     style={i < turnState.doom
-                      ? { background: doomDanger ? "rgba(192,57,43,0.6)" : "rgba(124,92,191,0.6)", border: `1px solid ${doomDanger ? "#d96b6b" : "#7c5cbf"}`, boxShadow: `0 0 8px ${doomDanger ? "rgba(192,57,43,0.3)" : "rgba(124,92,191,0.3)"}` }
-                      : { background: "rgba(10,8,5,0.4)", border: "1px solid #3d3020" }}>
-                    {i < turnState.doom && <DoomIcon size={12} color={doomDanger ? "#d96b6b" : "#a888e8"} />}
+                      ? { background: doomDanger ? "rgba(192,57,43,0.7)" : "rgba(124,92,191,0.7)", border: `1px solid ${doomDanger ? "#d96b6b" : "#7c5cbf"}`, boxShadow: `0 0 6px ${doomDanger ? "rgba(192,57,43,0.4)" : "rgba(124,92,191,0.4)"}` }
+                      : { background: "rgba(10,8,5,0.5)", border: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "#3d3020"}` }}>
+                    {i < turnState.doom && <DoomIcon size={10} color={doomDanger ? "#d96b6b" : "#a888e8"} />}
                   </button>
                 ))}
+                <span className="text-[10px] font-mono font-bold ml-1" style={{ color: doomDanger ? "#d96b6b" : "#a888e8" }}>{turnState.doom}/{turnState.doomThreshold}</span>
               </div>
-              <p className="text-[9px] text-ark-text-muted">{turnState.actName}</p>
-              {/* Clue checkpoint */}
+            </div>
+
+            {/* ACT side */}
+            <div className="px-4 py-3">
               {(() => {
                 const totalClues = players.reduce((sum, p) => sum + p.clues, 0);
                 const needed = turnState.cluesRequired ?? 0;
                 const canAdvance = totalClues >= needed;
                 return (
-                  <div className={`mt-2 flex items-center gap-2 px-2 py-1.5 rounded-lg text-[10px] font-mono transition-all ${canAdvance ? "animate-pulse" : ""}`}
-                    style={{ background: canAdvance ? "rgba(106,171,247,0.12)" : "rgba(10,8,5,0.3)", border: `1px solid ${canAdvance ? "rgba(106,171,247,0.4)" : "#3d3020"}` }}>
-                    <ClueIcon size={12} color={canAdvance ? "#6aabf7" : "#5a4838"} />
-                    <span style={{ color: canAdvance ? "#6aabf7" : "#5a4838" }}>
-                      Clues: {totalClues} / {needed} needed to advance act
-                    </span>
-                    {canAdvance && <span className="font-bold" style={{ color: "#6aabf7" }}>✓ Ready!</span>}
-                  </div>
+                  <>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <ClueIcon size={12} color={canAdvance ? "#6aabf7" : "#4a6a8a"} />
+                      <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: canAdvance ? "#6aabf7" : "#4a6a8a" }}>Act</span>
+                      {turnState.scenarioNumber && <span className="text-[9px] font-mono" style={{ color: "#6a5840" }}>#{turnState.scenarioNumber}</span>}
+                      {canAdvance && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(106,171,247,0.15)", color: "#6aabf7" }}>READY!</span>}
+                    </div>
+                    <p className="text-[11px] font-decorative font-bold text-ark-text truncate mb-1.5">{turnState.actName}</p>
+                    {/* Clue progress bar */}
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020" }}>
+                        <div className="h-full rounded-full transition-all duration-500"
+                          style={{ width: `${Math.min((totalClues / Math.max(1, needed)) * 100, 100)}%`, background: canAdvance ? "linear-gradient(90deg, #3a6ab8, #6aabf7)" : "linear-gradient(90deg, #2a4a68, #4a8ab8)" }} />
+                      </div>
+                      <span className="text-[10px] font-mono font-bold flex-shrink-0" style={{ color: canAdvance ? "#6aabf7" : "#4a6a8a" }}>{totalClues}/{needed}</span>
+                    </div>
+                  </>
                 );
               })()}
             </div>
-
-            {isLead && (
-              <div className="flex flex-col gap-2 flex-shrink-0">
-                <button onClick={() => setShowCampaignPicker(true)}
-                  className="px-4 py-2 rounded-xl text-sm font-bold font-decorative transition-all"
-                  style={{ background: "rgba(124,92,191,0.15)", border: "1px solid rgba(124,92,191,0.4)", color: "#a888e8" }}>
-                  📖 Campaign
-                </button>
-                <button onClick={handleAdvanceAct}
-                  className="px-3 py-2 rounded-xl text-sm font-bold font-decorative transition-all"
-                  style={{ background: "rgba(124,92,191,0.15)", border: "1px solid rgba(124,92,191,0.4)", color: "#a888e8" }}>
-                  Advance Act →
-                </button>
-                {turnState.campaignId && turnState.campaignId !== "custom" && (
-                  <button onClick={handleAdvanceScenario}
-                    className="px-3 py-2 rounded-xl text-sm font-bold font-decorative transition-all"
-                    style={{ background: "rgba(58,158,107,0.12)", border: "1px solid rgba(58,158,107,0.4)", color: "#5bbf8a" }}>
-                    Next Scenario ↗
-                  </button>
-                )}
-              </div>
-            )}
           </div>
+
+          {/* Bottom strip: lead actions */}
+          {isLead && (
+            <div className="px-3 py-2 flex items-center gap-2 flex-wrap" style={{ background: "rgba(10,8,5,0.4)" }}>
+              <button onClick={() => setShowCampaignPicker(true)}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
+                style={{ background: "rgba(124,92,191,0.12)", border: "1px solid rgba(124,92,191,0.3)", color: "#a888e8" }}>
+                📖 Campaign
+              </button>
+              <button onClick={handleAdvanceAct}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
+                style={{ background: "rgba(124,92,191,0.12)", border: "1px solid rgba(124,92,191,0.3)", color: "#a888e8" }}>
+                Advance Act →
+              </button>
+              {turnState.campaignId && turnState.campaignId !== "custom" && (
+                <button onClick={handleAdvanceScenario}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
+                  style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.3)", color: "#5bbf8a" }}>
+                  Next Scenario ↗
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* ── Campaign picker modal ── */}
