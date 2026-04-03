@@ -1034,7 +1034,7 @@ export default function SessionPage() {
 
           {/* ── STEP 2: Turn Order ── */}
           {players.length >= 2 && (
-            <div className="mb-5 rounded-xl p-4" style={{ background: lobbyOrderConfirmed ? "rgba(58,173,152,0.06)" : "rgba(26,20,16,0.7)", border: `1px solid ${lobbyOrderConfirmed ? "rgba(58,173,152,0.4)" : "#3d3020"}` }}>
+            <div className="mb-5 rounded-xl p-4" style={{ background: lobbyOrderConfirmed ? "rgba(58,173,152,0.06)" : "rgba(236,220,176,0.92)", border: `1px solid ${lobbyOrderConfirmed ? "rgba(58,173,152,0.4)" : "rgba(138,104,32,0.3)"}` }}>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
                   style={{ background: lobbyOrderConfirmed ? "rgba(58,173,152,0.3)" : "rgba(201,151,58,0.2)", border: `1px solid ${lobbyOrderConfirmed ? "rgba(58,173,152,0.6)" : "rgba(201,151,58,0.5)"}`, color: lobbyOrderConfirmed ? "#3aad98" : "#c9973a" }}>
@@ -1078,7 +1078,7 @@ export default function SessionPage() {
 
           {/* ── STEP 3: Lead Investigator ── */}
           {players.length >= 1 && (
-            <div className="mb-5 rounded-xl p-4" style={{ background: lobbyLeadConfirmed ? "rgba(201,151,58,0.06)" : "rgba(26,20,16,0.7)", border: `1px solid ${lobbyLeadConfirmed ? "rgba(201,151,58,0.4)" : "#3d3020"}` }}>
+            <div className="mb-5 rounded-xl p-4" style={{ background: lobbyLeadConfirmed ? "rgba(201,151,58,0.06)" : "rgba(236,220,176,0.92)", border: `1px solid ${lobbyLeadConfirmed ? "rgba(201,151,58,0.4)" : "rgba(138,104,32,0.3)"}` }}>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
                   style={{ background: lobbyLeadConfirmed ? "rgba(201,151,58,0.3)" : "rgba(201,151,58,0.15)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }}>
@@ -1096,7 +1096,7 @@ export default function SessionPage() {
                   return (
                     <button key={player.id} onClick={() => { setLobbyLeadIdx(idx); setLobbyLeadConfirmed(false); }}
                       className="w-full flex items-center gap-3 p-2.5 rounded-lg transition-all text-left"
-                      style={{ background: isSelected ? cls.bg : "rgba(236,220,176,0.65)", border: `1px solid ${isSelected ? cls.border : "#3d3020"}` }}>
+                      style={{ background: isSelected ? cls.bg : "rgba(236,220,176,0.65)", border: `1px solid ${isSelected ? cls.border : "rgba(138,104,32,0.3)"}` }}>
                       <div className="w-7 h-7 rounded flex items-center justify-center font-bold text-xs flex-shrink-0"
                         style={{ background: cls.bg, color: cls.hex }}>{player.investigator[0]}</div>
                       <div className="flex-1 min-w-0">
@@ -1181,8 +1181,8 @@ export default function SessionPage() {
                 <button onClick={handleStartGame} disabled={!ready}
                   className="w-full py-4 rounded-2xl font-decorative font-bold text-base tracking-wide transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{
-                    background: ready ? "linear-gradient(135deg, #c9973a, #a07828)" : "rgba(26,20,16,0.8)",
-                    color: ready ? "#0e0b06" : "#5a4838",
+                    background: ready ? "linear-gradient(135deg, #c9973a, #a07828)" : "rgba(200,168,96,0.25)",
+                    color: ready ? "#2a1808" : "#8a6820",
                     border: "1px solid rgba(201,151,58,0.4)",
                     boxShadow: ready ? "0 0 32px rgba(201,151,58,0.25)" : "none"
                   }}>
@@ -1410,7 +1410,7 @@ export default function SessionPage() {
             </button>
             <button onClick={handleEndTurn}
               className="flex-1 py-3.5 rounded-xl font-decorative font-bold text-sm tracking-wide transition-all active:scale-98"
-              style={{ background: "linear-gradient(135deg, #3d3020, #2a2016)", border: "1px solid #5c4a2a", color: "#9a8870" }}>
+              style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", border: "1px solid rgba(201,151,58,0.5)", color: "#2a1808" }}>
               End Turn →
             </button>
           </div>
@@ -1849,7 +1849,7 @@ export default function SessionPage() {
         )}
 
         {/* ══ DOOM & ACT STATUS BAR — always prominent ══ */}
-        <div className="rounded-2xl mb-4 overflow-hidden" style={{ border: `2px solid ${doomDanger ? "rgba(192,57,43,0.5)" : "rgba(112,80,184,0.35)"}`, background: "linear-gradient(135deg, rgba(236,220,176,0.98), rgba(10,8,5,0.98))", boxShadow: doomDanger ? "0 0 24px rgba(192,57,43,0.15)" : "0 0 16px rgba(112,80,184,0.08)" }}>
+        <div className="rounded-2xl mb-4 overflow-hidden" style={{ border: `2px solid ${doomDanger ? "rgba(192,57,43,0.5)" : "rgba(112,80,184,0.35)"}`, background: "rgba(236,220,176,0.98)", boxShadow: doomDanger ? "0 0 24px rgba(192,57,43,0.15)" : "0 0 16px rgba(112,80,184,0.08)" }}>
 
           {/* Top strip: Agenda + Act side by side */}
           <div className="grid grid-cols-2" style={{ borderBottom: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "rgba(112,80,184,0.2)"}` }}>
@@ -1870,7 +1870,7 @@ export default function SessionPage() {
                     className="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200"
                     style={i < turnState.doom
                       ? { background: doomDanger ? "rgba(192,57,43,0.7)" : "rgba(112,80,184,0.7)", border: `1px solid ${doomDanger ? "#c03028" : "#7c5cbf"}`, boxShadow: `0 0 6px ${doomDanger ? "rgba(192,57,43,0.4)" : "rgba(112,80,184,0.4)"}` }
-                      : { background: "rgba(236,220,176,0.75)", border: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "#3d3020"}` }}>
+                      : { background: "rgba(236,220,176,0.75)", border: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "rgba(138,104,32,0.3)"}` }}>
                     {i < turnState.doom && <DoomIcon size={10} color={doomDanger ? "#c03028" : "#9070d8"} />}
                   </button>
                 ))}
@@ -2089,7 +2089,7 @@ export default function SessionPage() {
                   { label: "Cards in hand & deck", color: "#3aad98", carries: true, note: "Keep your deck; some cards may be lost via trauma" },
                   { label: "Earned campaign items", color: "#c9973a", carries: true, note: "Story items and campaign log entries carry over" },
                 ].map(item => (
-                  <div key={item.label} className="flex items-start gap-2.5 p-2.5 rounded-lg" style={{ background: item.carries ? "rgba(236,220,176,0.75)" : "rgba(26,20,16,0.4)", border: `1px solid ${item.carries ? item.color + "30" : "#3d302010"}` }}>
+                  <div key={item.label} className="flex items-start gap-2.5 p-2.5 rounded-lg" style={{ background: item.carries ? "rgba(236,220,176,0.75)" : "rgba(200,168,96,0.15)", border: `1px solid ${item.carries ? item.color + "30" : "#3d302010"}` }}>
                     <span className="text-sm flex-shrink-0">{item.carries ? "✓" : "✗"}</span>
                     <div>
                       <p className="text-xs font-semibold" style={{ color: item.carries ? item.color : "#5a4838" }}>{item.label}</p>
@@ -2909,12 +2909,12 @@ export default function SessionPage() {
             })}
 
             {/* Keyword reference — collapsible, always available */}
-            <details className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.06)" }}>
+            <details className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(138,104,32,0.25)" }}>
               <summary className="px-4 py-2.5 cursor-pointer text-xs font-mono text-ark-text-muted select-none"
                 style={{ background: "rgba(236,220,176,0.8)" }}>
                 ▸ Enemy keyword reference
               </summary>
-              <div className="divide-y" style={{ borderColor: "rgba(138,104,32,0.2)", background: "rgba(20,14,8,0.8)" }}>
+              <div className="divide-y" style={{ borderColor: "rgba(138,104,32,0.2)", background: "rgba(236,220,176,0.8)" }}>
                 {ENEMY_KEYWORDS.map(kw => (
                   <div key={kw.key} className="flex items-start gap-3 px-4 py-2.5">
                     <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold flex-shrink-0 mt-0.5"

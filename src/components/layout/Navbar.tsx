@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 function LearnIcon({ active }: { active: boolean }) {
   return (
     <svg viewBox="0 0 20 20" className="w-4 h-4" fill="none"
-      stroke={active ? "#f0e4c0" : "#8a7040"} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      stroke={active ? "#2a1808" : "#8a7040"} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M4 17.5A2 2 0 016 15.5H16"/>
       <path d="M6 2H16v15.5H6A2 2 0 014 15.5V4A2 2 0 016 2z"/>
       <line x1="8" y1="7" x2="13" y2="7"/>
@@ -19,7 +19,7 @@ function LearnIcon({ active }: { active: boolean }) {
 function PlayIcon({ active }: { active: boolean }) {
   return (
     <svg viewBox="0 0 20 20" className="w-4 h-4" fill="none"
-      stroke={active ? "#f0e4c0" : "#8a7040"} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      stroke={active ? "#2a1808" : "#8a7040"} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="10" cy="10" r="7"/>
       <circle cx="10" cy="10" r="3"/>
       <line x1="10" y1="3" x2="10" y2="4.5"/>
@@ -81,9 +81,9 @@ function NavTab({ href, label, active, icon }: { href: string; label: string; ac
       href={href}
       className="px-4 py-2 rounded-lg text-xs font-bold tracking-wider transition-all duration-200 flex items-center gap-2 font-heading"
       style={active ? {
-        background: "#2a1808",
-        color: "#f0e4c0",
-        boxShadow: "0 2px 8px rgba(30,10,0,0.25)",
+        background: "linear-gradient(135deg, #c9973a, #a07828)",
+        color: "#2a1808",
+        boxShadow: "0 2px 8px rgba(160,120,40,0.30)",
       } : {
         color: "#8a7040",
       }}>
