@@ -15,11 +15,20 @@
 
 ---
 
-## CURRENT STATUS (Updated: April 3, 2026 — Session 11 IN PROGRESS)
+## CURRENT STATUS (Updated: April 3, 2026 — Session 11 COMPLETE)
 
 ### Live URL: https://arkham-horror-2026.vercel.app
 ### Last commit: `650aa5e` — "feat: 6 UX fixes — lobby/start game, turn order setup, view board toggle, Game Train rebrand, Inter font overhaul, improved text contrast"
-### Session 11 changes (pending deploy — run deploy.ps1):
+### Session 11 changes — FULL PARCHMENT REDESIGN (pending deploy — run deploy.ps1):
+**End-to-end Full Parchment visual overhaul — Option A selected by Ahsan:**
+- **Homepage (page.tsx)**: removed all hardcoded dark `#161008`/`#0f0c07` backgrounds; hero, step cards, investigator cards, play CTA, footer all now warm parchment `#ecdcb0`/`#f2e8cc`
+- **TopicCard**: replaced dark gradient card bg with parchment `#ecdcb0`, gold border `#c8a860`, colour accent top bar per investigator class
+- **Session page (play/[sessionCode]/page.tsx)**: bulk-replaced all `rgba(26,20,16,...)`, `#0e0b06`, `#1e1710`, `#3d3020` dark backgrounds/borders with parchment equivalents; modal backdrop overlays kept dark (intentional)
+- **Learn components**: DefinitionBox, ExampleBox, EdgeCaseBox, StepCard — all text/bg updated to parchment ink colours
+- **globals.css**: fixed `.ark-prose p` text colour (was dark `#a89878`), `.ornate-border` bg, `.stat-pill` bg
+- **deploy.ps1**: updated commit message to Session 11
+
+### Session 10 changes (deployed):
 **Visual overhaul — matched to official rulebook:**
 - **Fonts**: replaced Inter (generic) with Cinzel Decorative (titles) + Cinzel (headings/buttons) + Crimson Text (body) + IM Fell English (flavour text) — matches the rulebook's gothic/classical serif aesthetic
 - **Colour palette**: shifted from cold blue-black (`#0a0805`) to warm deep sepia (`#0e0b06`, `#1e1710`) — matches the rulebook's candlelight/parchment warmth

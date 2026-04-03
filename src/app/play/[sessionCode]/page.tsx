@@ -899,8 +899,8 @@ export default function SessionPage() {
   if (loading) return (
     <><Navbar /><main className="max-w-5xl mx-auto px-4 py-20 text-center">
       <div className="space-y-3 animate-pulse">
-        <div className="h-6 w-40 rounded mx-auto" style={{ background: "#1e1710" }} />
-        <div className="h-4 w-60 rounded mx-auto" style={{ background: "#1e1710" }} />
+        <div className="h-6 w-40 rounded mx-auto" style={{ background: "#e8d8a8" }} />
+        <div className="h-4 w-60 rounded mx-auto" style={{ background: "#e8d8a8" }} />
       </div>
     </main></>
   );
@@ -926,7 +926,7 @@ export default function SessionPage() {
     // ── Non-creator waiting room ──────────────────────────────
     if (!isCreator) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#0e0b06" }}>
+        <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#f2e8cc" }}>
           <Navbar />
           <div className="max-w-sm w-full text-center mt-16">
             <div className="inline-flex items-center gap-2 text-xs font-mono tracking-widest mb-6 px-3 py-1.5 rounded-full"
@@ -940,7 +940,7 @@ export default function SessionPage() {
             {/* Show who's already in the lobby */}
             {players.length > 0 && (
               <div className="rounded-xl p-4 mb-6 text-left space-y-2"
-                style={{ background: "rgba(26,20,16,0.8)", border: "1px solid #3d3020" }}>
+                style={{ background: "rgba(236,220,176,0.9)", border: "1px solid #c8a860" }}>
                 <p className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-3">In the lobby</p>
                 {orderedLobbyPlayers.map((player) => {
                   const inv = investigators.find(i => i.name === player.investigator);
@@ -965,7 +965,7 @@ export default function SessionPage() {
     }
 
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: "#0e0b06" }}>
+      <div className="min-h-screen flex flex-col" style={{ background: "#f2e8cc" }}>
         <Navbar />
         <main className="max-w-lg mx-auto px-4 py-10 w-full">
 
@@ -997,7 +997,7 @@ export default function SessionPage() {
             </div>
 
             {players.length === 0 ? (
-              <div className="rounded-xl p-6 text-center" style={{ background: "rgba(26,20,16,0.5)", border: "1px dashed #3d3020" }}>
+              <div className="rounded-xl p-6 text-center" style={{ background: "rgba(236,220,176,0.7)", border: "1px dashed #c8a860" }}>
                 <p className="text-ark-text-muted text-sm">No investigators yet. Add the first one below.</p>
               </div>
             ) : (
@@ -1007,7 +1007,7 @@ export default function SessionPage() {
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
                   return (
                     <div key={player.id} className="flex items-center gap-3 rounded-xl p-3 transition-all"
-                      style={{ background: "linear-gradient(135deg, #1e1710, #120e09)", border: `1px solid ${cls.border}` }}>
+                      style={{ background: "#ecdcb0", border: `1px solid ${cls.border}` }}>
                       <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
                         style={{ background: "rgba(201,151,58,0.12)", border: "1px solid rgba(201,151,58,0.3)", color: "#c9973a" }}>
                         {idx + 1}
@@ -1049,7 +1049,7 @@ export default function SessionPage() {
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
                   return (
                     <div key={player.id} className="flex items-center gap-3 rounded-lg p-2.5"
-                      style={{ background: "rgba(10,8,5,0.4)", border: `1px solid ${cls.border}50` }}>
+                      style={{ background: "rgba(236,220,176,0.65)", border: `1px solid ${cls.border}50` }}>
                       <span className="font-mono font-bold text-sm w-5 text-center flex-shrink-0" style={{ color: "#c9973a" }}>{idx + 1}</span>
                       <div className="w-7 h-7 rounded flex items-center justify-center font-bold text-xs flex-shrink-0"
                         style={{ background: cls.bg, color: cls.hex }}>{player.investigator[0]}</div>
@@ -1096,7 +1096,7 @@ export default function SessionPage() {
                   return (
                     <button key={player.id} onClick={() => { setLobbyLeadIdx(idx); setLobbyLeadConfirmed(false); }}
                       className="w-full flex items-center gap-3 p-2.5 rounded-lg transition-all text-left"
-                      style={{ background: isSelected ? cls.bg : "rgba(10,8,5,0.4)", border: `1px solid ${isSelected ? cls.border : "#3d3020"}` }}>
+                      style={{ background: isSelected ? cls.bg : "rgba(236,220,176,0.65)", border: `1px solid ${isSelected ? cls.border : "#3d3020"}` }}>
                       <div className="w-7 h-7 rounded flex items-center justify-center font-bold text-xs flex-shrink-0"
                         style={{ background: cls.bg, color: cls.hex }}>{player.investigator[0]}</div>
                       <div className="flex-1 min-w-0">
@@ -1120,7 +1120,7 @@ export default function SessionPage() {
 
           {/* Add player form */}
           {players.length < 4 && (
-            <div className="rounded-xl p-4 mb-6 space-y-3" style={{ background: "rgba(26,20,16,0.8)", border: "1px solid rgba(201,151,58,0.2)" }}>
+            <div className="rounded-xl p-4 mb-6 space-y-3" style={{ background: "rgba(236,220,176,0.9)", border: "1px solid rgba(201,151,58,0.2)" }}>
               <h3 className="font-decorative font-semibold text-sm text-ark-text">
                 {players.length === 0 ? "Add First Investigator" : "Add Another Investigator"}
               </h3>
@@ -1218,7 +1218,7 @@ export default function SessionPage() {
     };
 
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: "#0e0b06" }}>
+      <div className="min-h-screen flex flex-col" style={{ background: "#f2e8cc" }}>
         <Navbar />
         <main className="max-w-sm mx-auto px-4 py-10 w-full">
           <div className="text-center mb-7">
@@ -1243,7 +1243,7 @@ export default function SessionPage() {
                       className="w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left active:scale-98"
                       style={{ background: cls.bg, border: `1px solid ${cls.border}` }}>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
-                        style={{ background: "rgba(10,8,5,0.4)", color: cls.hex, border: `1px solid ${cls.border}` }}>
+                        style={{ background: "rgba(236,220,176,0.65)", color: cls.hex, border: `1px solid ${cls.border}` }}>
                         {p.investigator[0]}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -1271,7 +1271,7 @@ export default function SessionPage() {
           {canAddNew && (
             <div>
               <p className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-2">Join as a new player</p>
-              <div className="rounded-xl p-4 space-y-3" style={{ background: "rgba(26,20,16,0.8)", border: "1px solid rgba(201,151,58,0.2)" }}>
+              <div className="rounded-xl p-4 space-y-3" style={{ background: "rgba(236,220,176,0.9)", border: "1px solid rgba(201,151,58,0.2)" }}>
                 <input value={joiningName} onChange={e => setJoiningName(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && handleJoinGame()}
                   placeholder="Your name"
@@ -1331,7 +1331,7 @@ export default function SessionPage() {
     const actionsLeft = 3 - turnState.actionsUsed;
 
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: "#0e0b06" }}>
+      <div className="min-h-screen flex flex-col" style={{ background: "#f2e8cc" }}>
         <Navbar />
 
         {/* Big YOUR TURN header */}
@@ -1347,7 +1347,7 @@ export default function SessionPage() {
 
           {/* Your Turn banner */}
           <div className="w-full rounded-2xl p-6 mb-6 text-center relative overflow-hidden"
-            style={{ background: `linear-gradient(145deg, ${cls.bg}, rgba(10,8,5,0.95))`, border: `2px solid ${cls.border}`, boxShadow: `0 0 40px ${cls.glow}` }}>
+            style={{ background: `linear-gradient(145deg, ${cls.bg}, rgba(248,240,216,0.5))`, border: `2px solid ${cls.border}`, boxShadow: `0 0 40px ${cls.glow}` }}>
             <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at top, ${cls.hex}08, transparent 70%)` }} />
             <p className="text-xs font-mono uppercase tracking-widest mb-1" style={{ color: cls.hex }}>It&apos;s your turn</p>
             <h1 className="font-display font-extrabold text-4xl text-ark-text mb-1">{currentPlayer.player_name}</h1>
@@ -1362,7 +1362,7 @@ export default function SessionPage() {
                 <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all"
                   style={i < actionsLeft
                     ? { background: `linear-gradient(135deg, ${cls.hex}, ${cls.hex}88)`, boxShadow: `0 0 12px ${cls.glow}`, color: "#fff" }
-                    : { background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020", color: "#3d3020" }}>
+                    : { background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860", color: "#3d3020" }}>
                   <ActionSymbol size={18} />
                 </div>
                 <span className="text-[9px] font-mono" style={{ color: i < actionsLeft ? cls.hex : "#3d3020" }}>
@@ -1417,14 +1417,14 @@ export default function SessionPage() {
 
           {/* My stats peek */}
           {myPlayer && (
-            <div className="w-full mt-4 rounded-xl p-4 grid grid-cols-4 gap-2" style={{ background: "rgba(26,20,16,0.6)", border: "1px solid #2e2318" }}>
+            <div className="w-full mt-4 rounded-xl p-4 grid grid-cols-4 gap-2" style={{ background: "rgba(236,220,176,0.8)", border: "1px solid rgba(138,104,32,0.2)" }}>
               {[
                 { label: "DMG", val: myPlayer.damage, max: inv?.health ?? 9, color: "#c03028", field: "damage" as const },
                 { label: "HOR", val: myPlayer.horror, max: inv?.sanity ?? 7, color: "#9070d8", field: "horror" as const },
                 { label: "RES", val: myPlayer.resources, max: null, color: "#c9973a", field: "resources" as const },
                 { label: "CLU", val: myPlayer.clues, max: null, color: "#4a8fd4", field: "clues" as const },
               ].map(s => (
-                <div key={s.label} className="flex flex-col items-center gap-1 py-2 rounded-lg" style={{ background: "rgba(10,8,5,0.4)" }}>
+                <div key={s.label} className="flex flex-col items-center gap-1 py-2 rounded-lg" style={{ background: "rgba(236,220,176,0.65)" }}>
                   <span className="text-[9px] font-mono text-ark-text-muted">{s.label}</span>
                   <div className="flex items-center gap-1">
                     <button onClick={() => handleStatChange(myPlayer, s.field, -1)} className="w-5 h-5 rounded text-xs font-bold" style={{ color: s.color }}>−</button>
@@ -1444,9 +1444,9 @@ export default function SessionPage() {
   // ── Action confirmation modal (in YOUR TURN context) ──────
   if (isMyTurn && selectedAction && turnState.phase === "investigation") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#0e0b06" }}>
+      <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#f2e8cc" }}>
         <div className="w-full max-w-sm rounded-2xl p-6 space-y-4"
-          style={{ background: "#1e1710", border: `1px solid ${selectedAction.color}40`, boxShadow: `0 20px 60px rgba(0,0,0,0.8), 0 0 40px ${selectedAction.color}12` }}>
+          style={{ background: "#f0e8d0", border: `1px solid ${selectedAction.color}40`, boxShadow: `0 20px 60px rgba(90,58,8,0.2), 0 0 40px ${selectedAction.color}12` }}>
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: selectedAction.bg, border: `1px solid ${selectedAction.color}30` }}>
               {selectedAction.skill
@@ -1460,7 +1460,7 @@ export default function SessionPage() {
           </div>
 
           {selectedAction.skill && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs" style={{ background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020" }}>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs" style={{ background: "rgba(236,220,176,0.75)", border: "1px solid #c8a860" }}>
               <SkillIcon skill={selectedAction.skill} size={14} />
               <span className="text-ark-text-muted">Tests your </span>
               <span className="font-bold text-ark-text">{{WIL:"Willpower",INT:"Intellect",COM:"Combat",AGI:"Agility"}[selectedAction.skill] ?? selectedAction.skill}</span>
@@ -1492,7 +1492,7 @@ export default function SessionPage() {
                       className="w-full text-left px-3 py-2 rounded-lg transition-all"
                       style={isSelected
                         ? { background: `${selectedAction.color}20`, border: `1px solid ${selectedAction.color}60`, color: selectedAction.color }
-                        : { background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020", color: "#c8b090" }}>
+                        : { background: "rgba(236,220,176,0.75)", border: "1px solid #c8a860", color: "#c8b090" }}>
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-decorative font-bold text-sm">{e.name}</span>
                         <span className="text-[10px] font-mono text-ark-text-muted shrink-0">
@@ -1511,7 +1511,7 @@ export default function SessionPage() {
           {/* ── When no enemies but trying to engage/fight ── */}
           {(["fight","evade","engage"].includes(selectedAction.id)) && enemies.length === 0 && (
             <div className="px-3 py-2 rounded-lg text-xs text-ark-text-muted"
-              style={{ background: "rgba(10,8,5,0.4)", border: "1px solid #3d3020" }}>
+              style={{ background: "rgba(236,220,176,0.65)", border: "1px solid #c8a860" }}>
               No enemies in play — the lead investigator can spawn one in the Enemies tab.
             </div>
           )}
@@ -1531,7 +1531,7 @@ export default function SessionPage() {
                     className="flex-1 py-2 rounded-lg text-sm font-bold font-mono transition-all"
                     style={selectedShroud === n
                       ? { background: "rgba(74,143,212,0.25)", border: "2px solid #4a8fd4", color: "#4a8fd4", boxShadow: "0 0 8px rgba(74,143,212,0.3)" }
-                      : { background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020", color: "#8a7860" }}>
+                      : { background: "rgba(236,220,176,0.75)", border: "1px solid #c8a860", color: "#8a7860" }}>
                     {n}
                   </button>
                 ))}
@@ -1566,7 +1566,7 @@ export default function SessionPage() {
             <button onClick={() => setSelectedAction(null)} className="btn-ghost flex-1 py-2.5 text-sm rounded-lg">← Back</button>
             <button onClick={handleLogAction}
               className="flex-1 py-2.5 text-sm rounded-lg font-bold transition-all"
-              style={{ background: `linear-gradient(135deg, ${selectedAction.color}cc, ${selectedAction.color}88)`, color: "#0e0b06" }}>
+              style={{ background: `linear-gradient(135deg, ${selectedAction.color}cc, ${selectedAction.color}88)`, color: "#2a1808" }}>
               Log Action
             </button>
           </div>
@@ -1583,7 +1583,7 @@ export default function SessionPage() {
               style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)" }}
               onClick={e => { if (e.target === e.currentTarget) setLearnModalActionId(null); }}>
               <div className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col"
-                style={{ background: "#16110a", border: `1px solid ${color}30`, maxHeight: "85vh" }}>
+                style={{ background: "#ecdcb0", border: `1px solid ${color}30`, maxHeight: "85vh" }}>
                 {/* Header */}
                 <div className="flex items-center gap-3 px-5 py-4 flex-shrink-0" style={{ borderBottom: `1px solid ${color}20`, background: `${color}08` }}>
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -1662,7 +1662,7 @@ export default function SessionPage() {
                 <div className="px-5 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${color}20` }}>
                   <button onClick={() => setLearnModalActionId(null)}
                     className="w-full py-2.5 rounded-xl font-bold font-decorative text-sm transition-all"
-                    style={{ background: `linear-gradient(135deg, ${color}cc, ${color}88)`, color: "#0e0b06" }}>
+                    style={{ background: `linear-gradient(135deg, ${color}cc, ${color}88)`, color: "#2a1808" }}>
                     Got it — back to my turn
                   </button>
                 </div>
@@ -1700,7 +1700,7 @@ export default function SessionPage() {
             <p className="font-decorative font-bold text-sm" style={{ color: "#c9973a" }}>⚡ It&apos;s your turn — {3 - turnState.actionsUsed} action{3 - turnState.actionsUsed !== 1 ? "s" : ""} remaining</p>
             <button onClick={() => setViewBoardMode(false)}
               className="px-4 py-2 rounded-lg text-xs font-bold font-decorative transition-all flex-shrink-0"
-              style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#0e0b06" }}>
+              style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#2a1808" }}>
               ← Your Turn
             </button>
           </div>
@@ -1805,7 +1805,7 @@ export default function SessionPage() {
         {/* ── Identity picker modal — shown to non-creator devices on game start ── */}
         {showNamePicker && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.92)", backdropFilter: "blur(10px)" }}>
-            <div className="w-full max-w-sm rounded-2xl overflow-hidden" style={{ background: "#1e1710", border: "1px solid rgba(201,151,58,0.4)", boxShadow: "0 24px 80px rgba(0,0,0,0.9)" }}>
+            <div className="w-full max-w-sm rounded-2xl overflow-hidden" style={{ background: "#f0e8d0", border: "1px solid rgba(201,151,58,0.4)", boxShadow: "0 24px 80px rgba(90,58,8,0.18)" }}>
               {/* Header */}
               <div className="px-6 pt-6 pb-4" style={{ borderBottom: "1px solid rgba(201,151,58,0.15)" }}>
                 <div className="text-3xl mb-3">🕵️</div>
@@ -1849,7 +1849,7 @@ export default function SessionPage() {
         )}
 
         {/* ══ DOOM & ACT STATUS BAR — always prominent ══ */}
-        <div className="rounded-2xl mb-4 overflow-hidden" style={{ border: `2px solid ${doomDanger ? "rgba(192,57,43,0.5)" : "rgba(112,80,184,0.35)"}`, background: "linear-gradient(135deg, rgba(20,14,30,0.97), rgba(10,8,5,0.98))", boxShadow: doomDanger ? "0 0 24px rgba(192,57,43,0.15)" : "0 0 16px rgba(112,80,184,0.08)" }}>
+        <div className="rounded-2xl mb-4 overflow-hidden" style={{ border: `2px solid ${doomDanger ? "rgba(192,57,43,0.5)" : "rgba(112,80,184,0.35)"}`, background: "linear-gradient(135deg, rgba(236,220,176,0.98), rgba(10,8,5,0.98))", boxShadow: doomDanger ? "0 0 24px rgba(192,57,43,0.15)" : "0 0 16px rgba(112,80,184,0.08)" }}>
 
           {/* Top strip: Agenda + Act side by side */}
           <div className="grid grid-cols-2" style={{ borderBottom: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "rgba(112,80,184,0.2)"}` }}>
@@ -1870,7 +1870,7 @@ export default function SessionPage() {
                     className="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200"
                     style={i < turnState.doom
                       ? { background: doomDanger ? "rgba(192,57,43,0.7)" : "rgba(112,80,184,0.7)", border: `1px solid ${doomDanger ? "#c03028" : "#7c5cbf"}`, boxShadow: `0 0 6px ${doomDanger ? "rgba(192,57,43,0.4)" : "rgba(112,80,184,0.4)"}` }
-                      : { background: "rgba(10,8,5,0.5)", border: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "#3d3020"}` }}>
+                      : { background: "rgba(236,220,176,0.75)", border: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "#3d3020"}` }}>
                     {i < turnState.doom && <DoomIcon size={10} color={doomDanger ? "#c03028" : "#9070d8"} />}
                   </button>
                 ))}
@@ -1922,7 +1922,7 @@ export default function SessionPage() {
                             className="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 disabled:opacity-30"
                             style={filled
                               ? { background: canAdvance ? "rgba(74,143,212,0.75)" : "rgba(74,138,184,0.5)", border: `1px solid ${canAdvance ? "#4a8fd4" : "#4a8ab8"}`, boxShadow: canAdvance ? "0 0 6px rgba(74,143,212,0.4)" : "none" }
-                              : { background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020", cursor: canFill ? "pointer" : "default" }}>
+                              : { background: "rgba(236,220,176,0.75)", border: "1px solid #c8a860", cursor: canFill ? "pointer" : "default" }}>
                             {filled && <ClueIcon size={10} color={canAdvance ? "#4a8fd4" : "#4a8ab8"} />}
                           </button>
                         );
@@ -1937,7 +1937,7 @@ export default function SessionPage() {
 
           {/* Bottom strip: lead actions */}
           {isLead && (
-            <div className="px-3 py-2 flex items-center gap-2 flex-wrap" style={{ background: "rgba(10,8,5,0.4)" }}>
+            <div className="px-3 py-2 flex items-center gap-2 flex-wrap" style={{ background: "rgba(236,220,176,0.65)" }}>
               <button onClick={() => setShowCampaignPicker(true)}
                 className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
                 style={{ background: "rgba(112,80,184,0.12)", border: "1px solid rgba(112,80,184,0.3)", color: "#9070d8" }}>
@@ -1975,7 +1975,7 @@ export default function SessionPage() {
         {/* ── End Scenario modal ── */}
         {showEndScenario && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}>
-            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#1e1710", border: "1px solid rgba(192,57,43,0.4)" }}>
+            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#e8d8a8", border: "1px solid rgba(192,57,43,0.4)" }}>
               <div className="text-center">
                 <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.4)" }}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#c03028" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -2004,8 +2004,8 @@ export default function SessionPage() {
         {/* ── Scenario Summary screen (shown to all devices) ── */}
         {showScenarioSummary && (
           <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" style={{ background: "rgba(0,0,0,0.92)", backdropFilter: "blur(10px)" }}>
-            <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col" style={{ background: "#110d08", border: "1px solid rgba(201,151,58,0.35)", maxHeight: "90vh" }}>
-              <div className="px-5 py-4 text-center flex-shrink-0" style={{ background: "linear-gradient(135deg, rgba(201,151,58,0.12), rgba(10,8,5,0.95))", borderBottom: "1px solid rgba(201,151,58,0.2)" }}>
+            <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col" style={{ background: "#ecdcb0", border: "1px solid rgba(201,151,58,0.35)", maxHeight: "90vh" }}>
+              <div className="px-5 py-4 text-center flex-shrink-0" style={{ background: "linear-gradient(135deg, rgba(201,151,58,0.12), rgba(248,240,216,0.5))", borderBottom: "1px solid rgba(201,151,58,0.2)" }}>
                 <div className="text-2xl mb-2">📜</div>
                 <h2 className="font-decorative font-bold text-xl text-ark-text">Scenario Complete</h2>
                 {turnState.scenarioResolution && (
@@ -2020,7 +2020,7 @@ export default function SessionPage() {
                   const isDefeated = p.damage >= (inv?.health ?? 9);
                   const isInsane = p.horror >= (inv?.sanity ?? 7);
                   return (
-                    <div key={p.id} className="rounded-xl p-4" style={{ background: "rgba(26,20,16,0.8)", border: `1px solid ${cls.border}` }}>
+                    <div key={p.id} className="rounded-xl p-4" style={{ background: "rgba(236,220,176,0.9)", border: `1px solid ${cls.border}` }}>
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm" style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }}>{p.investigator[0]}</div>
                         <div>
@@ -2040,7 +2040,7 @@ export default function SessionPage() {
                           { label: "Resources", val: p.resources, max: null, color: "#c9973a" },
                           { label: "Clues", val: p.clues, max: null, color: "#4a8fd4" },
                         ].map(s => (
-                          <div key={s.label} className="text-center py-2 rounded-lg" style={{ background: "rgba(10,8,5,0.4)" }}>
+                          <div key={s.label} className="text-center py-2 rounded-lg" style={{ background: "rgba(236,220,176,0.65)" }}>
                             <div className="text-[8px] font-mono text-ark-text-muted">{s.label}</div>
                             <div className="font-mono font-bold text-sm mt-0.5" style={{ color: s.color }}>{s.val}{s.max ? `/${s.max}` : ""}</div>
                           </div>
@@ -2050,7 +2050,7 @@ export default function SessionPage() {
                   );
                 })}
                 {/* Log summary */}
-                <div className="rounded-xl p-3" style={{ background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020" }}>
+                <div className="rounded-xl p-3" style={{ background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860" }}>
                   <p className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-2">{actionLog.length} actions logged this scenario</p>
                   {actionLog.filter(e => e.action === "Enemy Defeated").length > 0 && (
                     <p className="text-xs text-ark-text-muted">Enemies defeated: {actionLog.filter(e => e.action === "Enemy Defeated").map(e => e.detail.split(" defeated")[0]).join(", ")}</p>
@@ -2061,7 +2061,7 @@ export default function SessionPage() {
                 {isLead && (
                   <button onClick={() => { setShowScenarioSummary(false); setShowCarryOverModal(true); }}
                     className="w-full py-3 rounded-xl font-bold font-decorative text-sm"
-                    style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#0e0b06" }}>
+                    style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#2a1808" }}>
                     Continue to Next Scenario →
                   </button>
                 )}
@@ -2077,7 +2077,7 @@ export default function SessionPage() {
         {/* ── Carry-Over modal (next session setup) ── */}
         {showCarryOverModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}>
-            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#1e1710", border: "1px solid rgba(58,173,152,0.3)" }}>
+            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#e8d8a8", border: "1px solid rgba(58,173,152,0.3)" }}>
               <h3 className="font-decorative font-bold text-lg text-ark-text">Next Session Carry-Over</h3>
               <p className="text-xs text-ark-text-muted">When starting the next session, remind your group which of these carry over between scenarios:</p>
               <div className="space-y-2">
@@ -2089,7 +2089,7 @@ export default function SessionPage() {
                   { label: "Cards in hand & deck", color: "#3aad98", carries: true, note: "Keep your deck; some cards may be lost via trauma" },
                   { label: "Earned campaign items", color: "#c9973a", carries: true, note: "Story items and campaign log entries carry over" },
                 ].map(item => (
-                  <div key={item.label} className="flex items-start gap-2.5 p-2.5 rounded-lg" style={{ background: item.carries ? "rgba(10,8,5,0.5)" : "rgba(26,20,16,0.4)", border: `1px solid ${item.carries ? item.color + "30" : "#3d302010"}` }}>
+                  <div key={item.label} className="flex items-start gap-2.5 p-2.5 rounded-lg" style={{ background: item.carries ? "rgba(236,220,176,0.75)" : "rgba(26,20,16,0.4)", border: `1px solid ${item.carries ? item.color + "30" : "#3d302010"}` }}>
                     <span className="text-sm flex-shrink-0">{item.carries ? "✓" : "✗"}</span>
                     <div>
                       <p className="text-xs font-semibold" style={{ color: item.carries ? item.color : "#5a4838" }}>{item.label}</p>
@@ -2100,7 +2100,7 @@ export default function SessionPage() {
               </div>
               <button onClick={() => { setShowCarryOverModal(false); handleAdvanceScenario(); }}
                 className="w-full py-3 rounded-xl font-bold font-decorative text-sm"
-                style={{ background: "linear-gradient(135deg, rgba(58,173,152,0.8), rgba(58,158,107,0.8))", color: "#0e0b06" }}>
+                style={{ background: "linear-gradient(135deg, rgba(58,173,152,0.8), rgba(58,158,107,0.8))", color: "#2a1808" }}>
                 Got it — Advance to Next Scenario
               </button>
               <button onClick={() => setShowCarryOverModal(false)} className="btn-ghost w-full py-2 text-sm rounded-xl">Close</button>
@@ -2111,7 +2111,7 @@ export default function SessionPage() {
         {/* ── Campaign picker modal ── */}
         {showCampaignPicker && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}>
-            <div className="w-full max-w-md rounded-2xl p-6 space-y-4" style={{ background: "#1e1710", border: "1px solid rgba(112,80,184,0.3)" }}>
+            <div className="w-full max-w-md rounded-2xl p-6 space-y-4" style={{ background: "#e8d8a8", border: "1px solid rgba(112,80,184,0.3)" }}>
               <h3 className="font-decorative font-bold text-lg text-ark-text">Select Campaign & Scenario</h3>
 
               {selectedCampaignId === null ? (
@@ -2217,7 +2217,7 @@ export default function SessionPage() {
                   )}
                   <button onClick={handleAdvancePhase}
                     className="px-4 py-2 rounded-xl text-sm font-bold font-decorative transition-all"
-                    style={{ background: `linear-gradient(135deg, ${currentPhase.color}cc, ${currentPhase.color}88)`, color: "#0e0b06", boxShadow: `0 0 16px ${currentPhase.color}40` }}>
+                    style={{ background: `linear-gradient(135deg, ${currentPhase.color}cc, ${currentPhase.color}88)`, color: "#2a1808", boxShadow: `0 0 16px ${currentPhase.color}40` }}>
                     Advance → {PHASES[(PHASES.findIndex(p=>p.id===turnState.phase)+1)%4].label}
                   </button>
                 </div>
@@ -2231,13 +2231,13 @@ export default function SessionPage() {
 
         {/* ── Active turn indicator + live recent action feed ── */}
         {turnState.phase === "investigation" && currentPlayer && !isMyTurn && (
-          <div className="rounded-xl mb-4 overflow-hidden" style={{ border: "1px solid #3d3020" }}>
+          <div className="rounded-xl mb-4 overflow-hidden" style={{ border: "1px solid #c8a860" }}>
             {/* Who's taking their turn */}
             {(() => {
               const inv = investigators.find(i => i.name === currentPlayer.investigator);
               const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
               return (
-                <div className="p-3 flex items-center gap-3" style={{ background: "rgba(26,20,16,0.7)" }}>
+                <div className="p-3 flex items-center gap-3" style={{ background: "rgba(236,220,176,0.85)" }}>
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0" style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }}>{currentPlayer.investigator[0]}</div>
                   <div className="flex-1 min-w-0">
                     <span className="font-decorative font-bold text-sm text-ark-text">{currentPlayer.player_name}</span>
@@ -2248,7 +2248,7 @@ export default function SessionPage() {
                       <div key={i} className="w-5 h-5 rounded-full flex items-center justify-center"
                         style={i < (3 - turnState.actionsUsed)
                           ? { background: cls.bg, border: `1px solid ${cls.border}` }
-                          : { background: "rgba(10,8,5,0.6)", border: "1px solid #2e2318", opacity: 0.4 }}>
+                          : { background: "rgba(236,220,176,0.8)", border: "1px solid rgba(138,104,32,0.2)", opacity: 0.4 }}>
                         <ActionSymbol size={10} />
                       </div>
                     ))}
@@ -2266,7 +2266,7 @@ export default function SessionPage() {
               const inv = investigators.find(i => i.name === currentPlayer.investigator);
               const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
               return (
-                <div className="px-3 pb-2 space-y-1" style={{ background: "rgba(16,12,8,0.6)", borderTop: "1px solid #2e2318" }}>
+                <div className="px-3 pb-2 space-y-1" style={{ background: "rgba(236,220,176,0.75)", borderTop: "1px solid rgba(138,104,32,0.2)" }}>
                   {recentActions.map(e => {
                     const adef = ACTIONS.find(a => a.label === e.action);
                     return (
@@ -2293,13 +2293,13 @@ export default function SessionPage() {
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all flex-1 justify-center"
               style={enemies.length > 0
                 ? { background: "rgba(192,48,40,0.1)", border: "1px solid rgba(192,48,40,0.35)", color: "#c03028" }
-                : { background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020", color: "#5a4838" }}>
+                : { background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860", color: "#5a4838" }}>
               <CombatIcon size={12} color={enemies.length > 0 ? "#c03028" : "#5a4838"} />
               {enemies.length > 0 ? `${enemies.length} Enem${enemies.length === 1 ? "y" : "ies"} in Play` : "No Enemies"}
             </button>
             <button onClick={() => setActiveTab("log")}
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all flex-1 justify-center"
-              style={{ background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020", color: "#6b5840" }}>
+              style={{ background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860", color: "#6b5840" }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
               {actionLog.length} Action{actionLog.length !== 1 ? "s" : ""} Logged
             </button>
@@ -2307,12 +2307,12 @@ export default function SessionPage() {
         )}
 
         {/* ── Tabs ── */}
-        <div className="flex gap-1 mb-5 p-1 rounded-xl w-fit overflow-x-auto" style={{ background: "rgba(26,20,16,0.8)", border: "1px solid #3d3020" }}>
+        <div className="flex gap-1 mb-5 p-1 rounded-xl w-fit overflow-x-auto" style={{ background: "rgba(236,220,176,0.9)", border: "1px solid #c8a860" }}>
           {(["board","enemies","log","reference"] as const).map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold font-decorative tracking-wide transition-all duration-200 whitespace-nowrap"
               style={activeTab === tab
-                ? { background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#0e0b06", boxShadow: "0 2px 8px rgba(201,151,58,0.3)" }
+                ? { background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#2a1808", boxShadow: "0 2px 8px rgba(201,151,58,0.3)" }
                 : { color: "#6b5840" }}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -2327,13 +2327,13 @@ export default function SessionPage() {
             {/* Lead panel */}
             {leadPlayer && (
               <div className="rounded-xl p-4 relative overflow-hidden"
-                style={{ background: "linear-gradient(135deg, rgba(201,151,58,0.07), rgba(10,8,5,0.95))", border: "1px solid rgba(201,151,58,0.3)" }}>
+                style={{ background: "rgba(201,151,58,0.06)", border: "1px solid rgba(201,151,58,0.3)" }}>
                 <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(201,151,58,0.5), transparent)" }} />
                 <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ background: "linear-gradient(135deg, #c9973a, #8b6914)", boxShadow: "0 0 16px rgba(201,151,58,0.35)" }}>
-                      <svg viewBox="0 0 20 20" className="w-5 h-5 fill-current" style={{ color: "#0e0b06" }}><path d="M10 2L12.4 7.5H18L13.4 11L15.3 17L10 13.5L4.7 17L6.6 11L2 7.5H7.6L10 2Z"/></svg>
+                      <svg viewBox="0 0 20 20" className="w-5 h-5 fill-current" style={{ color: "#2a1808" }}><path d="M10 2L12.4 7.5H18L13.4 11L15.3 17L10 13.5L4.7 17L6.6 11L2 7.5H7.6L10 2Z"/></svg>
                     </div>
                     <div>
                       <p className="text-[10px] font-decorative uppercase tracking-widest" style={{ color: "#c9973a" }}>Lead Investigator</p>
@@ -2353,7 +2353,7 @@ export default function SessionPage() {
                                 className="px-2 py-1 rounded text-[10px] font-decorative font-semibold transition-all"
                                 style={idx === turnState.leadInvestigatorIdx
                                   ? { background: "rgba(201,151,58,0.25)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }
-                                  : { background: "transparent", border: "1px solid #3d3020", color: "#5a4838" }}>
+                                  : { background: "transparent", border: "1px solid #c8a860", color: "#5a4838" }}>
                                 {p.player_name}
                               </button>
                             ))}
@@ -2385,7 +2385,7 @@ export default function SessionPage() {
               </div>
 
               {isCreator && showAddPlayer && (
-                <div className="rounded-xl p-4 mb-4 space-y-3" style={{ background: "rgba(26,20,16,0.8)", border: "1px solid rgba(201,151,58,0.2)" }}>
+                <div className="rounded-xl p-4 mb-4 space-y-3" style={{ background: "rgba(236,220,176,0.9)", border: "1px solid rgba(201,151,58,0.2)" }}>
                   <h4 className="font-decorative font-semibold text-sm text-ark-text">Add Investigator</h4>
                   <input value={addingName} onChange={e => setAddingName(e.target.value)} placeholder="Player name"
                     className="ark-input w-full px-3 py-2 rounded-lg text-sm" />
@@ -2402,7 +2402,7 @@ export default function SessionPage() {
               )}
 
               {players.length === 0 ? (
-                <div className="rounded-xl p-10 text-center" style={{ background: "rgba(26,20,16,0.5)", border: "1px dashed #3d3020" }}>
+                <div className="rounded-xl p-10 text-center" style={{ background: "rgba(236,220,176,0.7)", border: "1px dashed #c8a860" }}>
                   <p className="text-ark-text-muted text-sm">No investigators yet — add one above.</p>
                 </div>
               ) : (
@@ -2426,7 +2426,7 @@ export default function SessionPage() {
                     return (
                       <div key={player.id} className="rounded-xl p-4 relative transition-all duration-300"
                         style={{
-                          background: "linear-gradient(145deg, #1e1710, #120e09)",
+                          background: "linear-gradient(145deg, #ecdcb0, #e4d4a0)",
                           border: isMe ? `2px solid ${cls.border}` : isActive ? `1px solid ${cls.border}` : "1px solid #3d3020",
                           boxShadow: isMe ? `0 0 24px ${cls.glow}, 0 4px 20px rgba(0,0,0,0.5)` : isActive ? `0 0 14px ${cls.glow}` : "none",
                         }}>
@@ -2508,7 +2508,7 @@ export default function SessionPage() {
                               {healthRemaining}/{maxHealth}
                             </span>
                           </div>
-                          <div className="h-1.5 rounded-full overflow-hidden mb-1" style={{ background: "rgba(10,8,5,0.4)" }}>
+                          <div className="h-1.5 rounded-full overflow-hidden mb-1" style={{ background: "rgba(236,220,176,0.65)" }}>
                             <div className="h-full rounded-full transition-all duration-500" style={{ width: `${healthPct}%`, background: healthPct > 66 ? "linear-gradient(90deg, #2a7048, #3aad98)" : healthPct > 33 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
                           </div>
                           <div className="flex gap-1">
@@ -2533,7 +2533,7 @@ export default function SessionPage() {
                               {sanityRemaining}/{maxSanity}
                             </span>
                           </div>
-                          <div className="h-1.5 rounded-full overflow-hidden mb-1" style={{ background: "rgba(10,8,5,0.4)" }}>
+                          <div className="h-1.5 rounded-full overflow-hidden mb-1" style={{ background: "rgba(236,220,176,0.65)" }}>
                             <div className="h-full rounded-full transition-all duration-500" style={{ width: `${sanityPct}%`, background: sanityPct > 66 ? "linear-gradient(90deg, #4a68b8, #4a8fd4)" : sanityPct > 33 ? "linear-gradient(90deg, #5c6eb5, #8ab3f5)" : "linear-gradient(90deg, #6c4280, #9070d8)" }} />
                           </div>
                           <div className="flex gap-1">
@@ -2556,14 +2556,14 @@ export default function SessionPage() {
                             { label: "Resources", val: player.resources, color: "#c9973a", field: "resources" as const },
                             { label: "Clues", val: player.clues, color: "#4a8fd4", field: "clues" as const },
                           ].map(s => (
-                            <div key={s.label} className="flex items-center gap-1 py-1 px-2 rounded" style={{ background: "rgba(10,8,5,0.35)" }}>
+                            <div key={s.label} className="flex items-center gap-1 py-1 px-2 rounded" style={{ background: "rgba(236,220,176,0.35)" }}>
                               <div className="flex-1">
                                 <div className="text-[9px] font-mono text-ark-text-muted">{s.label}</div>
                                 <div className="font-mono font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
                               </div>
                               <div className="flex gap-0.5">
-                                <button onClick={() => handleStatChange(player, s.field, -1)} className="w-4 h-4 rounded text-[8px] font-bold" style={{ background: "rgba(10,8,5,0.5)" }}>−</button>
-                                <button onClick={() => handleStatChange(player, s.field, 1)} className="w-4 h-4 rounded text-[8px] font-bold" style={{ background: "rgba(10,8,5,0.5)" }}>+</button>
+                                <button onClick={() => handleStatChange(player, s.field, -1)} className="w-4 h-4 rounded text-[8px] font-bold" style={{ background: "rgba(236,220,176,0.75)" }}>−</button>
+                                <button onClick={() => handleStatChange(player, s.field, 1)} className="w-4 h-4 rounded text-[8px] font-bold" style={{ background: "rgba(236,220,176,0.75)" }}>+</button>
                               </div>
                             </div>
                           ))}
@@ -2571,14 +2571,14 @@ export default function SessionPage() {
 
                         {/* Skill stats */}
                         {inv && (
-                          <div className="grid grid-cols-4 gap-1 pt-2.5" style={{ borderTop: "1px solid #2e2318" }}>
+                          <div className="grid grid-cols-4 gap-1 pt-2.5" style={{ borderTop: "1px solid rgba(138,104,32,0.2)" }}>
                             {[
                               { label: "WIL", val: inv.willpower, color: "#9070d8", skill: "WIL" },
                               { label: "INT", val: inv.intellect, color: "#4a8fd4", skill: "INT" },
                               { label: "COM", val: inv.combat,    color: "#c03028", skill: "COM" },
                               { label: "AGI", val: inv.agility,   color: "#3aad98", skill: "AGI" },
                             ].map(s => (
-                              <div key={s.label} className="text-center py-1.5 rounded" style={{ background: "rgba(10,8,5,0.35)" }}>
+                              <div key={s.label} className="text-center py-1.5 rounded" style={{ background: "rgba(236,220,176,0.35)" }}>
                                 <SkillIcon skill={s.skill} size={12} />
                                 <div className="text-[9px] text-ark-text-muted font-mono mt-0.5">{s.label}</div>
                                 <div className="font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
@@ -2589,7 +2589,7 @@ export default function SessionPage() {
 
                         {/* Ability */}
                         {inv && (
-                          <div className="mt-2.5 pt-2.5 px-2 py-2 rounded-lg" style={{ borderTop: "1px solid #2e2318", background: `${cls.bg}` }}>
+                          <div className="mt-2.5 pt-2.5 px-2 py-2 rounded-lg" style={{ borderTop: "1px solid rgba(138,104,32,0.2)", background: `${cls.bg}` }}>
                             <p className="text-[9px] font-decorative uppercase tracking-wider mb-0.5" style={{ color: cls.hex }}>Ability</p>
                             <p className="text-[10px] leading-tight" style={{ color: "#8a7860" }}>{inv.ability}</p>
                           </div>
@@ -2664,7 +2664,7 @@ export default function SessionPage() {
                       />
                       {showCardDropdown && cardResults.length > 0 && (
                         <ul className="absolute z-50 left-0 right-0 top-full mt-1 rounded-xl overflow-hidden shadow-xl"
-                          style={{ background: "#1a1814", border: "1px solid rgba(192,48,40,0.4)" }}>
+                          style={{ background: "#ecdcb0", border: "1px solid rgba(192,48,40,0.4)" }}>
                           {cardResults.map(card => {
                             const preset = getEnemyPreset(card.id);
                             return (
@@ -2700,7 +2700,7 @@ export default function SessionPage() {
                     {/* Stats — 2 rows of clear labels */}
                     <div className="grid grid-cols-3 gap-2">
                       {(["fightVal","evadeVal","health","damage","horror"] as const).map(f => (
-                        <div key={f} className="rounded-lg p-2 text-center" style={{ background: "rgba(10,8,5,0.5)", border: "1px solid #2e2318" }}>
+                        <div key={f} className="rounded-lg p-2 text-center" style={{ background: "rgba(236,220,176,0.75)", border: "1px solid rgba(138,104,32,0.2)" }}>
                           <div className="text-[9px] font-mono uppercase tracking-wide text-ark-text-muted mb-1.5">
                             {({fightVal:"⚔ Fight",evadeVal:"🏃 Evade",health:"❤ Max HP",damage:"💀 Atk DMG",horror:"🧠 Atk HOR"} as Record<string,string>)[f]}
                           </div>
@@ -2722,7 +2722,7 @@ export default function SessionPage() {
                             className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-all"
                             style={newEnemy.keywords.includes(k.key)
                               ? { background: `${k.color}20`, border: `1px solid ${k.color}60`, color: k.color }
-                              : { background: "transparent", border: "1px solid #3d3020", color: "#5a4838" }}>
+                              : { background: "transparent", border: "1px solid #c8a860", color: "#5a4838" }}>
                             {k.key}
                           </button>
                         ))}
@@ -2741,7 +2741,7 @@ export default function SessionPage() {
 
             {/* ── Active enemies ── */}
             {enemies.length === 0 ? (
-              <div className="rounded-xl p-10 text-center" style={{ background: "rgba(26,20,16,0.5)", border: "1px dashed rgba(192,48,40,0.2)" }}>
+              <div className="rounded-xl p-10 text-center" style={{ background: "rgba(236,220,176,0.7)", border: "1px dashed rgba(184,32,32,0.3)" }}>
                 <p className="text-2xl mb-2">🕯</p>
                 <p className="text-ark-text-muted text-sm">No enemies in play.</p>
                 <p className="text-[10px] text-ark-text-muted mt-1">Add one when an encounter card reveals an enemy.</p>
@@ -2794,7 +2794,7 @@ export default function SessionPage() {
 
                   {/* ── Row 2: Key stats — compact, readable ── */}
                   <div className="mx-4 mb-2 grid grid-cols-4 gap-1.5 rounded-lg overflow-hidden"
-                    style={{ background: "rgba(10,8,5,0.5)", border: "1px solid #1e1810" }}>
+                    style={{ background: "rgba(236,220,176,0.75)", border: "1px solid #c8a860" }}>
                     {[
                       { label: "Fight", val: enemy.fightVal, color: "#c03028", hint: "Use Combat" },
                       { label: "Evade", val: enemy.evadeVal, color: "#c8871a", hint: "Use Agility" },
@@ -2818,7 +2818,7 @@ export default function SessionPage() {
                           + Hit
                         </button>
                       )}
-                      <div className="flex-1 h-2.5 rounded-full overflow-hidden" style={{ background: "rgba(10,8,5,0.6)" }}>
+                      <div className="flex-1 h-2.5 rounded-full overflow-hidden" style={{ background: "rgba(236,220,176,0.8)" }}>
                         <div className="h-full rounded-full transition-all duration-500"
                           style={{ width: `${hpPct}%`, background: hpPct > 50 ? "linear-gradient(90deg, #2a7048, #3aad98)" : hpPct > 25 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
                       </div>
@@ -2847,14 +2847,14 @@ export default function SessionPage() {
                             className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
                             style={engaged
                               ? { background: cls.bg, border: `2px solid ${cls.border}`, color: cls.hex, boxShadow: `0 0 8px ${cls.glow}` }
-                              : { background: "rgba(10,8,5,0.5)", border: "1px solid #2e2318", color: "#5a4838" }}>
+                              : { background: "rgba(236,220,176,0.75)", border: "1px solid rgba(138,104,32,0.2)", color: "#5a4838" }}>
                             {engaged ? "⚔ " : ""}{p.player_name}
                           </button>
                         ) : (
                           <span key={p.id} className="px-3 py-1.5 rounded-lg text-xs font-semibold"
                             style={engaged
                               ? { background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }
-                              : { background: "rgba(10,8,5,0.3)", border: "1px solid #2e2318", color: "#5a4838" }}>
+                              : { background: "rgba(236,220,176,0.55)", border: "1px solid rgba(138,104,32,0.2)", color: "#5a4838" }}>
                             {engaged ? "⚔ " : ""}{p.player_name}
                           </span>
                         );
@@ -2889,7 +2889,7 @@ export default function SessionPage() {
                               className="flex-1 py-2 rounded-lg text-xs font-bold font-decorative transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                               style={hasTargets && !enemy.exhausted
                                 ? { background: isEnemyPhase ? "rgba(192,48,40,0.2)" : "rgba(192,48,40,0.1)", border: `1px solid ${isEnemyPhase ? "rgba(192,48,40,0.6)" : "rgba(192,48,40,0.3)"}`, color: "#c03028", boxShadow: isEnemyPhase ? "0 0 8px rgba(192,48,40,0.2)" : "none" }
-                                : { background: "rgba(10,8,5,0.4)", border: "1px solid #2e2318", color: "#5a4838" }}>
+                                : { background: "rgba(236,220,176,0.65)", border: "1px solid rgba(138,104,32,0.2)", color: "#5a4838" }}>
                               ⚔ Attacks!
                             </button>
                           );
@@ -2911,10 +2911,10 @@ export default function SessionPage() {
             {/* Keyword reference — collapsible, always available */}
             <details className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.06)" }}>
               <summary className="px-4 py-2.5 cursor-pointer text-xs font-mono text-ark-text-muted select-none"
-                style={{ background: "rgba(26,20,16,0.6)" }}>
+                style={{ background: "rgba(236,220,176,0.8)" }}>
                 ▸ Enemy keyword reference
               </summary>
-              <div className="divide-y" style={{ borderColor: "#1e1810", background: "rgba(20,14,8,0.8)" }}>
+              <div className="divide-y" style={{ borderColor: "rgba(138,104,32,0.2)", background: "rgba(20,14,8,0.8)" }}>
                 {ENEMY_KEYWORDS.map(kw => (
                   <div key={kw.key} className="flex items-start gap-3 px-4 py-2.5">
                     <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold flex-shrink-0 mt-0.5"
@@ -2939,7 +2939,7 @@ export default function SessionPage() {
               )}
             </div>
             {actionLog.length === 0 ? (
-              <div className="rounded-xl p-10 text-center" style={{ background: "rgba(26,20,16,0.5)", border: "1px dashed #3d3020" }}>
+              <div className="rounded-xl p-10 text-center" style={{ background: "rgba(236,220,176,0.7)", border: "1px dashed #c8a860" }}>
                 <p className="text-ark-text-muted text-sm">No actions logged yet.</p>
               </div>
             ) : (
@@ -2948,7 +2948,7 @@ export default function SessionPage() {
                   const actionDef = ACTIONS.find(a => a.label === entry.action);
                   const phaseInfo = PHASES.find(p => p.id === entry.phase);
                   return (
-                    <div key={entry.id} className="flex items-start gap-3 p-3 rounded-xl group" style={{ background: "rgba(26,20,16,0.7)", border: "1px solid #2e2318" }}>
+                    <div key={entry.id} className="flex items-start gap-3 p-3 rounded-xl group" style={{ background: "rgba(236,220,176,0.85)", border: "1px solid rgba(138,104,32,0.2)" }}>
                       <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
                         style={{ background: actionDef ? actionDef.bg : "rgba(61,48,32,0.4)", border: `1px solid ${actionDef?.color ?? "#3d3020"}30` }}>
                         {actionDef?.skill ? <SkillIcon skill={actionDef.skill} size={16} /> : <ActionSymbol size={16} />}
@@ -2985,7 +2985,7 @@ export default function SessionPage() {
           <div className="space-y-5">
 
             {/* Round structure */}
-            <div className="rounded-xl p-4" style={{ background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020" }}>
+            <div className="rounded-xl p-4" style={{ background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860" }}>
               <h3 className="font-decorative font-bold text-sm text-ark-text mb-3">Round Structure</h3>
               <div className="flex items-center gap-2 flex-wrap">
                 {PHASES.map((phase, i) => (
@@ -3002,7 +3002,7 @@ export default function SessionPage() {
             </div>
 
             {/* Skill icons legend */}
-            <div className="rounded-xl p-4" style={{ background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020" }}>
+            <div className="rounded-xl p-4" style={{ background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860" }}>
               <h3 className="font-decorative font-bold text-sm text-ark-text mb-3">Skill Icons</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
@@ -3023,7 +3023,7 @@ export default function SessionPage() {
             </div>
 
             {/* Token legend */}
-            <div className="rounded-xl p-4" style={{ background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020" }}>
+            <div className="rounded-xl p-4" style={{ background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860" }}>
               <h3 className="font-decorative font-bold text-sm text-ark-text mb-3">Token Types</h3>
               <div className="grid grid-cols-3 gap-3">
                 {[
@@ -3041,12 +3041,12 @@ export default function SessionPage() {
             </div>
 
             {/* Chaos bag */}
-            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #3d3020" }}>
-              <div className="px-4 py-3" style={{ background: "rgba(26,20,16,0.6)", borderBottom: "1px solid #3d3020" }}>
+            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #c8a860" }}>
+              <div className="px-4 py-3" style={{ background: "rgba(236,220,176,0.8)", borderBottom: "1px solid #c8a860" }}>
                 <h3 className="font-decorative font-bold text-sm text-ark-text">{turnState.campaignId && CAMPAIGNS.find(c => c.id === turnState.campaignId)?.name ? CAMPAIGNS.find(c => c.id === turnState.campaignId)!.name : "Standard"} Chaos Bag</h3>
                 <p className="text-xs text-ark-text-muted">Standard difficulty</p>
               </div>
-              <div className="p-4 flex flex-wrap gap-2" style={{ background: "rgba(10,8,5,0.5)" }}>
+              <div className="p-4 flex flex-wrap gap-2" style={{ background: "rgba(236,220,176,0.75)" }}>
                 {CHAOS_TOKENS.map((t, i) => (
                   <span key={i} className="px-2 py-1 rounded font-mono font-bold text-xs" style={{ background: `${t.color}15`, border: `1px solid ${t.color}40`, color: t.color }}>{t.token}</span>
                 ))}

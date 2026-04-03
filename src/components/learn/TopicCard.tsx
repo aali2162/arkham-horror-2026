@@ -13,11 +13,11 @@ interface TopicCardProps {
 }
 
 const colorConfig = {
-  blue:   { hex: "#4a8fd4", glow: "rgba(74,143,212,0.15)",   bg: "rgba(74,143,212,0.06)",   border: "rgba(74,143,212,0.3)"  },
-  green:  { hex: "#3a9e6b", glow: "rgba(58,158,107,0.15)",   bg: "rgba(58,158,107,0.06)",   border: "rgba(58,158,107,0.3)"  },
-  red:    { hex: "#c0392b", glow: "rgba(192,57,43,0.18)",     bg: "rgba(192,57,43,0.07)",    border: "rgba(192,57,43,0.3)"   },
-  purple: { hex: "#7c5cbf", glow: "rgba(124,92,191,0.18)",   bg: "rgba(124,92,191,0.07)",   border: "rgba(124,92,191,0.3)"  },
-  amber:  { hex: "#d4922a", glow: "rgba(212,146,42,0.18)",   bg: "rgba(212,146,42,0.07)",   border: "rgba(212,146,42,0.3)"  },
+  blue:   { hex: "#4a8fd4", bg: "rgba(74,143,212,0.08)",   border: "rgba(74,143,212,0.25)",  topBar: "#4a8fd4" },
+  green:  { hex: "#2e8a50", bg: "rgba(46,138,80,0.08)",    border: "rgba(46,138,80,0.25)",   topBar: "#2e8a50" },
+  red:    { hex: "#b82020", bg: "rgba(184,32,32,0.08)",    border: "rgba(184,32,32,0.25)",   topBar: "#b82020" },
+  purple: { hex: "#7050b8", bg: "rgba(112,80,184,0.08)",   border: "rgba(112,80,184,0.25)",  topBar: "#7050b8" },
+  amber:  { hex: "#c8871a", bg: "rgba(200,135,26,0.08)",   border: "rgba(200,135,26,0.25)",  topBar: "#c8871a" },
 };
 
 // Art Deco SVG icon per topic
@@ -86,59 +86,56 @@ export default function TopicCard({ href, title, tagline, color, detail, difficu
       style={{ animationDelay: `${delay * 0.07}s` }}
     >
       <div
-        className="h-full rounded-xl p-5 flex flex-col gap-3 transition-all duration-300 relative overflow-hidden hover:-translate-y-0.5"
+        className="h-full rounded-xl flex flex-col transition-all duration-300 relative overflow-hidden hover:-translate-y-0.5"
         style={{
-          background: "linear-gradient(145deg, #161008 0%, #0f0c07 100%)",
-          border: `1px solid rgba(61,48,32,0.7)`,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,151,58,0.03)"
+          background: "#ecdcb0",
+          border: `1px solid #c8a860`,
+          boxShadow: "0 3px 14px rgba(90,58,8,0.10), inset 0 1px 0 rgba(255,248,200,0.7)"
         }}
       >
-        {/* Top color accent line */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{ background: `linear-gradient(90deg, transparent, ${c.hex}80, transparent)` }}/>
+        {/* Top colour accent bar */}
+        <div className="h-[3px] w-full flex-shrink-0"
+          style={{ background: `linear-gradient(90deg, ${c.topBar}cc, ${c.topBar}55, transparent)` }} />
 
-        {/* Corner glow */}
-        <div className="absolute top-0 right-0 w-20 h-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style={{ background: `radial-gradient(circle at top right, ${c.bg}, transparent 70%)` }} />
-
-        {/* Icon */}
-        <div className="flex items-start justify-between">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-105"
-            style={{
-              background: `linear-gradient(135deg, ${c.bg}, rgba(10,8,5,0.4))`,
-              border: `1px solid ${c.border}`,
-              color: c.hex,
-              boxShadow: `0 0 16px ${c.glow}`
-            }}>
-            {icon}
+        <div className="p-5 flex flex-col gap-3 flex-1">
+          {/* Icon row */}
+          <div className="flex items-start justify-between">
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-105"
+              style={{
+                background: c.bg,
+                border: `1.5px solid ${c.border}`,
+                color: c.hex,
+              }}>
+              {icon}
+            </div>
+            {difficulty && (
+              <span className="text-[10px] font-heading font-semibold tracking-wide uppercase px-2 py-0.5 rounded-full"
+                style={{ background: c.bg, color: c.hex, border: `1px solid ${c.border}` }}>
+                {difficulty}
+              </span>
+            )}
           </div>
-          {difficulty && (
-            <span className="text-[10px] font-sans font-semibold tracking-wide uppercase px-2 py-0.5 rounded-full"
-              style={{ background: `${c.bg}`, color: c.hex, border: `1px solid ${c.border}` }}>
-              {difficulty}
-            </span>
+
+          {/* Content */}
+          <div className="flex-1">
+            <h3 className="font-heading font-bold text-sm mb-1.5 transition-colors duration-200"
+              style={{ color: "#2a1808" }}>
+              {title}
+            </h3>
+            <p className="text-xs leading-relaxed font-body" style={{ color: "#6a5030" }}>{tagline}</p>
+          </div>
+
+          {/* Footer detail + arrow */}
+          {detail && (
+            <div className="flex items-center justify-between pt-2.5"
+              style={{ borderTop: "1px solid rgba(138,104,32,0.2)" }}>
+              <span className="text-[10px] font-mono tracking-wider" style={{ color: "#8a7040" }}>{detail}</span>
+              <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="#8a6820" strokeWidth="1.8" strokeLinecap="round">
+                <path d="M3 8 L13 8 M9 4 L13 8 L9 12"/>
+              </svg>
+            </div>
           )}
         </div>
-
-        {/* Content */}
-        <div className="flex-1">
-          <h3 className="font-sans font-bold text-sm mb-1.5 transition-colors duration-200 group-hover:text-ark-gold-bright"
-            style={{ color: "#e8dcc8" }}>
-            {title}
-          </h3>
-          <p className="text-xs leading-relaxed font-sans" style={{ color: "#8a8278" }}>{tagline}</p>
-        </div>
-
-        {/* Footer detail + arrow */}
-        {detail && (
-          <div className="flex items-center justify-between pt-2"
-            style={{ borderTop: "1px solid rgba(61,48,32,0.5)" }}>
-            <span className="text-[10px] font-mono tracking-wider" style={{ color: "#4a3828" }}>{detail}</span>
-            <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="#c9973a" strokeWidth="1.8" strokeLinecap="round">
-              <path d="M3 8 L13 8 M9 4 L13 8 L9 12"/>
-            </svg>
-          </div>
-        )}
       </div>
     </Link>
   );

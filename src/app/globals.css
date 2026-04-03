@@ -199,9 +199,9 @@ body::before {
   top: -8px;
   left: 50%;
   transform: translateX(-50%);
-  background: #0a0805;
+  background: #f2e8cc;
   padding: 0 8px;
-  color: #c9973a;
+  color: #8a6820;
   font-size: 12px;
   line-height: 1;
 }
@@ -228,8 +228,8 @@ body::before {
   align-items: center;
   gap: 2px;
   padding: 6px 10px;
-  background: rgba(10, 8, 5, 0.6);
-  border: 1px solid #3d3020;
+  background: rgba(236, 220, 176, 0.9);
+  border: 1px solid #c8a860;
   border-radius: 8px;
   transition: all 0.2s;
 }
@@ -392,7 +392,7 @@ body::before {
 .ark-prose p {
   font-size: 0.9375rem;
   line-height: 1.75;
-  color: #a89878;
+  color: #5a3a10;
 }
 .ark-prose p + p {
   margin-top: 0.875rem;
