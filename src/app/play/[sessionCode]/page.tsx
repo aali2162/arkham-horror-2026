@@ -38,149 +38,190 @@ const CAMPAIGNS = [
   { id: "custom", name: "Custom / Freeform", subtitle: "Enter your own names", scenarios: [] }
 ];
 
-// ─── Class colours ───────────────────────────────────────────────────────────
+// ─── Class colours — matched exactly to rulebook quick-reference ─────────────
 const CLASS_COLORS: Record<string, { hex: string; bg: string; border: string; glow: string }> = {
-  Guardian: { hex: "#4a8fd4", bg: "rgba(74,143,212,0.12)",  border: "rgba(74,143,212,0.4)",  glow: "rgba(74,143,212,0.2)"  },
-  Seeker:   { hex: "#d4922a", bg: "rgba(212,146,42,0.12)",  border: "rgba(212,146,42,0.4)",  glow: "rgba(212,146,42,0.2)"  },
-  Rogue:    { hex: "#3a9e6b", bg: "rgba(58,158,107,0.12)",  border: "rgba(58,158,107,0.4)",  glow: "rgba(58,158,107,0.2)"  },
-  Mystic:   { hex: "#7c5cbf", bg: "rgba(124,92,191,0.12)",  border: "rgba(124,92,191,0.4)",  glow: "rgba(124,92,191,0.2)"  },
-  Survivor: { hex: "#c0392b", bg: "rgba(192,57,43,0.12)",   border: "rgba(192,57,43,0.4)",   glow: "rgba(192,57,43,0.2)"   },
+  Guardian: { hex: "#4a8fd4", bg: "rgba(74,143,212,0.10)",  border: "rgba(74,143,212,0.45)",  glow: "rgba(74,143,212,0.22)"  },
+  Seeker:   { hex: "#c8871a", bg: "rgba(200,135,26,0.10)",  border: "rgba(200,135,26,0.45)",  glow: "rgba(200,135,26,0.22)"  },
+  Rogue:    { hex: "#2e8a50", bg: "rgba(46,138,80,0.10)",   border: "rgba(46,138,80,0.45)",   glow: "rgba(46,138,80,0.22)"   },
+  Mystic:   { hex: "#7050b8", bg: "rgba(112,80,184,0.10)",  border: "rgba(112,80,184,0.45)",  glow: "rgba(112,80,184,0.22)"  },
+  Survivor: { hex: "#b82020", bg: "rgba(184,32,32,0.10)",   border: "rgba(184,32,32,0.45)",   glow: "rgba(184,32,32,0.22)"   },
 };
 
-// ─── Arkham actions (with rulebook-accurate SVG symbols inline) ───────────────
+// ─── Arkham actions — colours matched to rulebook class/skill palette ─────────
 const ACTIONS = [
-  { id: "investigate", label: "Investigate", color: "#6aabf7", bg: "rgba(106,171,247,0.08)", desc: "Test Intellect vs. location shroud to collect a clue", skill: "INT" },
-  { id: "move",        label: "Move",        color: "#5bbf8a", bg: "rgba(91,191,138,0.08)",  desc: "Move to a connecting location", skill: null },
-  { id: "fight",       label: "Fight",       color: "#d96b6b", bg: "rgba(217,107,107,0.08)", desc: "Test Combat vs. enemy Fight value — deal damage on success", skill: "COM" },
-  { id: "evade",       label: "Evade",       color: "#e8a84a", bg: "rgba(232,168,74,0.08)",  desc: "Test Agility vs. enemy Evade value — exhaust the enemy", skill: "AGI" },
-  { id: "engage",      label: "Engage",      color: "#d96b6b", bg: "rgba(217,107,107,0.08)", desc: "Engage an unengaged enemy at your location", skill: null },
-  { id: "parley",      label: "Parley",      color: "#a888e8", bg: "rgba(168,136,232,0.08)", desc: "Negotiate with an enemy — requires card text to allow it", skill: "WIL" },
-  { id: "draw",        label: "Draw",        color: "#a888e8", bg: "rgba(168,136,232,0.08)", desc: "Draw 1 card from your deck", skill: null },
-  { id: "resource",    label: "Resource",    color: "#c9973a", bg: "rgba(201,151,58,0.08)",  desc: "Gain 1 resource token from the supply", skill: null },
-  { id: "play",        label: "Play Card",   color: "#6aabf7", bg: "rgba(106,171,247,0.08)", desc: "Pay cost and play an Asset or Event from hand", skill: null },
-  { id: "activate",    label: "Activate",    color: "#5bbf8a", bg: "rgba(91,191,138,0.08)",  desc: "Use a [→] ability on a card you control", skill: null },
-  { id: "resign",      label: "Resign",      color: "#7a7060", bg: "rgba(122,112,96,0.08)",  desc: "Leave the scenario safely at a resign location", skill: null },
+  { id: "investigate", label: "Investigate", color: "#c8871a", bg: "rgba(200,135,26,0.08)", desc: "Test Intellect vs. location shroud to collect a clue", skill: "INT" },
+  { id: "move",        label: "Move",        color: "#3aad98", bg: "rgba(58,173,152,0.08)", desc: "Move to a connecting location", skill: null },
+  { id: "fight",       label: "Fight",       color: "#c03028", bg: "rgba(192,48,40,0.08)",  desc: "Test Combat vs. enemy Fight value — deal damage on success", skill: "COM" },
+  { id: "evade",       label: "Evade",       color: "#2e8a50", bg: "rgba(46,138,80,0.08)",  desc: "Test Agility vs. enemy Evade value — exhaust the enemy", skill: "AGI" },
+  { id: "engage",      label: "Engage",      color: "#c03028", bg: "rgba(192,48,40,0.08)",  desc: "Engage an unengaged enemy at your location", skill: null },
+  { id: "parley",      label: "Parley",      color: "#9070d8", bg: "rgba(144,112,216,0.08)",desc: "Negotiate with an enemy — requires card text to allow it", skill: "WIL" },
+  { id: "draw",        label: "Draw",        color: "#9070d8", bg: "rgba(144,112,216,0.08)",desc: "Draw 1 card from your deck", skill: null },
+  { id: "resource",    label: "Resource",    color: "#c9973a", bg: "rgba(201,151,58,0.08)", desc: "Gain 1 resource token from the supply", skill: null },
+  { id: "play",        label: "Play Card",   color: "#4a8fd4", bg: "rgba(74,143,212,0.08)", desc: "Pay cost and play an Asset or Event from hand", skill: null },
+  { id: "activate",    label: "Activate",    color: "#3aad98", bg: "rgba(58,173,152,0.08)", desc: "Use a [→] ability on a card you control", skill: null },
+  { id: "resign",      label: "Resign",      color: "#8a7860", bg: "rgba(138,120,96,0.08)", desc: "Leave the scenario safely at a resign location", skill: null },
 ] as const;
 type ActionId = typeof ACTIONS[number]["id"];
 
-// ─── Phase config ─────────────────────────────────────────────────────────────
+// ─── Phase config — colours matched to rulebook phase-card borders ────────────
 const PHASES: { id: TurnState["phase"]; label: string; color: string; desc: string }[] = [
-  { id: "mythos",        label: "Mythos",        color: "#a888e8", desc: "Place doom, check threshold, draw encounter cards" },
-  { id: "investigation", label: "Investigation",  color: "#6aabf7", desc: "Each investigator takes 3 actions" },
-  { id: "enemy",         label: "Enemy",          color: "#d96b6b", desc: "Hunter enemies move, then all engaged enemies attack" },
-  { id: "upkeep",        label: "Upkeep",         color: "#5bbf8a", desc: "Ready all exhausted cards, draw 1 card, gain 1 resource" },
+  { id: "mythos",        label: "Mythos",        color: "#9070d8", desc: "Place doom, check threshold, draw encounter cards" },
+  { id: "investigation", label: "Investigation",  color: "#c8871a", desc: "Each investigator takes 3 actions" },
+  { id: "enemy",         label: "Enemy",          color: "#c03028", desc: "Hunter enemies move, then all engaged enemies attack" },
+  { id: "upkeep",        label: "Upkeep",         color: "#3aad98", desc: "Ready all exhausted cards, draw 1 card, gain 1 resource" },
 ];
 
-// ─── Enemy keyword guide ──────────────────────────────────────────────────────
+// ─── Enemy keyword guide — colours match rulebook keyword badge style ─────────
 const ENEMY_KEYWORDS = [
-  { key: "Hunter",    color: "#d96b6b", desc: "Moves toward nearest investigator each Enemy Phase" },
-  { key: "Alert",     color: "#e8a84a", desc: "Attacks if you fail evasion" },
-  { key: "Retaliate", color: "#d96b6b", desc: "Attacks if you fail a Fight test against it" },
-  { key: "Aloof",     color: "#a888e8", desc: "Won't auto-engage — must use Engage action" },
-  { key: "Elusive",   color: "#5bbf8a", desc: "Flees after being attacked" },
-  { key: "Massive",   color: "#e8a84a", desc: "Engages ALL investigators at its location" },
-  { key: "Patrol",    color: "#6aabf7", desc: "Moves between designated locations each phase" },
-  { key: "Doomed",    color: "#c9973a", desc: "When defeated, place 1 doom on current agenda" },
+  { key: "Hunter",    color: "#c03028", desc: "Moves toward nearest investigator each Enemy Phase" },
+  { key: "Alert",     color: "#c8871a", desc: "Attacks if you fail evasion" },
+  { key: "Retaliate", color: "#c03028", desc: "Attacks if you fail a Fight test against it" },
+  { key: "Aloof",     color: "#9070d8", desc: "Won't auto-engage — must use Engage action" },
+  { key: "Elusive",   color: "#3aad98", desc: "Flees after being attacked" },
+  { key: "Massive",   color: "#c8871a", desc: "Engages ALL investigators at its location" },
+  { key: "Patrol",    color: "#4a8fd4", desc: "Moves between designated locations each phase" },
+  { key: "Doomed",    color: "#9070d8", desc: "When defeated, place 1 doom on current agenda" },
 ];
 
-// ─── SVG Rulebook Symbols ─────────────────────────────────────────────────────
+// ─── SVG Rulebook Symbols — matched exactly to the quick-reference page ──────
+
+// Action cost symbol: double-chevron arrow (►► in rulebook)
 function ActionSymbol({ size = 20 }: { size?: number }) {
-  // Arkham Horror action cost symbol: stylised arrow in a circle
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
-      <path d="M8 12h8M13 8l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M5 7l5 5-5 5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 7l5 5-5 5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
 }
 
+// Willpower: raised fist — solid silhouette matching rulebook
 function WillpowerIcon({ size = 16, color = "currentColor" }: { size?: number; color?: string }) {
-  // Diamond shape — Willpower
   return (
-    <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-      <path d="M10 2L18 10L10 18L2 10Z" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15"/>
-      <path d="M10 5L15 10L10 15L5 10Z" fill={color} fillOpacity="0.5"/>
+    <svg width={size} height={size} viewBox="0 0 20 20" fill={color}>
+      {/* Fist silhouette */}
+      <path d="M7 10V6.5a1 1 0 012 0V10h.5V5.5a1 1 0 012 0V10h.5V6.5a1 1 0 012 0V11.5c0 2.5-1.5 5-4 5.5H8c-2 0-3-1.5-3-3V12a1 1 0 011-1h1v-1z" fillOpacity="0.85"/>
     </svg>
   );
 }
 
+// Intellect: open book — two pages spread
 function IntellectIcon({ size = 16, color = "currentColor" }: { size?: number; color?: string }) {
-  // Book / eye — Intellect
   return (
     <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-      <circle cx="10" cy="10" r="7" stroke={color} strokeWidth="1.5" fill="none"/>
-      <path d="M3 10 Q10 4 17 10 Q10 16 3 10Z" stroke={color} strokeWidth="1.2" fill={color} fillOpacity="0.2"/>
-      <circle cx="10" cy="10" r="2.5" fill={color} fillOpacity="0.7"/>
-      <circle cx="10" cy="10" r="1" fill={color}/>
+      <path d="M10 5C8 3.5 4 3.5 2 5v10c2-1.5 6-1.5 8 0V5z" fill={color} fillOpacity="0.7" stroke={color} strokeWidth="0.8"/>
+      <path d="M10 5c2-1.5 6-1.5 8 0v10c-2-1.5-6-1.5-8 0V5z" fill={color} fillOpacity="0.45" stroke={color} strokeWidth="0.8"/>
+      <line x1="10" y1="5" x2="10" y2="15" stroke={color} strokeWidth="1" strokeOpacity="0.6"/>
     </svg>
   );
 }
 
+// Combat: clenched fist with knuckle lines — matches rulebook fist icon
 function CombatIcon({ size = 16, color = "currentColor" }: { size?: number; color?: string }) {
-  // Fist / sword — Combat
   return (
-    <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-      <path d="M4 16L13 4" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M13 4L16 7" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M11 6L14 9" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
-      <circle cx="5" cy="15" r="1.5" fill={color} fillOpacity="0.6"/>
+    <svg width={size} height={size} viewBox="0 0 20 20" fill={color}>
+      <path d="M5 9.5V8a1.5 1.5 0 013 0v1.5h.4V7a1.5 1.5 0 013 0v2.5h.4V8a1.5 1.5 0 013 0v2.5c0 1-.3 2-.8 2.8L13 15H7l-1-1.5C5.4 12.6 5 11.5 5 10.5V9.5z" fillOpacity="0.85"/>
+      <rect x="5" y="15" width="10" height="2.5" rx="1.2" fillOpacity="0.7"/>
     </svg>
   );
 }
 
+// Agility: running figure leaning forward — matches rulebook
 function AgilityIcon({ size = 16, color = "currentColor" }: { size?: number; color?: string }) {
-  // Running figure / swift lines — Agility
   return (
-    <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-      <circle cx="13" cy="4" r="2" fill={color} fillOpacity="0.7"/>
-      <path d="M7 8l3-3 2 2-4 3v4" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M8 13l-2 4M11 13l1 4" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M2 9h4M3 12h3" stroke={color} strokeWidth="1.2" strokeLinecap="round" opacity="0.5"/>
+    <svg width={size} height={size} viewBox="0 0 20 20" fill={color}>
+      <circle cx="13.5" cy="3.5" r="2" fillOpacity="0.9"/>
+      {/* Body leaning forward */}
+      <path d="M12 6l-3 3.5 1.5 1L8 14h2l2-3 1.5 1L16 9l-2-1.5" fillOpacity="0.85"/>
+      {/* Back leg */}
+      <path d="M9 9.5L6.5 12l1 1L10 11" fillOpacity="0.7"/>
+      {/* Speed lines */}
+      <line x1="3" y1="8" x2="7" y2="8" stroke={color} strokeWidth="1.2" strokeOpacity="0.5" strokeLinecap="round"/>
+      <line x1="2" y1="11" x2="6" y2="11" stroke={color} strokeWidth="1" strokeOpacity="0.35" strokeLinecap="round"/>
     </svg>
   );
 }
 
+// Wild: question mark in a circle — matches rulebook "?" wild symbol
 function WildIcon({ size = 16, color = "currentColor" }: { size?: number; color?: string }) {
-  // Star — Wild
-  return (
-    <svg width={size} height={size} viewBox="0 0 20 20" fill={color} fillOpacity="0.8">
-      <path d="M10 2l2.1 5.5H18l-4.6 3.4 1.8 5.5L10 13l-5.2 3.4 1.8-5.5L2 7.5h5.9z"/>
-    </svg>
-  );
-}
-
-function DoomIcon({ size = 16, color = "#a888e8" }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-      <circle cx="10" cy="10" r="8" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.1"/>
-      <path d="M10 4v6l4 2" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx="10" cy="10" r="1.5" fill={color}/>
+      <circle cx="10" cy="10" r="8" fill={color} fillOpacity="0.15" stroke={color} strokeWidth="1.5"/>
+      <text x="10" y="14.5" textAnchor="middle" fontSize="10" fontWeight="bold" fill={color} fontFamily="serif">?</text>
     </svg>
   );
 }
 
-function ClueIcon({ size = 16, color = "#6aabf7" }: { size?: number; color?: string }) {
+// Doom token: black circle with skull/clock — dark ominous circle
+function DoomIcon({ size = 16, color = "#9070d8" }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-      <circle cx="10" cy="10" r="7" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.1"/>
-      <circle cx="10" cy="10" r="3" fill={color} fillOpacity="0.5"/>
-      <circle cx="10" cy="10" r="1.2" fill={color}/>
+      <circle cx="10" cy="10" r="8.5" fill={color} fillOpacity="0.18" stroke={color} strokeWidth="1.5"/>
+      {/* Skull eye sockets */}
+      <circle cx="7.5" cy="9"  r="1.5" fill={color} fillOpacity="0.7"/>
+      <circle cx="12.5" cy="9" r="1.5" fill={color} fillOpacity="0.7"/>
+      {/* Jaw line */}
+      <path d="M7 12.5 Q10 14.5 13 12.5" stroke={color} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.6"/>
+      {/* Tooth gaps */}
+      <line x1="10" y1="12.5" x2="10" y2="14" stroke={color} strokeWidth="1" strokeOpacity="0.5"/>
     </svg>
   );
 }
 
+// Clue token: teal circle with concentric rings — matches physical token
+function ClueIcon({ size = 16, color = "#3aad98" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="8"   fill={color} fillOpacity="0.12" stroke={color} strokeWidth="1.5"/>
+      <circle cx="10" cy="10" r="5"   fill={color} fillOpacity="0.25" stroke={color} strokeWidth="1"/>
+      <circle cx="10" cy="10" r="2.2" fill={color} fillOpacity="0.7"/>
+    </svg>
+  );
+}
+
+// Resource token: hexagonal wooden cube — matches physical token
 function ResourceIcon({ size = 16, color = "#c9973a" }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-      <rect x="3" y="6" width="14" height="10" rx="2" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.1"/>
-      <path d="M7 6V5a3 3 0 016 0v1" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
-      <circle cx="10" cy="11" r="2" fill={color} fillOpacity="0.6"/>
+      {/* Hexagon */}
+      <path d="M10 2L17.3 6v8L10 18 2.7 14V6z" fill={color} fillOpacity="0.15" stroke={color} strokeWidth="1.4"/>
+      {/* Inner cube lines suggesting 3D */}
+      <path d="M10 2v6M10 8l7.3-2M10 8l-7.3-2" stroke={color} strokeWidth="0.9" strokeOpacity="0.5"/>
+    </svg>
+  );
+}
+
+// Damage token: red hexagon with heart — matches physical token
+function DamageIcon({ size = 16, color = "#c03028" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
+      <path d="M10 2L17.3 6v8L10 18 2.7 14V6z" fill={color} fillOpacity="0.15" stroke={color} strokeWidth="1.4"/>
+      <path d="M10 14s-5-3.5-5-7a3 3 0 016 0 3 3 0 016 0c0 3.5-5 7-7 7z" fill={color} fillOpacity="0.7" transform="scale(0.6) translate(6.7,5)"/>
+    </svg>
+  );
+}
+
+// Horror token: blue hexagon with brain — matches physical token
+function HorrorIcon({ size = 16, color = "#3868a8" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
+      <path d="M10 2L17.3 6v8L10 18 2.7 14V6z" fill={color} fillOpacity="0.15" stroke={color} strokeWidth="1.4"/>
+      {/* Brain lobes */}
+      <path d="M7 11.5 Q6 9 8 8.5 Q9 7 10 8 Q11 7 12 8.5 Q14 9 13 11.5 Q12 13 10 13 Q8 13 7 11.5z" fill={color} fillOpacity="0.6"/>
+      <line x1="10" y1="8" x2="10" y2="13" stroke={color} strokeWidth="0.7" strokeOpacity="0.4"/>
     </svg>
   );
 }
 
 function SkillIcon({ skill, size = 14 }: { skill: string; size?: number }) {
-  const colorMap: Record<string, string> = { WIL: "#a888e8", INT: "#6aabf7", COM: "#d96b6b", AGI: "#5bbf8a", WILD: "#c9973a" };
+  // Skill colours matched exactly to rulebook quick-reference
+  const colorMap: Record<string, string> = {
+    WIL:  "#9070d8",  // Willpower — purple (Mystic-adjacent)
+    INT:  "#c8871a",  // Intellect — amber (Seeker-adjacent)
+    COM:  "#c03028",  // Combat    — red
+    AGI:  "#2e8a50",  // Agility   — green (Rogue-adjacent)
+    WILD: "#c9973a",  // Wild      — gold
+  };
   const color = colorMap[skill] ?? "#888";
   if (skill === "WIL") return <WillpowerIcon size={size} color={color} />;
   if (skill === "INT") return <IntellectIcon size={size} color={color} />;
@@ -203,14 +244,20 @@ const MISSED_RULES = [
   { title: "Fast Cards Cost No Action", desc: "Fast cards don't cost an action to play. They still cost resources. Can be played anytime — even between phases." },
 ];
 
+// Colours matched to actual physical token colours in the rulebook photo
 const CHAOS_TOKENS = [
-  { token: "+1", color: "#5bbf8a" }, { token: "0", color: "#8a8070" }, { token: "0", color: "#8a8070" },
-  { token: "−1", color: "#e8a84a" }, { token: "−1", color: "#e8a84a" }, { token: "−1", color: "#e8a84a" }, { token: "−1", color: "#e8a84a" },
-  { token: "−2", color: "#d98a40" }, { token: "−2", color: "#d98a40" },
-  { token: "−3", color: "#d96b6b" }, { token: "−4", color: "#c05050" },
-  { token: "Skull", color: "#8a7060" }, { token: "Cultist", color: "#8a7060" },
-  { token: "Tablet", color: "#8a7060" }, { token: "Elder Thing", color: "#8a7060" },
-  { token: "Elder Sign", color: "#c9973a" }, { token: "Auto-fail", color: "#c03020" },
+  { token: "+1",          color: "#3aad98" },  // teal — positive
+  { token: "0",           color: "#9a9080" },  { token: "0",  color: "#9a9080" },
+  { token: "−1",          color: "#c8871a" },  { token: "−1", color: "#c8871a" },
+  { token: "−1",          color: "#c8871a" },  { token: "−1", color: "#c8871a" },
+  { token: "−2",          color: "#b86020" },  { token: "−2", color: "#b86020" },
+  { token: "−3",          color: "#a83820" },  { token: "−4", color: "#902010" },
+  { token: "Skull",       color: "#706050" },   // dark brown — scenario symbol
+  { token: "Cultist",     color: "#606850" },
+  { token: "Tablet",      color: "#507060" },
+  { token: "Elder Thing", color: "#505870" },
+  { token: "Elder Sign",  color: "#3aad98" },  // teal — investigator ability
+  { token: "Auto-fail",   color: "#b82020" },  // red — skull/tentacle
 ];
 
 // ─── Default turn state ───────────────────────────────────────────────────────
@@ -852,8 +899,8 @@ export default function SessionPage() {
   if (loading) return (
     <><Navbar /><main className="max-w-5xl mx-auto px-4 py-20 text-center">
       <div className="space-y-3 animate-pulse">
-        <div className="h-6 w-40 rounded mx-auto" style={{ background: "#1a1410" }} />
-        <div className="h-4 w-60 rounded mx-auto" style={{ background: "#1a1410" }} />
+        <div className="h-6 w-40 rounded mx-auto" style={{ background: "#1e1710" }} />
+        <div className="h-4 w-60 rounded mx-auto" style={{ background: "#1e1710" }} />
       </div>
     </main></>
   );
@@ -879,7 +926,7 @@ export default function SessionPage() {
     // ── Non-creator waiting room ──────────────────────────────
     if (!isCreator) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#0c0f14" }}>
+        <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#0e0b06" }}>
           <Navbar />
           <div className="max-w-sm w-full text-center mt-16">
             <div className="inline-flex items-center gap-2 text-xs font-mono tracking-widest mb-6 px-3 py-1.5 rounded-full"
@@ -918,7 +965,7 @@ export default function SessionPage() {
     }
 
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: "#0c0f14" }}>
+      <div className="min-h-screen flex flex-col" style={{ background: "#0e0b06" }}>
         <Navbar />
         <main className="max-w-lg mx-auto px-4 py-10 w-full">
 
@@ -936,7 +983,7 @@ export default function SessionPage() {
           {/* Share */}
           <button onClick={handleCopyLink}
             className="w-full py-2.5 rounded-xl text-xs font-semibold font-mono mb-6 transition-all"
-            style={{ background: "rgba(201,151,58,0.08)", border: "1px solid rgba(201,151,58,0.25)", color: copied ? "#5bbf8a" : "#c9973a" }}>
+            style={{ background: "rgba(201,151,58,0.08)", border: "1px solid rgba(201,151,58,0.25)", color: copied ? "#3aad98" : "#c9973a" }}>
             {copied ? "✓ Link copied!" : "📋 Copy invite link"}
           </button>
 
@@ -960,7 +1007,7 @@ export default function SessionPage() {
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
                   return (
                     <div key={player.id} className="flex items-center gap-3 rounded-xl p-3 transition-all"
-                      style={{ background: "linear-gradient(135deg, #1a1410, #120e09)", border: `1px solid ${cls.border}` }}>
+                      style={{ background: "linear-gradient(135deg, #1e1710, #120e09)", border: `1px solid ${cls.border}` }}>
                       <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
                         style={{ background: "rgba(201,151,58,0.12)", border: "1px solid rgba(201,151,58,0.3)", color: "#c9973a" }}>
                         {idx + 1}
@@ -975,7 +1022,7 @@ export default function SessionPage() {
                       </div>
                       <button onClick={() => handleRemove(player)}
                         className="w-7 h-7 rounded-full text-xs flex items-center justify-center transition-all"
-                        style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#d96b6b" }}>
+                        style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#c03028" }}>
                         ✕
                       </button>
                     </div>
@@ -987,14 +1034,14 @@ export default function SessionPage() {
 
           {/* ── STEP 2: Turn Order ── */}
           {players.length >= 2 && (
-            <div className="mb-5 rounded-xl p-4" style={{ background: lobbyOrderConfirmed ? "rgba(91,191,138,0.06)" : "rgba(26,20,16,0.7)", border: `1px solid ${lobbyOrderConfirmed ? "rgba(91,191,138,0.4)" : "#3d3020"}` }}>
+            <div className="mb-5 rounded-xl p-4" style={{ background: lobbyOrderConfirmed ? "rgba(58,173,152,0.06)" : "rgba(26,20,16,0.7)", border: `1px solid ${lobbyOrderConfirmed ? "rgba(58,173,152,0.4)" : "#3d3020"}` }}>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
-                  style={{ background: lobbyOrderConfirmed ? "rgba(91,191,138,0.3)" : "rgba(201,151,58,0.2)", border: `1px solid ${lobbyOrderConfirmed ? "rgba(91,191,138,0.6)" : "rgba(201,151,58,0.5)"}`, color: lobbyOrderConfirmed ? "#5bbf8a" : "#c9973a" }}>
+                  style={{ background: lobbyOrderConfirmed ? "rgba(58,173,152,0.3)" : "rgba(201,151,58,0.2)", border: `1px solid ${lobbyOrderConfirmed ? "rgba(58,173,152,0.6)" : "rgba(201,151,58,0.5)"}`, color: lobbyOrderConfirmed ? "#3aad98" : "#c9973a" }}>
                   {lobbyOrderConfirmed ? "✓" : "2"}
                 </div>
                 <h2 className="text-sm font-decorative font-bold text-ark-text">Set Turn Order</h2>
-                {lobbyOrderConfirmed && <span className="text-xs font-mono" style={{ color: "#5bbf8a" }}>Confirmed</span>}
+                {lobbyOrderConfirmed && <span className="text-xs font-mono" style={{ color: "#3aad98" }}>Confirmed</span>}
               </div>
               <div className="space-y-2 mb-3">
                 {orderedLobbyPlayers.map((player, idx) => {
@@ -1011,11 +1058,11 @@ export default function SessionPage() {
                         <button onClick={() => handleReorderPlayer(player.id, "up")}
                           disabled={orderedLobbyPlayers[0]?.id === player.id}
                           className="w-5 h-5 rounded text-[10px] flex items-center justify-center disabled:opacity-20"
-                          style={{ background: "rgba(91,191,138,0.2)", color: "#5bbf8a" }}>↑</button>
+                          style={{ background: "rgba(58,173,152,0.2)", color: "#3aad98" }}>↑</button>
                         <button onClick={() => handleReorderPlayer(player.id, "down")}
                           disabled={orderedLobbyPlayers[orderedLobbyPlayers.length - 1]?.id === player.id}
                           className="w-5 h-5 rounded text-[10px] flex items-center justify-center disabled:opacity-20"
-                          style={{ background: "rgba(91,191,138,0.2)", color: "#5bbf8a" }}>↓</button>
+                          style={{ background: "rgba(58,173,152,0.2)", color: "#3aad98" }}>↓</button>
                       </div>
                     </div>
                   );
@@ -1023,7 +1070,7 @@ export default function SessionPage() {
               </div>
               <button onClick={() => setLobbyOrderConfirmed(true)}
                 className="w-full py-2 rounded-lg text-sm font-bold font-decorative transition-all"
-                style={{ background: lobbyOrderConfirmed ? "rgba(91,191,138,0.15)" : "rgba(91,191,138,0.2)", border: `1px solid rgba(91,191,138,0.5)`, color: "#5bbf8a" }}>
+                style={{ background: lobbyOrderConfirmed ? "rgba(58,173,152,0.15)" : "rgba(58,173,152,0.2)", border: `1px solid rgba(58,173,152,0.5)`, color: "#3aad98" }}>
                 {lobbyOrderConfirmed ? "✓ Turn Order Confirmed" : "Confirm Turn Order →"}
               </button>
             </div>
@@ -1092,12 +1139,12 @@ export default function SessionPage() {
                 return (
                   <div className="rounded-lg p-2.5 grid grid-cols-6 gap-1.5 text-center" style={{ background: cls.bg, border: `1px solid ${cls.border}` }}>
                     {[
-                      { label: "HP", val: selInv.health, color: "#d96b6b" },
-                      { label: "SAN", val: selInv.sanity, color: "#a888e8" },
-                      { label: "WIL", val: selInv.willpower, color: "#a888e8" },
-                      { label: "INT", val: selInv.intellect, color: "#6aabf7" },
-                      { label: "COM", val: selInv.combat, color: "#d96b6b" },
-                      { label: "AGI", val: selInv.agility, color: "#5bbf8a" },
+                      { label: "HP", val: selInv.health, color: "#c03028" },
+                      { label: "SAN", val: selInv.sanity, color: "#9070d8" },
+                      { label: "WIL", val: selInv.willpower, color: "#9070d8" },
+                      { label: "INT", val: selInv.intellect, color: "#4a8fd4" },
+                      { label: "COM", val: selInv.combat, color: "#c03028" },
+                      { label: "AGI", val: selInv.agility, color: "#3aad98" },
                     ].map(s => (
                       <div key={s.label}>
                         <div className="text-[9px] font-mono text-ark-text-muted">{s.label}</div>
@@ -1135,14 +1182,14 @@ export default function SessionPage() {
                   className="w-full py-4 rounded-2xl font-decorative font-bold text-base tracking-wide transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{
                     background: ready ? "linear-gradient(135deg, #c9973a, #a07828)" : "rgba(26,20,16,0.8)",
-                    color: ready ? "#0a0805" : "#5a4838",
+                    color: ready ? "#0e0b06" : "#5a4838",
                     border: "1px solid rgba(201,151,58,0.4)",
                     boxShadow: ready ? "0 0 32px rgba(201,151,58,0.25)" : "none"
                   }}>
                   {ready ? `▶ Start Game — ${players.length} Investigator${players.length !== 1 ? "s" : ""}` : "Start Game"}
                 </button>
                 {blockReason && (
-                  <p className="text-center text-xs mt-2 font-mono" style={{ color: "#d96b6b" }}>⚠ {blockReason}</p>
+                  <p className="text-center text-xs mt-2 font-mono" style={{ color: "#c03028" }}>⚠ {blockReason}</p>
                 )}
                 {ready && <p className="text-center text-xs text-ark-text-muted mt-2">Round 1 skips the Mythos Phase — first investigator goes immediately.</p>}
               </>
@@ -1171,12 +1218,12 @@ export default function SessionPage() {
     };
 
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: "#0c0f14" }}>
+      <div className="min-h-screen flex flex-col" style={{ background: "#0e0b06" }}>
         <Navbar />
         <main className="max-w-sm mx-auto px-4 py-10 w-full">
           <div className="text-center mb-7">
             <div className="inline-flex items-center gap-2 text-xs font-mono tracking-widest mb-4 px-3 py-1.5 rounded-full"
-              style={{ background: "rgba(91,191,138,0.08)", border: "1px solid rgba(91,191,138,0.25)", color: "#5bbf8a" }}>
+              style={{ background: "rgba(58,173,152,0.08)", border: "1px solid rgba(58,173,152,0.25)", color: "#3aad98" }}>
               <span className="live-dot" /> GAME IN PROGRESS · {sessionCode}
             </div>
             <h1 className="font-decorative font-bold text-2xl text-ark-text mb-1">Who are you?</h1>
@@ -1242,12 +1289,12 @@ export default function SessionPage() {
                   return (
                     <div className="rounded-lg p-2.5 grid grid-cols-6 gap-1.5 text-center" style={{ background: cls.bg, border: `1px solid ${cls.border}` }}>
                       {[
-                        { label: "HP", val: selInv.health, color: "#d96b6b" },
-                        { label: "SAN", val: selInv.sanity, color: "#a888e8" },
-                        { label: "WIL", val: selInv.willpower, color: "#a888e8" },
-                        { label: "INT", val: selInv.intellect, color: "#6aabf7" },
-                        { label: "COM", val: selInv.combat, color: "#d96b6b" },
-                        { label: "AGI", val: selInv.agility, color: "#5bbf8a" },
+                        { label: "HP", val: selInv.health, color: "#c03028" },
+                        { label: "SAN", val: selInv.sanity, color: "#9070d8" },
+                        { label: "WIL", val: selInv.willpower, color: "#9070d8" },
+                        { label: "INT", val: selInv.intellect, color: "#4a8fd4" },
+                        { label: "COM", val: selInv.combat, color: "#c03028" },
+                        { label: "AGI", val: selInv.agility, color: "#3aad98" },
                       ].map(s => (
                         <div key={s.label}>
                           <div className="text-[9px] font-mono text-ark-text-muted">{s.label}</div>
@@ -1266,7 +1313,7 @@ export default function SessionPage() {
           )}
 
           {!canAddNew && players.length > 0 && (
-            <div className="rounded-xl p-4 text-center text-xs font-mono" style={{ background: "rgba(192,57,43,0.08)", border: "1px solid rgba(192,57,43,0.3)", color: "#d96b6b" }}>
+            <div className="rounded-xl p-4 text-center text-xs font-mono" style={{ background: "rgba(192,57,43,0.08)", border: "1px solid rgba(192,57,43,0.3)", color: "#c03028" }}>
               Game is full (4/4). Select your investigator above to identify yourself.
             </div>
           )}
@@ -1284,7 +1331,7 @@ export default function SessionPage() {
     const actionsLeft = 3 - turnState.actionsUsed;
 
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: "#0c0f14" }}>
+      <div className="min-h-screen flex flex-col" style={{ background: "#0e0b06" }}>
         <Navbar />
 
         {/* Big YOUR TURN header */}
@@ -1352,13 +1399,13 @@ export default function SessionPage() {
           <div className="w-full flex gap-2">
             <button onClick={() => setViewBoardMode(true)}
               className="flex-1 py-3.5 rounded-xl font-decorative font-bold text-sm tracking-wide transition-all active:scale-98"
-              style={{ background: "rgba(106,171,247,0.08)", border: "1px solid rgba(106,171,247,0.3)", color: "#6aabf7" }}>
+              style={{ background: "rgba(74,143,212,0.08)", border: "1px solid rgba(74,143,212,0.3)", color: "#4a8fd4" }}>
               🗺 Board
             </button>
             <button onClick={handleUndoLastAction}
               disabled={actionLog.length === 0 || actionLog.every(e => e.action === "Undo" || e.action === "Log Cleared")}
               className="px-4 py-3.5 rounded-xl font-decorative font-bold text-sm tracking-wide transition-all active:scale-98 disabled:opacity-30"
-              style={{ background: "rgba(232,168,74,0.08)", border: "1px solid rgba(232,168,74,0.3)", color: "#e8a84a" }}>
+              style={{ background: "rgba(232,168,74,0.08)", border: "1px solid rgba(232,168,74,0.3)", color: "#c8871a" }}>
               ↩ Undo
             </button>
             <button onClick={handleEndTurn}
@@ -1372,10 +1419,10 @@ export default function SessionPage() {
           {myPlayer && (
             <div className="w-full mt-4 rounded-xl p-4 grid grid-cols-4 gap-2" style={{ background: "rgba(26,20,16,0.6)", border: "1px solid #2e2318" }}>
               {[
-                { label: "DMG", val: myPlayer.damage, max: inv?.health ?? 9, color: "#d96b6b", field: "damage" as const },
-                { label: "HOR", val: myPlayer.horror, max: inv?.sanity ?? 7, color: "#a888e8", field: "horror" as const },
+                { label: "DMG", val: myPlayer.damage, max: inv?.health ?? 9, color: "#c03028", field: "damage" as const },
+                { label: "HOR", val: myPlayer.horror, max: inv?.sanity ?? 7, color: "#9070d8", field: "horror" as const },
                 { label: "RES", val: myPlayer.resources, max: null, color: "#c9973a", field: "resources" as const },
-                { label: "CLU", val: myPlayer.clues, max: null, color: "#6aabf7", field: "clues" as const },
+                { label: "CLU", val: myPlayer.clues, max: null, color: "#4a8fd4", field: "clues" as const },
               ].map(s => (
                 <div key={s.label} className="flex flex-col items-center gap-1 py-2 rounded-lg" style={{ background: "rgba(10,8,5,0.4)" }}>
                   <span className="text-[9px] font-mono text-ark-text-muted">{s.label}</span>
@@ -1397,9 +1444,9 @@ export default function SessionPage() {
   // ── Action confirmation modal (in YOUR TURN context) ──────
   if (isMyTurn && selectedAction && turnState.phase === "investigation") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#0c0f14" }}>
+      <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#0e0b06" }}>
         <div className="w-full max-w-sm rounded-2xl p-6 space-y-4"
-          style={{ background: "#1a1410", border: `1px solid ${selectedAction.color}40`, boxShadow: `0 20px 60px rgba(0,0,0,0.8), 0 0 40px ${selectedAction.color}12` }}>
+          style={{ background: "#1e1710", border: `1px solid ${selectedAction.color}40`, boxShadow: `0 20px 60px rgba(0,0,0,0.8), 0 0 40px ${selectedAction.color}12` }}>
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: selectedAction.bg, border: `1px solid ${selectedAction.color}30` }}>
               {selectedAction.skill
@@ -1452,8 +1499,8 @@ export default function SessionPage() {
                           ⚔{e.fightVal} 🏃{e.evadeVal} ❤{e.health - e.currentDamage}hp
                         </span>
                       </div>
-                      {isEngaged && <span className="text-[9px]" style={{ color: "#5bbf8a" }}>⚔ Currently engaged with you</span>}
-                      {e.exhausted && <span className="text-[9px]" style={{ color: "#6aabf7" }}> · Exhausted</span>}
+                      {isEngaged && <span className="text-[9px]" style={{ color: "#3aad98" }}>⚔ Currently engaged with you</span>}
+                      {e.exhausted && <span className="text-[9px]" style={{ color: "#4a8fd4" }}> · Exhausted</span>}
                     </button>
                   );
                 })}
@@ -1483,14 +1530,14 @@ export default function SessionPage() {
                   }}
                     className="flex-1 py-2 rounded-lg text-sm font-bold font-mono transition-all"
                     style={selectedShroud === n
-                      ? { background: "rgba(106,171,247,0.25)", border: "2px solid #6aabf7", color: "#6aabf7", boxShadow: "0 0 8px rgba(106,171,247,0.3)" }
+                      ? { background: "rgba(74,143,212,0.25)", border: "2px solid #4a8fd4", color: "#4a8fd4", boxShadow: "0 0 8px rgba(74,143,212,0.3)" }
                       : { background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020", color: "#8a7860" }}>
                     {n}
                   </button>
                 ))}
               </div>
               {selectedShroud && (
-                <p className="text-[10px] font-mono mt-1.5 text-center" style={{ color: selectedShroud <= 2 ? "#5bbf8a" : selectedShroud === 3 ? "#e8a84a" : "#d96b6b" }}>
+                <p className="text-[10px] font-mono mt-1.5 text-center" style={{ color: selectedShroud <= 2 ? "#3aad98" : selectedShroud === 3 ? "#c8871a" : "#c03028" }}>
                   {selectedShroud <= 2 ? "Easy — low shroud" : selectedShroud === 3 ? "Moderate — be careful" : "Hard — high risk location"}
                 </p>
               )}
@@ -1519,7 +1566,7 @@ export default function SessionPage() {
             <button onClick={() => setSelectedAction(null)} className="btn-ghost flex-1 py-2.5 text-sm rounded-lg">← Back</button>
             <button onClick={handleLogAction}
               className="flex-1 py-2.5 text-sm rounded-lg font-bold transition-all"
-              style={{ background: `linear-gradient(135deg, ${selectedAction.color}cc, ${selectedAction.color}88)`, color: "#0a0805" }}>
+              style={{ background: `linear-gradient(135deg, ${selectedAction.color}cc, ${selectedAction.color}88)`, color: "#0e0b06" }}>
               Log Action
             </button>
           </div>
@@ -1536,7 +1583,7 @@ export default function SessionPage() {
               style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)" }}
               onClick={e => { if (e.target === e.currentTarget) setLearnModalActionId(null); }}>
               <div className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col"
-                style={{ background: "#141008", border: `1px solid ${color}30`, maxHeight: "85vh" }}>
+                style={{ background: "#16110a", border: `1px solid ${color}30`, maxHeight: "85vh" }}>
                 {/* Header */}
                 <div className="flex items-center gap-3 px-5 py-4 flex-shrink-0" style={{ borderBottom: `1px solid ${color}20`, background: `${color}08` }}>
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -1575,8 +1622,8 @@ export default function SessionPage() {
 
                   {/* Example */}
                   {actionData.example && (
-                    <div className="rounded-lg px-4 py-3" style={{ background: "rgba(91,191,138,0.07)", border: "1px solid rgba(91,191,138,0.25)" }}>
-                      <p className="text-[10px] font-mono uppercase tracking-widest mb-1.5" style={{ color: "#5bbf8a" }}>Example</p>
+                    <div className="rounded-lg px-4 py-3" style={{ background: "rgba(58,173,152,0.07)", border: "1px solid rgba(58,173,152,0.25)" }}>
+                      <p className="text-[10px] font-mono uppercase tracking-widest mb-1.5" style={{ color: "#3aad98" }}>Example</p>
                       <p className="text-xs text-ark-text leading-relaxed">{actionData.example.narrative}</p>
                     </div>
                   )}
@@ -1584,11 +1631,11 @@ export default function SessionPage() {
                   {/* Edge cases */}
                   {actionData.edgeCases && actionData.edgeCases.length > 0 && (
                     <div>
-                      <p className="text-[10px] font-mono uppercase tracking-widest mb-2" style={{ color: "#e8a84a" }}>Common questions</p>
+                      <p className="text-[10px] font-mono uppercase tracking-widest mb-2" style={{ color: "#c8871a" }}>Common questions</p>
                       <div className="space-y-2">
                         {actionData.edgeCases.map((ec, i) => (
                           <div key={i} className="rounded-lg px-3 py-2.5" style={{ background: "rgba(232,168,74,0.06)", border: "1px solid rgba(232,168,74,0.2)" }}>
-                            <p className="text-[11px] font-bold mb-1" style={{ color: "#e8a84a" }}>{ec.question}</p>
+                            <p className="text-[11px] font-bold mb-1" style={{ color: "#c8871a" }}>{ec.question}</p>
                             <p className="text-xs text-ark-text-muted leading-relaxed">{ec.answer}</p>
                           </div>
                         ))}
@@ -1599,11 +1646,11 @@ export default function SessionPage() {
                   {/* When to use */}
                   {actionData.whenToUse && actionData.whenToUse.length > 0 && (
                     <div>
-                      <p className="text-[10px] font-mono uppercase tracking-widest mb-2" style={{ color: "#6aabf7" }}>When to use this</p>
+                      <p className="text-[10px] font-mono uppercase tracking-widest mb-2" style={{ color: "#4a8fd4" }}>When to use this</p>
                       <ul className="space-y-1">
                         {actionData.whenToUse.map((tip, i) => (
                           <li key={i} className="flex items-start gap-2 text-xs text-ark-text-muted">
-                            <span style={{ color: "#6aabf7" }}>·</span>{tip}
+                            <span style={{ color: "#4a8fd4" }}>·</span>{tip}
                           </li>
                         ))}
                       </ul>
@@ -1615,7 +1662,7 @@ export default function SessionPage() {
                 <div className="px-5 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${color}20` }}>
                   <button onClick={() => setLearnModalActionId(null)}
                     className="w-full py-2.5 rounded-xl font-bold font-decorative text-sm transition-all"
-                    style={{ background: `linear-gradient(135deg, ${color}cc, ${color}88)`, color: "#0a0805" }}>
+                    style={{ background: `linear-gradient(135deg, ${color}cc, ${color}88)`, color: "#0e0b06" }}>
                     Got it — back to my turn
                   </button>
                 </div>
@@ -1653,7 +1700,7 @@ export default function SessionPage() {
             <p className="font-decorative font-bold text-sm" style={{ color: "#c9973a" }}>⚡ It&apos;s your turn — {3 - turnState.actionsUsed} action{3 - turnState.actionsUsed !== 1 ? "s" : ""} remaining</p>
             <button onClick={() => setViewBoardMode(false)}
               className="px-4 py-2 rounded-lg text-xs font-bold font-decorative transition-all flex-shrink-0"
-              style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#0a0805" }}>
+              style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#0e0b06" }}>
               ← Your Turn
             </button>
           </div>
@@ -1690,8 +1737,8 @@ export default function SessionPage() {
                     className="ark-input w-14 px-2 py-0.5 rounded text-sm font-mono font-bold text-center"
                     autoFocus
                   />
-                  <button onClick={() => handleFixRound(parseInt(roundEditValue))} className="text-[10px] px-1.5 py-1 rounded font-bold" style={{ background: "rgba(91,191,138,0.2)", color: "#5bbf8a" }}>✓</button>
-                  <button onClick={() => setShowRoundEdit(false)} className="text-[10px] px-1.5 py-1 rounded font-bold" style={{ background: "rgba(192,57,43,0.15)", color: "#d96b6b" }}>✕</button>
+                  <button onClick={() => handleFixRound(parseInt(roundEditValue))} className="text-[10px] px-1.5 py-1 rounded font-bold" style={{ background: "rgba(58,173,152,0.2)", color: "#3aad98" }}>✓</button>
+                  <button onClick={() => setShowRoundEdit(false)} className="text-[10px] px-1.5 py-1 rounded font-bold" style={{ background: "rgba(192,57,43,0.15)", color: "#c03028" }}>✕</button>
                 </div>
               ) : (
                 <button onClick={() => { if (isLead) { setRoundEditValue(String(turnState.round)); setShowRoundEdit(true); } }}
@@ -1712,19 +1759,19 @@ export default function SessionPage() {
             {/* Act badge */}
             {turnState.scenarioNumber && (
               <>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl" style={{ background: "rgba(124,92,191,0.12)", border: "1px solid rgba(124,92,191,0.35)" }}>
-                  <span className="font-mono font-bold text-xs" style={{ color: "#a888e8" }}>Act {turnState.scenarioNumber}</span>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl" style={{ background: "rgba(112,80,184,0.12)", border: "1px solid rgba(112,80,184,0.35)" }}>
+                  <span className="font-mono font-bold text-xs" style={{ color: "#9070d8" }}>Act {turnState.scenarioNumber}</span>
                 </div>
                 <div className="h-8 w-px" style={{ background: "#3d3020" }} />
               </>
             )}
             {/* Doom */}
             <div className="flex items-center gap-1.5">
-              <DoomIcon size={14} color={doomDanger ? "#d96b6b" : "#a888e8"} />
-              <span className="font-mono font-bold text-base" style={{ color: doomDanger ? "#d96b6b" : "#a888e8" }}>
+              <DoomIcon size={14} color={doomDanger ? "#c03028" : "#9070d8"} />
+              <span className="font-mono font-bold text-base" style={{ color: doomDanger ? "#c03028" : "#9070d8" }}>
                 {turnState.doom}<span className="text-sm font-normal text-ark-text-muted">/{turnState.doomThreshold}</span>
               </span>
-              {doomDanger && <span className="text-[9px] font-mono px-1.5 py-0.5 rounded animate-pulse" style={{ background: "rgba(192,57,43,0.2)", border: "1px solid rgba(192,57,43,0.4)", color: "#d96b6b" }}>ADVANCE!</span>}
+              {doomDanger && <span className="text-[9px] font-mono px-1.5 py-0.5 rounded animate-pulse" style={{ background: "rgba(192,57,43,0.2)", border: "1px solid rgba(192,57,43,0.4)", color: "#c03028" }}>ADVANCE!</span>}
             </div>
           </div>
 
@@ -1745,7 +1792,7 @@ export default function SessionPage() {
             )}
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs" style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.25)" }}>
               <span className="live-dot" />
-              <span style={{ color: "#5bbf8a" }}>Live</span>
+              <span style={{ color: "#3aad98" }}>Live</span>
             </div>
             <button onClick={handleCopyLink}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
@@ -1758,7 +1805,7 @@ export default function SessionPage() {
         {/* ── Identity picker modal — shown to non-creator devices on game start ── */}
         {showNamePicker && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.92)", backdropFilter: "blur(10px)" }}>
-            <div className="w-full max-w-sm rounded-2xl overflow-hidden" style={{ background: "#1a1410", border: "1px solid rgba(201,151,58,0.4)", boxShadow: "0 24px 80px rgba(0,0,0,0.9)" }}>
+            <div className="w-full max-w-sm rounded-2xl overflow-hidden" style={{ background: "#1e1710", border: "1px solid rgba(201,151,58,0.4)", boxShadow: "0 24px 80px rgba(0,0,0,0.9)" }}>
               {/* Header */}
               <div className="px-6 pt-6 pb-4" style={{ borderBottom: "1px solid rgba(201,151,58,0.15)" }}>
                 <div className="text-3xl mb-3">🕵️</div>
@@ -1802,16 +1849,16 @@ export default function SessionPage() {
         )}
 
         {/* ══ DOOM & ACT STATUS BAR — always prominent ══ */}
-        <div className="rounded-2xl mb-4 overflow-hidden" style={{ border: `2px solid ${doomDanger ? "rgba(192,57,43,0.5)" : "rgba(124,92,191,0.35)"}`, background: "linear-gradient(135deg, rgba(20,14,30,0.97), rgba(10,8,5,0.98))", boxShadow: doomDanger ? "0 0 24px rgba(192,57,43,0.15)" : "0 0 16px rgba(124,92,191,0.08)" }}>
+        <div className="rounded-2xl mb-4 overflow-hidden" style={{ border: `2px solid ${doomDanger ? "rgba(192,57,43,0.5)" : "rgba(112,80,184,0.35)"}`, background: "linear-gradient(135deg, rgba(20,14,30,0.97), rgba(10,8,5,0.98))", boxShadow: doomDanger ? "0 0 24px rgba(192,57,43,0.15)" : "0 0 16px rgba(112,80,184,0.08)" }}>
 
           {/* Top strip: Agenda + Act side by side */}
-          <div className="grid grid-cols-2" style={{ borderBottom: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "rgba(124,92,191,0.2)"}` }}>
+          <div className="grid grid-cols-2" style={{ borderBottom: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "rgba(112,80,184,0.2)"}` }}>
             {/* DOOM side */}
-            <div className="px-4 py-3" style={{ borderRight: `1px solid ${doomDanger ? "rgba(192,57,43,0.2)" : "rgba(124,92,191,0.15)"}` }}>
+            <div className="px-4 py-3" style={{ borderRight: `1px solid ${doomDanger ? "rgba(192,57,43,0.2)" : "rgba(112,80,184,0.15)"}` }}>
               <div className="flex items-center gap-1.5 mb-1">
-                <DoomIcon size={12} color={doomDanger ? "#d96b6b" : "#a888e8"} />
-                <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: doomDanger ? "#d96b6b" : "#a888e8" }}>Agenda</span>
-                {doomDanger && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(192,57,43,0.2)", color: "#d96b6b" }}>ADVANCE!</span>}
+                <DoomIcon size={12} color={doomDanger ? "#c03028" : "#9070d8"} />
+                <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: doomDanger ? "#c03028" : "#9070d8" }}>Agenda</span>
+                {doomDanger && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(192,57,43,0.2)", color: "#c03028" }}>ADVANCE!</span>}
               </div>
               <p className="text-[11px] font-decorative font-bold text-ark-text truncate mb-1.5">{turnState.agendaName}</p>
               {/* Doom pips */}
@@ -1822,12 +1869,12 @@ export default function SessionPage() {
                     disabled={!isLead}
                     className="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200"
                     style={i < turnState.doom
-                      ? { background: doomDanger ? "rgba(192,57,43,0.7)" : "rgba(124,92,191,0.7)", border: `1px solid ${doomDanger ? "#d96b6b" : "#7c5cbf"}`, boxShadow: `0 0 6px ${doomDanger ? "rgba(192,57,43,0.4)" : "rgba(124,92,191,0.4)"}` }
+                      ? { background: doomDanger ? "rgba(192,57,43,0.7)" : "rgba(112,80,184,0.7)", border: `1px solid ${doomDanger ? "#c03028" : "#7c5cbf"}`, boxShadow: `0 0 6px ${doomDanger ? "rgba(192,57,43,0.4)" : "rgba(112,80,184,0.4)"}` }
                       : { background: "rgba(10,8,5,0.5)", border: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "#3d3020"}` }}>
-                    {i < turnState.doom && <DoomIcon size={10} color={doomDanger ? "#d96b6b" : "#a888e8"} />}
+                    {i < turnState.doom && <DoomIcon size={10} color={doomDanger ? "#c03028" : "#9070d8"} />}
                   </button>
                 ))}
-                <span className="text-[10px] font-mono font-bold ml-1" style={{ color: doomDanger ? "#d96b6b" : "#a888e8" }}>{turnState.doom}/{turnState.doomThreshold}</span>
+                <span className="text-[10px] font-mono font-bold ml-1" style={{ color: doomDanger ? "#c03028" : "#9070d8" }}>{turnState.doom}/{turnState.doomThreshold}</span>
               </div>
             </div>
 
@@ -1855,10 +1902,10 @@ export default function SessionPage() {
                 return (
                   <>
                     <div className="flex items-center gap-1.5 mb-1">
-                      <ClueIcon size={12} color={canAdvance ? "#6aabf7" : "#4a6a8a"} />
-                      <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: canAdvance ? "#6aabf7" : "#4a6a8a" }}>Act</span>
+                      <ClueIcon size={12} color={canAdvance ? "#4a8fd4" : "#4a6a8a"} />
+                      <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: canAdvance ? "#4a8fd4" : "#4a6a8a" }}>Act</span>
                       {turnState.scenarioNumber && <span className="text-[9px] font-mono" style={{ color: "#6a5840" }}>#{turnState.scenarioNumber}</span>}
-                      {canAdvance && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(106,171,247,0.2)", color: "#6aabf7" }}>READY!</span>}
+                      {canAdvance && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(74,143,212,0.2)", color: "#4a8fd4" }}>READY!</span>}
                     </div>
                     <p className="text-[11px] font-decorative font-bold text-ark-text truncate mb-1">{turnState.actName}</p>
                     <p className="text-[9px] text-ark-text-muted mb-1.5">Tap a pip to spend a clue ({myClues} in hand)</p>
@@ -1874,13 +1921,13 @@ export default function SessionPage() {
                             title={filled ? "Tap to take back" : canFill ? "Tap to spend a clue" : "No clues in hand"}
                             className="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 disabled:opacity-30"
                             style={filled
-                              ? { background: canAdvance ? "rgba(106,171,247,0.75)" : "rgba(74,138,184,0.5)", border: `1px solid ${canAdvance ? "#6aabf7" : "#4a8ab8"}`, boxShadow: canAdvance ? "0 0 6px rgba(106,171,247,0.4)" : "none" }
+                              ? { background: canAdvance ? "rgba(74,143,212,0.75)" : "rgba(74,138,184,0.5)", border: `1px solid ${canAdvance ? "#4a8fd4" : "#4a8ab8"}`, boxShadow: canAdvance ? "0 0 6px rgba(74,143,212,0.4)" : "none" }
                               : { background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020", cursor: canFill ? "pointer" : "default" }}>
-                            {filled && <ClueIcon size={10} color={canAdvance ? "#6aabf7" : "#4a8ab8"} />}
+                            {filled && <ClueIcon size={10} color={canAdvance ? "#4a8fd4" : "#4a8ab8"} />}
                           </button>
                         );
                       })}
-                      {needed > 0 && <span className="text-[10px] font-mono font-bold ml-1" style={{ color: canAdvance ? "#6aabf7" : "#4a6a8a" }}>{cluesOnAct}/{needed}</span>}
+                      {needed > 0 && <span className="text-[10px] font-mono font-bold ml-1" style={{ color: canAdvance ? "#4a8fd4" : "#4a6a8a" }}>{cluesOnAct}/{needed}</span>}
                     </div>
                   </>
                 );
@@ -1893,7 +1940,7 @@ export default function SessionPage() {
             <div className="px-3 py-2 flex items-center gap-2 flex-wrap" style={{ background: "rgba(10,8,5,0.4)" }}>
               <button onClick={() => setShowCampaignPicker(true)}
                 className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
-                style={{ background: "rgba(124,92,191,0.12)", border: "1px solid rgba(124,92,191,0.3)", color: "#a888e8" }}>
+                style={{ background: "rgba(112,80,184,0.12)", border: "1px solid rgba(112,80,184,0.3)", color: "#9070d8" }}>
                 Campaign
               </button>
               {(() => {
@@ -1904,7 +1951,7 @@ export default function SessionPage() {
                   <button onClick={handleAdvanceAct} disabled={!_canAdvance}
                     title={_canAdvance ? "Advance the Act" : `Need ${_needed - _cluesOnAct} more clue(s) on the Act`}
                     className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all disabled:opacity-35 disabled:cursor-not-allowed"
-                    style={{ background: _canAdvance ? "rgba(106,171,247,0.15)" : "rgba(106,171,247,0.06)", border: `1px solid ${_canAdvance ? "rgba(106,171,247,0.4)" : "rgba(106,171,247,0.15)"}`, color: _canAdvance ? "#6aabf7" : "#4a6a8a" }}>
+                    style={{ background: _canAdvance ? "rgba(74,143,212,0.15)" : "rgba(74,143,212,0.06)", border: `1px solid ${_canAdvance ? "rgba(74,143,212,0.4)" : "rgba(74,143,212,0.15)"}`, color: _canAdvance ? "#4a8fd4" : "#4a6a8a" }}>
                     Advance Act →
                   </button>
                 );
@@ -1912,13 +1959,13 @@ export default function SessionPage() {
               {turnState.campaignId && turnState.campaignId !== "custom" && (
                 <button onClick={handleAdvanceScenario}
                   className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
-                  style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.3)", color: "#5bbf8a" }}>
+                  style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.3)", color: "#3aad98" }}>
                   Next Scenario ↗
                 </button>
               )}
               <button onClick={() => setShowEndScenario(true)}
                 className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all ml-auto"
-                style={{ background: "rgba(192,57,43,0.1)", border: "1px solid rgba(192,57,43,0.3)", color: "#d96b6b" }}>
+                style={{ background: "rgba(192,57,43,0.1)", border: "1px solid rgba(192,57,43,0.3)", color: "#c03028" }}>
                 End Scenario
               </button>
             </div>
@@ -1928,10 +1975,10 @@ export default function SessionPage() {
         {/* ── End Scenario modal ── */}
         {showEndScenario && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}>
-            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#1a1410", border: "1px solid rgba(192,57,43,0.4)" }}>
+            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#1e1710", border: "1px solid rgba(192,57,43,0.4)" }}>
               <div className="text-center">
                 <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.4)" }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#d96b6b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#c03028" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </div>
                 <h3 className="font-decorative font-bold text-lg text-ark-text">End Scenario</h3>
                 <p className="text-xs text-ark-text-muted mt-1">This will lock the session and show the summary to all players.</p>
@@ -1946,7 +1993,7 @@ export default function SessionPage() {
                 <button onClick={() => setShowEndScenario(false)} className="btn-ghost flex-1 py-2.5 text-sm rounded-xl">Cancel</button>
                 <button onClick={handleEndScenario}
                   className="flex-1 py-2.5 text-sm rounded-xl font-bold font-decorative transition-all"
-                  style={{ background: "linear-gradient(135deg, rgba(192,57,43,0.8), rgba(140,30,20,0.8))", color: "#fff", border: "1px solid rgba(217,107,107,0.4)" }}>
+                  style={{ background: "linear-gradient(135deg, rgba(192,57,43,0.8), rgba(140,30,20,0.8))", color: "#fff", border: "1px solid rgba(192,48,40,0.4)" }}>
                   End Scenario
                 </button>
               </div>
@@ -1981,17 +2028,17 @@ export default function SessionPage() {
                           <p className="text-[11px]" style={{ color: cls.hex }}>{p.investigator} · {inv?.class}</p>
                         </div>
                         {(isDefeated || isInsane) && (
-                          <span className="ml-auto text-[9px] font-mono font-bold px-2 py-0.5 rounded" style={{ background: isDefeated ? "rgba(192,57,43,0.2)" : "rgba(124,92,191,0.2)", color: isDefeated ? "#d96b6b" : "#a888e8" }}>
+                          <span className="ml-auto text-[9px] font-mono font-bold px-2 py-0.5 rounded" style={{ background: isDefeated ? "rgba(192,57,43,0.2)" : "rgba(112,80,184,0.2)", color: isDefeated ? "#c03028" : "#9070d8" }}>
                             {isDefeated ? "DEFEATED" : "INSANE"}
                           </span>
                         )}
                       </div>
                       <div className="grid grid-cols-4 gap-2">
                         {[
-                          { label: "Damage", val: p.damage, max: inv?.health ?? 9, color: "#d96b6b" },
-                          { label: "Horror", val: p.horror, max: inv?.sanity ?? 7, color: "#a888e8" },
+                          { label: "Damage", val: p.damage, max: inv?.health ?? 9, color: "#c03028" },
+                          { label: "Horror", val: p.horror, max: inv?.sanity ?? 7, color: "#9070d8" },
                           { label: "Resources", val: p.resources, max: null, color: "#c9973a" },
-                          { label: "Clues", val: p.clues, max: null, color: "#6aabf7" },
+                          { label: "Clues", val: p.clues, max: null, color: "#4a8fd4" },
                         ].map(s => (
                           <div key={s.label} className="text-center py-2 rounded-lg" style={{ background: "rgba(10,8,5,0.4)" }}>
                             <div className="text-[8px] font-mono text-ark-text-muted">{s.label}</div>
@@ -2014,7 +2061,7 @@ export default function SessionPage() {
                 {isLead && (
                   <button onClick={() => { setShowScenarioSummary(false); setShowCarryOverModal(true); }}
                     className="w-full py-3 rounded-xl font-bold font-decorative text-sm"
-                    style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#0a0805" }}>
+                    style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#0e0b06" }}>
                     Continue to Next Scenario →
                   </button>
                 )}
@@ -2030,16 +2077,16 @@ export default function SessionPage() {
         {/* ── Carry-Over modal (next session setup) ── */}
         {showCarryOverModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}>
-            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#1a1410", border: "1px solid rgba(91,191,138,0.3)" }}>
+            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#1e1710", border: "1px solid rgba(58,173,152,0.3)" }}>
               <h3 className="font-decorative font-bold text-lg text-ark-text">Next Session Carry-Over</h3>
               <p className="text-xs text-ark-text-muted">When starting the next session, remind your group which of these carry over between scenarios:</p>
               <div className="space-y-2">
                 {[
                   { label: "XP (experience points)", color: "#c9973a", carries: true, note: "Spend between scenarios on upgrades" },
-                  { label: "Trauma (physical + mental)", color: "#d96b6b", carries: true, note: "Reduce max HP/Sanity permanently" },
-                  { label: "Resources & Clues", color: "#6aabf7", carries: false, note: "Reset to starting values (5 resources, 0 clues)" },
-                  { label: "Damage & Horror", color: "#a888e8", carries: false, note: "Healed between scenarios (unless defeated/insane)" },
-                  { label: "Cards in hand & deck", color: "#5bbf8a", carries: true, note: "Keep your deck; some cards may be lost via trauma" },
+                  { label: "Trauma (physical + mental)", color: "#c03028", carries: true, note: "Reduce max HP/Sanity permanently" },
+                  { label: "Resources & Clues", color: "#4a8fd4", carries: false, note: "Reset to starting values (5 resources, 0 clues)" },
+                  { label: "Damage & Horror", color: "#9070d8", carries: false, note: "Healed between scenarios (unless defeated/insane)" },
+                  { label: "Cards in hand & deck", color: "#3aad98", carries: true, note: "Keep your deck; some cards may be lost via trauma" },
                   { label: "Earned campaign items", color: "#c9973a", carries: true, note: "Story items and campaign log entries carry over" },
                 ].map(item => (
                   <div key={item.label} className="flex items-start gap-2.5 p-2.5 rounded-lg" style={{ background: item.carries ? "rgba(10,8,5,0.5)" : "rgba(26,20,16,0.4)", border: `1px solid ${item.carries ? item.color + "30" : "#3d302010"}` }}>
@@ -2053,7 +2100,7 @@ export default function SessionPage() {
               </div>
               <button onClick={() => { setShowCarryOverModal(false); handleAdvanceScenario(); }}
                 className="w-full py-3 rounded-xl font-bold font-decorative text-sm"
-                style={{ background: "linear-gradient(135deg, rgba(91,191,138,0.8), rgba(58,158,107,0.8))", color: "#0a0805" }}>
+                style={{ background: "linear-gradient(135deg, rgba(58,173,152,0.8), rgba(58,158,107,0.8))", color: "#0e0b06" }}>
                 Got it — Advance to Next Scenario
               </button>
               <button onClick={() => setShowCarryOverModal(false)} className="btn-ghost w-full py-2 text-sm rounded-xl">Close</button>
@@ -2064,7 +2111,7 @@ export default function SessionPage() {
         {/* ── Campaign picker modal ── */}
         {showCampaignPicker && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}>
-            <div className="w-full max-w-md rounded-2xl p-6 space-y-4" style={{ background: "#1a1410", border: "1px solid rgba(124,92,191,0.3)" }}>
+            <div className="w-full max-w-md rounded-2xl p-6 space-y-4" style={{ background: "#1e1710", border: "1px solid rgba(112,80,184,0.3)" }}>
               <h3 className="font-decorative font-bold text-lg text-ark-text">Select Campaign & Scenario</h3>
 
               {selectedCampaignId === null ? (
@@ -2073,7 +2120,7 @@ export default function SessionPage() {
                     <button key={campaign.id}
                       onClick={() => setSelectedCampaignId(campaign.id)}
                       className="w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left"
-                      style={{ background: "rgba(124,92,191,0.08)", border: "1px solid rgba(124,92,191,0.25)" }}>
+                      style={{ background: "rgba(112,80,184,0.08)", border: "1px solid rgba(112,80,184,0.25)" }}>
                       <div className="flex-1">
                         <p className="font-decorative font-bold text-sm text-ark-text">{campaign.name}</p>
                         <p className="text-xs text-ark-text-muted">{campaign.subtitle}</p>
@@ -2093,7 +2140,7 @@ export default function SessionPage() {
                     <button key={scenario.id}
                       onClick={() => handleSelectScenario(selectedCampaignId, scenario.id)}
                       className="w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left"
-                      style={{ background: "rgba(91,191,138,0.08)", border: "1px solid rgba(91,191,138,0.25)" }}>
+                      style={{ background: "rgba(58,173,152,0.08)", border: "1px solid rgba(58,173,152,0.25)" }}>
                       <div className="flex-1">
                         <p className="font-decorative font-bold text-sm text-ark-text">{scenario.name}</p>
                         <p className="text-xs text-ark-text-muted">{scenario.agendaName}</p>
@@ -2127,28 +2174,28 @@ export default function SessionPage() {
                   {turnState.phase === "mythos" && (
                     <button onClick={async () => { await handleLeadPhaseAction("Doom Placed", `Placed 1 doom — now ${turnState.doom + 1}/${turnState.doomThreshold}`); pushTurnState({ ...turnState, doom: turnState.doom + 1 }); }}
                       className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                      style={{ background: "rgba(124,92,191,0.15)", border: "1px solid rgba(124,92,191,0.4)", color: "#a888e8" }}>
+                      style={{ background: "rgba(112,80,184,0.15)", border: "1px solid rgba(112,80,184,0.4)", color: "#9070d8" }}>
                       + Place Doom
                     </button>
                   )}
                   {turnState.phase === "mythos" && (
                     <button onClick={() => handleLeadPhaseAction("Encounter Cards Drawn", "All investigators drew encounter cards")}
                       className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                      style={{ background: "rgba(124,92,191,0.1)", border: "1px solid rgba(124,92,191,0.3)", color: "#a888e8" }}>
+                      style={{ background: "rgba(112,80,184,0.1)", border: "1px solid rgba(112,80,184,0.3)", color: "#9070d8" }}>
                       Log Encounter Draw
                     </button>
                   )}
                   {turnState.phase === "enemy" && (
                     <button onClick={() => handleLeadPhaseAction("Hunter Enemies Moved", "Hunter enemies moved toward nearest investigator")}
                       className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                      style={{ background: "rgba(217,107,107,0.12)", border: "1px solid rgba(217,107,107,0.4)", color: "#d96b6b" }}>
+                      style={{ background: "rgba(192,48,40,0.12)", border: "1px solid rgba(192,48,40,0.4)", color: "#c03028" }}>
                       Log Hunter Move
                     </button>
                   )}
                   {turnState.phase === "enemy" && (
                     <button onClick={() => handleLeadPhaseAction("Enemies Attacked", "All engaged ready enemies attacked")}
                       className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                      style={{ background: "rgba(217,107,107,0.1)", border: "1px solid rgba(217,107,107,0.3)", color: "#d96b6b" }}>
+                      style={{ background: "rgba(192,48,40,0.1)", border: "1px solid rgba(192,48,40,0.3)", color: "#c03028" }}>
                       Log Enemy Attacks
                     </button>
                   )}
@@ -2157,20 +2204,20 @@ export default function SessionPage() {
                       {(enemies.some(e => e.exhausted)) && (
                         <button onClick={handleReadyAllEnemies}
                           className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                          style={{ background: "rgba(91,191,138,0.15)", border: "1px solid rgba(91,191,138,0.5)", color: "#5bbf8a" }}>
+                          style={{ background: "rgba(58,173,152,0.15)", border: "1px solid rgba(58,173,152,0.5)", color: "#3aad98" }}>
                           ✓ Ready All Enemies
                         </button>
                       )}
                       <button onClick={() => handleLeadPhaseAction("Upkeep Resolved", "All cards readied, each investigator drew 1 card and gained 1 resource")}
                         className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                        style={{ background: "rgba(91,191,138,0.12)", border: "1px solid rgba(91,191,138,0.4)", color: "#5bbf8a" }}>
+                        style={{ background: "rgba(58,173,152,0.12)", border: "1px solid rgba(58,173,152,0.4)", color: "#3aad98" }}>
                         Log Upkeep Done
                       </button>
                     </>
                   )}
                   <button onClick={handleAdvancePhase}
                     className="px-4 py-2 rounded-xl text-sm font-bold font-decorative transition-all"
-                    style={{ background: `linear-gradient(135deg, ${currentPhase.color}cc, ${currentPhase.color}88)`, color: "#0a0805", boxShadow: `0 0 16px ${currentPhase.color}40` }}>
+                    style={{ background: `linear-gradient(135deg, ${currentPhase.color}cc, ${currentPhase.color}88)`, color: "#0e0b06", boxShadow: `0 0 16px ${currentPhase.color}40` }}>
                     Advance → {PHASES[(PHASES.findIndex(p=>p.id===turnState.phase)+1)%4].label}
                   </button>
                 </div>
@@ -2245,9 +2292,9 @@ export default function SessionPage() {
             <button onClick={() => setActiveTab("enemies")}
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all flex-1 justify-center"
               style={enemies.length > 0
-                ? { background: "rgba(217,107,107,0.1)", border: "1px solid rgba(217,107,107,0.35)", color: "#d96b6b" }
+                ? { background: "rgba(192,48,40,0.1)", border: "1px solid rgba(192,48,40,0.35)", color: "#c03028" }
                 : { background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020", color: "#5a4838" }}>
-              <CombatIcon size={12} color={enemies.length > 0 ? "#d96b6b" : "#5a4838"} />
+              <CombatIcon size={12} color={enemies.length > 0 ? "#c03028" : "#5a4838"} />
               {enemies.length > 0 ? `${enemies.length} Enem${enemies.length === 1 ? "y" : "ies"} in Play` : "No Enemies"}
             </button>
             <button onClick={() => setActiveTab("log")}
@@ -2265,7 +2312,7 @@ export default function SessionPage() {
             <button key={tab} onClick={() => setActiveTab(tab)}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold font-decorative tracking-wide transition-all duration-200 whitespace-nowrap"
               style={activeTab === tab
-                ? { background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#0a0805", boxShadow: "0 2px 8px rgba(201,151,58,0.3)" }
+                ? { background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#0e0b06", boxShadow: "0 2px 8px rgba(201,151,58,0.3)" }
                 : { color: "#6b5840" }}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -2286,7 +2333,7 @@ export default function SessionPage() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ background: "linear-gradient(135deg, #c9973a, #8b6914)", boxShadow: "0 0 16px rgba(201,151,58,0.35)" }}>
-                      <svg viewBox="0 0 20 20" className="w-5 h-5 fill-current" style={{ color: "#0a0805" }}><path d="M10 2L12.4 7.5H18L13.4 11L15.3 17L10 13.5L4.7 17L6.6 11L2 7.5H7.6L10 2Z"/></svg>
+                      <svg viewBox="0 0 20 20" className="w-5 h-5 fill-current" style={{ color: "#0e0b06" }}><path d="M10 2L12.4 7.5H18L13.4 11L15.3 17L10 13.5L4.7 17L6.6 11L2 7.5H7.6L10 2Z"/></svg>
                     </div>
                     <div>
                       <p className="text-[10px] font-decorative uppercase tracking-widest" style={{ color: "#c9973a" }}>Lead Investigator</p>
@@ -2315,7 +2362,7 @@ export default function SessionPage() {
                       )}
                       <button onClick={() => setReorderMode(!reorderMode)}
                         className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                        style={{ background: reorderMode ? "rgba(91,191,138,0.15)" : "rgba(201,151,58,0.08)", border: reorderMode ? "1px solid rgba(91,191,138,0.4)" : "1px solid rgba(201,151,58,0.25)", color: reorderMode ? "#5bbf8a" : "#c9973a" }}>
+                        style={{ background: reorderMode ? "rgba(58,173,152,0.15)" : "rgba(201,151,58,0.08)", border: reorderMode ? "1px solid rgba(58,173,152,0.4)" : "1px solid rgba(201,151,58,0.25)", color: reorderMode ? "#3aad98" : "#c9973a" }}>
                         {reorderMode ? "✓ Done" : "⇅ Reorder Turn"}
                       </button>
                     </div>
@@ -2379,7 +2426,7 @@ export default function SessionPage() {
                     return (
                       <div key={player.id} className="rounded-xl p-4 relative transition-all duration-300"
                         style={{
-                          background: "linear-gradient(145deg, #1a1410, #120e09)",
+                          background: "linear-gradient(145deg, #1e1710, #120e09)",
                           border: isMe ? `2px solid ${cls.border}` : isActive ? `1px solid ${cls.border}` : "1px solid #3d3020",
                           boxShadow: isMe ? `0 0 24px ${cls.glow}, 0 4px 20px rgba(0,0,0,0.5)` : isActive ? `0 0 14px ${cls.glow}` : "none",
                         }}>
@@ -2388,7 +2435,7 @@ export default function SessionPage() {
                         {isCreator && (
                           <button onClick={() => handleRemove(player)}
                             className="absolute top-3 right-3 w-6 h-6 rounded-full text-xs flex items-center justify-center opacity-0 hover:opacity-100 focus:opacity-100 transition-all"
-                            style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#d96b6b" }}
+                            style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#c03028" }}
                             aria-label={`Remove ${player.player_name}`}>
                             ✕
                           </button>
@@ -2400,13 +2447,13 @@ export default function SessionPage() {
                             <button onClick={() => handleReorderPlayer(player.id, "up")}
                               disabled={orderedPlayers[0]?.id === player.id}
                               className="w-5 h-5 rounded text-xs flex items-center justify-center transition-all disabled:opacity-30"
-                              style={{ background: "rgba(91,191,138,0.2)", border: "1px solid rgba(91,191,138,0.4)", color: "#5bbf8a" }}>
+                              style={{ background: "rgba(58,173,152,0.2)", border: "1px solid rgba(58,173,152,0.4)", color: "#3aad98" }}>
                               ↑
                             </button>
                             <button onClick={() => handleReorderPlayer(player.id, "down")}
                               disabled={orderedPlayers[orderedPlayers.length - 1]?.id === player.id}
                               className="w-5 h-5 rounded text-xs flex items-center justify-center transition-all disabled:opacity-30"
-                              style={{ background: "rgba(91,191,138,0.2)", border: "1px solid rgba(91,191,138,0.4)", color: "#5bbf8a" }}>
+                              style={{ background: "rgba(58,173,152,0.2)", border: "1px solid rgba(58,173,152,0.4)", color: "#3aad98" }}>
                               ↓
                             </button>
                           </div>
@@ -2433,17 +2480,17 @@ export default function SessionPage() {
                         {/* Status */}
                         {(isDefeated || isInsane) && (
                           <div className="mb-2 px-2 py-1 rounded text-[10px] font-decorative font-bold text-center"
-                            style={{ background: isDefeated ? "rgba(192,57,43,0.15)" : "rgba(124,92,191,0.15)", color: isDefeated ? "#d96b6b" : "#a888e8", border: `1px solid ${isDefeated ? "rgba(192,57,43,0.3)" : "rgba(124,92,191,0.3)"}` }}>
+                            style={{ background: isDefeated ? "rgba(192,57,43,0.15)" : "rgba(112,80,184,0.15)", color: isDefeated ? "#c03028" : "#9070d8", border: `1px solid ${isDefeated ? "rgba(192,57,43,0.3)" : "rgba(112,80,184,0.3)"}` }}>
                             {isDefeated ? "DEFEATED — Take 1 Physical Trauma" : "INSANE — Take 1 Mental Trauma"}
                           </div>
                         )}
 
                         {/* Engaged enemies */}
                         {engagedEnemies.length > 0 && (
-                          <div className="mb-2 px-2 py-1.5 rounded-lg text-[10px]" style={{ background: "rgba(217,107,107,0.08)", border: "1px solid rgba(217,107,107,0.3)" }}>
+                          <div className="mb-2 px-2 py-1.5 rounded-lg text-[10px]" style={{ background: "rgba(192,48,40,0.08)", border: "1px solid rgba(192,48,40,0.3)" }}>
                             <div className="flex items-center gap-1.5 mb-1">
-                              <CombatIcon size={11} color="#d96b6b" />
-                              <span className="font-decorative font-bold" style={{ color: "#d96b6b" }}>{engagedEnemies.length} enemy engaged — AoO applies!</span>
+                              <CombatIcon size={11} color="#c03028" />
+                              <span className="font-decorative font-bold" style={{ color: "#c03028" }}>{engagedEnemies.length} enemy engaged — AoO applies!</span>
                             </div>
                             {engagedEnemies.map(e => (
                               <div key={e.id} className="text-[10px] pl-4" style={{ color: "#c08080" }}>
@@ -2457,22 +2504,22 @@ export default function SessionPage() {
                         <div className="mb-2">
                           <div className="flex items-center justify-between mb-0.5">
                             <span className="text-[9px] font-mono text-ark-text-muted">❤ Health</span>
-                            <span className="text-[9px] font-mono" style={{ color: healthPct > 66 ? "#5bbf8a" : healthPct > 33 ? "#d4922a" : "#c05050" }}>
+                            <span className="text-[9px] font-mono" style={{ color: healthPct > 66 ? "#3aad98" : healthPct > 33 ? "#d4922a" : "#c05050" }}>
                               {healthRemaining}/{maxHealth}
                             </span>
                           </div>
                           <div className="h-1.5 rounded-full overflow-hidden mb-1" style={{ background: "rgba(10,8,5,0.4)" }}>
-                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${healthPct}%`, background: healthPct > 66 ? "linear-gradient(90deg, #2a7048, #5bbf8a)" : healthPct > 33 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
+                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${healthPct}%`, background: healthPct > 66 ? "linear-gradient(90deg, #2a7048, #3aad98)" : healthPct > 33 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
                           </div>
                           <div className="flex gap-1">
                             <button onClick={() => handleStatChange(player, "damage", 1)}
                               className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
-                              style={{ background: "rgba(217,107,107,0.15)", color: "#d96b6b", border: "1px solid rgba(217,107,107,0.3)" }}>
+                              style={{ background: "rgba(192,48,40,0.15)", color: "#c03028", border: "1px solid rgba(192,48,40,0.3)" }}>
                               − Hurt
                             </button>
                             <button onClick={() => handleStatChange(player, "damage", -1)}
                               className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
-                              style={{ background: "rgba(58,158,107,0.1)", color: "#5bbf8a", border: "1px solid rgba(58,158,107,0.25)" }}>
+                              style={{ background: "rgba(58,158,107,0.1)", color: "#3aad98", border: "1px solid rgba(58,158,107,0.25)" }}>
                               + Heal
                             </button>
                           </div>
@@ -2482,22 +2529,22 @@ export default function SessionPage() {
                         <div className="mb-2">
                           <div className="flex items-center justify-between mb-0.5">
                             <span className="text-[9px] font-mono text-ark-text-muted">🧠 Sanity</span>
-                            <span className="text-[9px] font-mono" style={{ color: sanityPct > 66 ? "#5bbf8a" : sanityPct > 33 ? "#d4922a" : "#c05050" }}>
+                            <span className="text-[9px] font-mono" style={{ color: sanityPct > 66 ? "#3aad98" : sanityPct > 33 ? "#d4922a" : "#c05050" }}>
                               {sanityRemaining}/{maxSanity}
                             </span>
                           </div>
                           <div className="h-1.5 rounded-full overflow-hidden mb-1" style={{ background: "rgba(10,8,5,0.4)" }}>
-                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${sanityPct}%`, background: sanityPct > 66 ? "linear-gradient(90deg, #4a68b8, #6aabf7)" : sanityPct > 33 ? "linear-gradient(90deg, #5c6eb5, #8ab3f5)" : "linear-gradient(90deg, #6c4280, #a888e8)" }} />
+                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${sanityPct}%`, background: sanityPct > 66 ? "linear-gradient(90deg, #4a68b8, #4a8fd4)" : sanityPct > 33 ? "linear-gradient(90deg, #5c6eb5, #8ab3f5)" : "linear-gradient(90deg, #6c4280, #9070d8)" }} />
                           </div>
                           <div className="flex gap-1">
                             <button onClick={() => handleStatChange(player, "horror", 1)}
                               className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
-                              style={{ background: "rgba(168,136,232,0.15)", color: "#a888e8", border: "1px solid rgba(168,136,232,0.3)" }}>
+                              style={{ background: "rgba(144,112,216,0.15)", color: "#9070d8", border: "1px solid rgba(144,112,216,0.3)" }}>
                               − Horror
                             </button>
                             <button onClick={() => handleStatChange(player, "horror", -1)}
                               className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
-                              style={{ background: "rgba(58,158,107,0.1)", color: "#5bbf8a", border: "1px solid rgba(58,158,107,0.25)" }}>
+                              style={{ background: "rgba(58,158,107,0.1)", color: "#3aad98", border: "1px solid rgba(58,158,107,0.25)" }}>
                               + Recover
                             </button>
                           </div>
@@ -2507,7 +2554,7 @@ export default function SessionPage() {
                         <div className="grid grid-cols-2 gap-1 mb-2.5">
                           {[
                             { label: "Resources", val: player.resources, color: "#c9973a", field: "resources" as const },
-                            { label: "Clues", val: player.clues, color: "#6aabf7", field: "clues" as const },
+                            { label: "Clues", val: player.clues, color: "#4a8fd4", field: "clues" as const },
                           ].map(s => (
                             <div key={s.label} className="flex items-center gap-1 py-1 px-2 rounded" style={{ background: "rgba(10,8,5,0.35)" }}>
                               <div className="flex-1">
@@ -2526,10 +2573,10 @@ export default function SessionPage() {
                         {inv && (
                           <div className="grid grid-cols-4 gap-1 pt-2.5" style={{ borderTop: "1px solid #2e2318" }}>
                             {[
-                              { label: "WIL", val: inv.willpower, color: "#a888e8", skill: "WIL" },
-                              { label: "INT", val: inv.intellect, color: "#6aabf7", skill: "INT" },
-                              { label: "COM", val: inv.combat,    color: "#d96b6b", skill: "COM" },
-                              { label: "AGI", val: inv.agility,   color: "#5bbf8a", skill: "AGI" },
+                              { label: "WIL", val: inv.willpower, color: "#9070d8", skill: "WIL" },
+                              { label: "INT", val: inv.intellect, color: "#4a8fd4", skill: "INT" },
+                              { label: "COM", val: inv.combat,    color: "#c03028", skill: "COM" },
+                              { label: "AGI", val: inv.agility,   color: "#3aad98", skill: "AGI" },
                             ].map(s => (
                               <div key={s.label} className="text-center py-1.5 rounded" style={{ background: "rgba(10,8,5,0.35)" }}>
                                 <SkillIcon skill={s.skill} size={12} />
@@ -2579,13 +2626,13 @@ export default function SessionPage() {
                 {!showAddEnemy ? (
                   <button onClick={() => setShowAddEnemy(true)}
                     className="w-full py-3 rounded-xl text-sm font-bold font-decorative transition-all"
-                    style={{ background: "rgba(217,107,107,0.08)", border: "1px dashed rgba(217,107,107,0.35)", color: "#d96b6b" }}>
+                    style={{ background: "rgba(192,48,40,0.08)", border: "1px dashed rgba(192,48,40,0.35)", color: "#c03028" }}>
                     + Spawn Enemy from encounter card
                   </button>
                 ) : (
-                  <div className="rounded-xl p-4 space-y-4" style={{ background: "rgba(217,107,107,0.04)", border: "1px solid rgba(217,107,107,0.25)" }}>
+                  <div className="rounded-xl p-4 space-y-4" style={{ background: "rgba(192,48,40,0.04)", border: "1px solid rgba(192,48,40,0.25)" }}>
                     <div className="flex items-center justify-between">
-                      <h4 className="font-decorative font-bold text-sm" style={{ color: "#d96b6b" }}>New Enemy</h4>
+                      <h4 className="font-decorative font-bold text-sm" style={{ color: "#c03028" }}>New Enemy</h4>
                       <button onClick={() => { setShowAddEnemy(false); setCardSearch(""); }}
                         className="text-[11px] text-ark-text-muted px-2 py-1 rounded hover:text-ark-text">Cancel</button>
                     </div>
@@ -2617,7 +2664,7 @@ export default function SessionPage() {
                       />
                       {showCardDropdown && cardResults.length > 0 && (
                         <ul className="absolute z-50 left-0 right-0 top-full mt-1 rounded-xl overflow-hidden shadow-xl"
-                          style={{ background: "#1a1814", border: "1px solid rgba(217,107,107,0.4)" }}>
+                          style={{ background: "#1a1814", border: "1px solid rgba(192,48,40,0.4)" }}>
                           {cardResults.map(card => {
                             const preset = getEnemyPreset(card.id);
                             return (
@@ -2639,7 +2686,7 @@ export default function SessionPage() {
                                   </div>
                                   {card.keywords && card.keywords.length > 0 && (
                                     <div className="flex flex-wrap gap-1 mt-0.5">
-                                      {card.keywords.map(k => <span key={k} className="text-[9px] font-mono px-1 rounded" style={{ background: "rgba(217,107,107,0.12)", color: "#d96b6b" }}>{k}</span>)}
+                                      {card.keywords.map(k => <span key={k} className="text-[9px] font-mono px-1 rounded" style={{ background: "rgba(192,48,40,0.12)", color: "#c03028" }}>{k}</span>)}
                                     </div>
                                   )}
                                 </button>
@@ -2658,9 +2705,9 @@ export default function SessionPage() {
                             {({fightVal:"⚔ Fight",evadeVal:"🏃 Evade",health:"❤ Max HP",damage:"💀 Atk DMG",horror:"🧠 Atk HOR"} as Record<string,string>)[f]}
                           </div>
                           <div className="flex items-center justify-center gap-2">
-                            <button onClick={() => setNewEnemy(p => ({ ...p, [f]: Math.max(0, p[f] - 1) }))} className="w-6 h-6 rounded text-sm font-bold" style={{ background: "rgba(217,107,107,0.15)", color: "#d96b6b" }}>−</button>
+                            <button onClick={() => setNewEnemy(p => ({ ...p, [f]: Math.max(0, p[f] - 1) }))} className="w-6 h-6 rounded text-sm font-bold" style={{ background: "rgba(192,48,40,0.15)", color: "#c03028" }}>−</button>
                             <span className="font-mono font-bold text-base text-ark-text w-5 text-center">{newEnemy[f]}</span>
-                            <button onClick={() => setNewEnemy(p => ({ ...p, [f]: p[f] + 1 }))} className="w-6 h-6 rounded text-sm font-bold" style={{ background: "rgba(217,107,107,0.15)", color: "#d96b6b" }}>+</button>
+                            <button onClick={() => setNewEnemy(p => ({ ...p, [f]: p[f] + 1 }))} className="w-6 h-6 rounded text-sm font-bold" style={{ background: "rgba(192,48,40,0.15)", color: "#c03028" }}>+</button>
                           </div>
                         </div>
                       ))}
@@ -2684,7 +2731,7 @@ export default function SessionPage() {
 
                     <button onClick={handleAddEnemy} disabled={!newEnemy.name.trim()}
                       className="w-full py-3 rounded-xl text-sm font-bold font-decorative transition-all disabled:opacity-40"
-                      style={{ background: "linear-gradient(135deg, #a03020, #7a1a0a)", color: "#fff", border: "1px solid rgba(217,107,107,0.4)" }}>
+                      style={{ background: "linear-gradient(135deg, #a03020, #7a1a0a)", color: "#fff", border: "1px solid rgba(192,48,40,0.4)" }}>
                       Spawn Enemy
                     </button>
                   </div>
@@ -2694,7 +2741,7 @@ export default function SessionPage() {
 
             {/* ── Active enemies ── */}
             {enemies.length === 0 ? (
-              <div className="rounded-xl p-10 text-center" style={{ background: "rgba(26,20,16,0.5)", border: "1px dashed rgba(217,107,107,0.2)" }}>
+              <div className="rounded-xl p-10 text-center" style={{ background: "rgba(26,20,16,0.5)", border: "1px dashed rgba(192,48,40,0.2)" }}>
                 <p className="text-2xl mb-2">🕯</p>
                 <p className="text-ark-text-muted text-sm">No enemies in play.</p>
                 <p className="text-[10px] text-ark-text-muted mt-1">Add one when an encounter card reveals an enemy.</p>
@@ -2708,7 +2755,7 @@ export default function SessionPage() {
               return (
                 <div key={enemy.id} className="rounded-xl overflow-hidden transition-all duration-300"
                   style={{
-                    border: enemy.exhausted ? "1px solid rgba(106,171,247,0.35)" : "1px solid rgba(217,107,107,0.4)",
+                    border: enemy.exhausted ? "1px solid rgba(74,143,212,0.35)" : "1px solid rgba(192,48,40,0.4)",
                     opacity: enemy.exhausted ? 0.8 : 1,
                     background: enemy.exhausted ? "rgba(8,14,22,0.95)" : "rgba(20,8,5,0.95)",
                   }}>
@@ -2720,11 +2767,11 @@ export default function SessionPage() {
                         <h4 className="font-decorative font-bold text-base text-ark-text leading-tight">{enemy.name}</h4>
                         {enemy.exhausted && (
                           <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full"
-                            style={{ background: "rgba(106,171,247,0.15)", color: "#6aabf7" }}>EXHAUSTED</span>
+                            style={{ background: "rgba(74,143,212,0.15)", color: "#4a8fd4" }}>EXHAUSTED</span>
                         )}
                         {isMassive && (
                           <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full"
-                            style={{ background: "rgba(232,168,74,0.15)", color: "#e8a84a" }}>MASSIVE</span>
+                            style={{ background: "rgba(232,168,74,0.15)", color: "#c8871a" }}>MASSIVE</span>
                         )}
                       </div>
                       {/* Keywords inline */}
@@ -2739,7 +2786,7 @@ export default function SessionPage() {
                     {isLead && (
                       <button onClick={() => handleDefeatEnemy(enemy.id)}
                         className="text-[11px] font-bold px-3 py-1.5 rounded-lg flex-shrink-0 transition-all"
-                        style={{ background: "rgba(58,158,107,0.12)", border: "1px solid rgba(58,158,107,0.35)", color: "#5bbf8a" }}>
+                        style={{ background: "rgba(58,158,107,0.12)", border: "1px solid rgba(58,158,107,0.35)", color: "#3aad98" }}>
                         ✓ Defeat
                       </button>
                     )}
@@ -2749,10 +2796,10 @@ export default function SessionPage() {
                   <div className="mx-4 mb-2 grid grid-cols-4 gap-1.5 rounded-lg overflow-hidden"
                     style={{ background: "rgba(10,8,5,0.5)", border: "1px solid #1e1810" }}>
                     {[
-                      { label: "Fight", val: enemy.fightVal, color: "#d96b6b", hint: "Use Combat" },
-                      { label: "Evade", val: enemy.evadeVal, color: "#e8a84a", hint: "Use Agility" },
+                      { label: "Fight", val: enemy.fightVal, color: "#c03028", hint: "Use Combat" },
+                      { label: "Evade", val: enemy.evadeVal, color: "#c8871a", hint: "Use Agility" },
                       { label: "Deals", val: `${enemy.damage}💀 ${enemy.horror}🧠`, color: "#c8b090", hint: "Per attack" },
-                      { label: "HP", val: `${hpLeft}/${enemy.health}`, color: hpPct > 50 ? "#5bbf8a" : hpPct > 25 ? "#d4922a" : "#c05050", hint: "Remaining" },
+                      { label: "HP", val: `${hpLeft}/${enemy.health}`, color: hpPct > 50 ? "#3aad98" : hpPct > 25 ? "#d4922a" : "#c05050", hint: "Remaining" },
                     ].map(s => (
                       <div key={s.label} className="py-2 text-center" title={s.hint}>
                         <div className="text-[8px] font-mono text-ark-text-muted uppercase tracking-wide">{s.label}</div>
@@ -2767,18 +2814,18 @@ export default function SessionPage() {
                       {isLead && (
                         <button onClick={() => handleEnemyDamage(enemy.id, 1)}
                           className="text-[11px] font-bold px-2.5 py-1.5 rounded-lg flex-shrink-0 transition-all"
-                          style={{ background: "rgba(217,107,107,0.15)", border: "1px solid rgba(217,107,107,0.3)", color: "#d96b6b" }}>
+                          style={{ background: "rgba(192,48,40,0.15)", border: "1px solid rgba(192,48,40,0.3)", color: "#c03028" }}>
                           + Hit
                         </button>
                       )}
                       <div className="flex-1 h-2.5 rounded-full overflow-hidden" style={{ background: "rgba(10,8,5,0.6)" }}>
                         <div className="h-full rounded-full transition-all duration-500"
-                          style={{ width: `${hpPct}%`, background: hpPct > 50 ? "linear-gradient(90deg, #2a7048, #5bbf8a)" : hpPct > 25 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
+                          style={{ width: `${hpPct}%`, background: hpPct > 50 ? "linear-gradient(90deg, #2a7048, #3aad98)" : hpPct > 25 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
                       </div>
                       {isLead && (
                         <button onClick={() => handleEnemyDamage(enemy.id, -1)}
                           className="text-[11px] font-bold px-2.5 py-1.5 rounded-lg flex-shrink-0 transition-all"
-                          style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.25)", color: "#5bbf8a" }}>
+                          style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.25)", color: "#3aad98" }}>
                           − Heal
                         </button>
                       )}
@@ -2823,8 +2870,8 @@ export default function SessionPage() {
                         <button onClick={() => handleToggleExhaust(enemy.id)}
                           className="flex-1 py-2 rounded-lg text-xs font-semibold font-decorative transition-all"
                           style={enemy.exhausted
-                            ? { background: "rgba(91,191,138,0.12)", border: "1px solid rgba(91,191,138,0.3)", color: "#5bbf8a" }
-                            : { background: "rgba(106,171,247,0.07)", border: "1px solid rgba(106,171,247,0.25)", color: "#6aabf7" }}>
+                            ? { background: "rgba(58,173,152,0.12)", border: "1px solid rgba(58,173,152,0.3)", color: "#3aad98" }
+                            : { background: "rgba(74,143,212,0.07)", border: "1px solid rgba(74,143,212,0.25)", color: "#4a8fd4" }}>
                           {enemy.exhausted ? "✓ Ready" : "Exhaust"}
                         </button>
                         {(() => {
@@ -2841,7 +2888,7 @@ export default function SessionPage() {
                               }
                               className="flex-1 py-2 rounded-lg text-xs font-bold font-decorative transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                               style={hasTargets && !enemy.exhausted
-                                ? { background: isEnemyPhase ? "rgba(217,107,107,0.2)" : "rgba(217,107,107,0.1)", border: `1px solid ${isEnemyPhase ? "rgba(217,107,107,0.6)" : "rgba(217,107,107,0.3)"}`, color: "#d96b6b", boxShadow: isEnemyPhase ? "0 0 8px rgba(217,107,107,0.2)" : "none" }
+                                ? { background: isEnemyPhase ? "rgba(192,48,40,0.2)" : "rgba(192,48,40,0.1)", border: `1px solid ${isEnemyPhase ? "rgba(192,48,40,0.6)" : "rgba(192,48,40,0.3)"}`, color: "#c03028", boxShadow: isEnemyPhase ? "0 0 8px rgba(192,48,40,0.2)" : "none" }
                                 : { background: "rgba(10,8,5,0.4)", border: "1px solid #2e2318", color: "#5a4838" }}>
                               ⚔ Attacks!
                             </button>
@@ -2852,8 +2899,8 @@ export default function SessionPage() {
                     {/* ── What this enemy deals — reminder for non-lead too ── */}
                     {enemy.engagedPlayerIds.length > 0 && !isLead && (
                       <div className="mt-2 px-3 py-2 rounded-lg text-xs"
-                        style={{ background: "rgba(217,107,107,0.07)", border: "1px solid rgba(217,107,107,0.2)", color: "#c8a890" }}>
-                        ⚔ Deals <span style={{ color: "#d96b6b", fontWeight: "bold" }}>{enemy.damage} damage</span> + <span style={{ color: "#a888e8", fontWeight: "bold" }}>{enemy.horror} horror</span> per attack — lead applies it
+                        style={{ background: "rgba(192,48,40,0.07)", border: "1px solid rgba(192,48,40,0.2)", color: "#c8a890" }}>
+                        ⚔ Deals <span style={{ color: "#c03028", fontWeight: "bold" }}>{enemy.damage} damage</span> + <span style={{ color: "#9070d8", fontWeight: "bold" }}>{enemy.horror} horror</span> per attack — lead applies it
                       </div>
                     )}
                   </div>
@@ -2920,7 +2967,7 @@ export default function SessionPage() {
                       </div>
                       <button onClick={() => handleDeleteLogEntry(entry.id)}
                         className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
-                        style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#d96b6b" }}
+                        style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#c03028" }}
                         title="Delete this entry">
                         ✕
                       </button>
@@ -2959,10 +3006,10 @@ export default function SessionPage() {
               <h3 className="font-decorative font-bold text-sm text-ark-text mb-3">Skill Icons</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  { skill: "WIL", label: "Willpower", color: "#a888e8", desc: "Treacheries, Parley, horror" },
-                  { skill: "INT", label: "Intellect",  color: "#6aabf7", desc: "Investigate, clue tests" },
-                  { skill: "COM", label: "Combat",     color: "#d96b6b", desc: "Fight tests, enemies" },
-                  { skill: "AGI", label: "Agility",    color: "#5bbf8a", desc: "Evade tests, movement" },
+                  { skill: "WIL", label: "Willpower", color: "#9070d8", desc: "Treacheries, Parley, horror" },
+                  { skill: "INT", label: "Intellect",  color: "#4a8fd4", desc: "Investigate, clue tests" },
+                  { skill: "COM", label: "Combat",     color: "#c03028", desc: "Fight tests, enemies" },
+                  { skill: "AGI", label: "Agility",    color: "#3aad98", desc: "Evade tests, movement" },
                 ].map(s => (
                   <div key={s.skill} className="flex items-center gap-2 p-2 rounded-lg" style={{ background: `${s.color}08`, border: `1px solid ${s.color}20` }}>
                     <SkillIcon skill={s.skill} size={20} />
@@ -2980,8 +3027,8 @@ export default function SessionPage() {
               <h3 className="font-decorative font-bold text-sm text-ark-text mb-3">Token Types</h3>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { Icon: () => <DoomIcon size={20} />, label: "Doom", color: "#a888e8", desc: "Counts toward Agenda threshold" },
-                  { Icon: () => <ClueIcon size={20} />, label: "Clue", color: "#6aabf7", desc: "Spend to advance Act deck" },
+                  { Icon: () => <DoomIcon size={20} />, label: "Doom", color: "#9070d8", desc: "Counts toward Agenda threshold" },
+                  { Icon: () => <ClueIcon size={20} />, label: "Clue", color: "#4a8fd4", desc: "Spend to advance Act deck" },
                   { Icon: () => <ResourceIcon size={20} />, label: "Resource", color: "#c9973a", desc: "Currency to play cards" },
                 ].map(t => (
                   <div key={t.label} className="flex flex-col items-center gap-1.5 p-3 rounded-lg text-center" style={{ background: `${t.color}08`, border: `1px solid ${t.color}20` }}>
@@ -3012,7 +3059,7 @@ export default function SessionPage() {
               <div className="space-y-2">
                 {MISSED_RULES.map((r, i) => (
                   <div key={i} className="px-4 py-3 rounded-xl" style={{ background: "rgba(232,168,74,0.05)", border: "1px solid rgba(232,168,74,0.2)" }}>
-                    <p className="font-bold text-xs mb-1" style={{ color: "#e8a84a" }}>{r.title}</p>
+                    <p className="font-bold text-xs mb-1" style={{ color: "#c8871a" }}>{r.title}</p>
                     <p className="text-xs text-ark-text-muted leading-relaxed">{r.desc}</p>
                   </div>
                 ))}

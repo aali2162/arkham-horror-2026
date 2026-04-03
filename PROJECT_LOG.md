@@ -20,6 +20,15 @@
 ### Live URL: https://arkham-horror-2026.vercel.app
 ### Last commit: `650aa5e` — "feat: 6 UX fixes — lobby/start game, turn order setup, view board toggle, Game Train rebrand, Inter font overhaul, improved text contrast"
 ### Session 11 changes (pending deploy — run deploy.ps1):
+**Visual overhaul — matched to official rulebook:**
+- **Fonts**: replaced Inter (generic) with Cinzel Decorative (titles) + Cinzel (headings/buttons) + Crimson Text (body) + IM Fell English (flavour text) — matches the rulebook's gothic/classical serif aesthetic
+- **Colour palette**: shifted from cold blue-black (`#0a0805`) to warm deep sepia (`#0e0b06`, `#1e1710`) — matches the rulebook's candlelight/parchment warmth
+- **Class colours**: corrected to exact rulebook quick-reference values — Guardian blue `#4a8fd4`, Seeker amber `#c8871a`, Mystic purple `#7050b8`, Rogue green `#2e8a50`, Survivor red `#b82020`
+- **Skill colours**: Willpower purple `#9070d8`, Intellect amber `#c8871a`, Combat red `#c03028`, Agility green `#2e8a50`
+- **All SVG icons rebuilt**: Willpower=raised fist, Intellect=open book, Combat=clenched fist with knuckles, Agility=running figure with speed lines, Wild=question mark in circle, Doom=skull face, Clue=concentric circle token, Resource=hexagonal cube, new DamageIcon (red hexagon/heart), new HorrorIcon (blue hexagon/brain)
+- **Phase colours**: Mythos purple, Investigation amber, Enemy red, Upkeep teal — all matching rulebook card border colours
+- **Chaos tokens**: colours matched to physical token photography in rulebook
+- **Action colours**: each action now uses its associated class/skill colour
 - **Enemy attack fixed:** "⚔ Attacks!" button now actually applies `enemy.damage` to damage and `enemy.horror` to horror for every engaged investigator via `updatePlayerStat`. Previously only logged, never hurt anyone.
 - **Attack button UX:** disabled (greyed) when no one is engaged or enemy is exhausted; tooltip shows exact damage preview; glows red during Enemy phase
 - **Non-lead reminder:** engaged investigators see a passive reminder strip showing what the enemy deals per attack
