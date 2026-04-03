@@ -367,7 +367,36 @@ body::before {
   100% { transform: scale(2); opacity: 0; }
 }
 
+/* ─── Shimmer keyframe (used by .text-shimmer) ── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
 /* ─── Page transition wrapper ────────────────── */
 .page-enter {
   @apply opacity-0 animate-fade-in;
+}
+
+/* ─── Prose-quality text sizing ──────────────── */
+.ark-prose p {
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: #a89878;
+}
+.ark-prose p + p {
+  margin-top: 0.875rem;
+}
+
+/* ─── Interactive step reveal ────────────────── */
+.step-reveal {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.step-reveal.hidden-step {
+  opacity: 0.35;
+  filter: blur(1px);
+}
+.step-reveal.active-step {
+  opacity: 1;
+  filter: none;
 }
