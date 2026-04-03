@@ -1,9 +1,9 @@
 interface DefinitionBoxProps {
   term: string;
-  definition: string;
+  meaning: string;
 }
 
-export default function DefinitionBox({ term, definition }: DefinitionBoxProps) {
+export default function DefinitionBox({ term, meaning }: DefinitionBoxProps) {
   return (
     <div className="definition-box my-3">
       <div className="flex items-start gap-3">
@@ -13,7 +13,7 @@ export default function DefinitionBox({ term, definition }: DefinitionBoxProps) 
         </div>
         <div>
           <span className="font-decorative font-semibold text-sm" style={{ color: "#6ab4f5" }}>{term}</span>
-          <p className="text-ark-text-dim text-sm leading-relaxed mt-1">{definition}</p>
+          <p className="text-ark-text-dim text-sm leading-relaxed mt-1">{meaning}</p>
         </div>
       </div>
     </div>
