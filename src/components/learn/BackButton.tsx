@@ -1,30 +1,12 @@
 "use client";
+import Link from "next/link";
 
-import { useRouter } from "next/navigation";
-
-interface BackButtonProps {
-  href?: string;
-  label?: string;
-}
-
-export default function BackButton({ href, label = "Back" }: BackButtonProps) {
-  const router = useRouter();
-
-  const handleClick = () => {
-    if (href) {
-      router.push(href);
-    } else {
-      router.back();
-    }
-  };
-
+export default function BackButton({ href, label }: { href: string; label: string }) {
   return (
-    <button
-      onClick={handleClick}
-      className="inline-flex items-center gap-2 text-ark-text-dim hover:text-ark-blue transition-colors text-sm font-medium mb-6 group"
-    >
-      <span className="group-hover:-translate-x-1 transition-transform">←</span>
-      {label}
-    </button>
+    <Link href={href}
+      className="inline-flex items-center gap-2 text-sm text-ark-text-muted hover:text-ark-text-dim transition-all duration-200 mb-6 group">
+      <span className="text-base transition-transform duration-200 group-hover:-translate-x-1">←</span>
+      <span className="font-decorative tracking-wide">{label}</span>
+    </Link>
   );
 }

@@ -1,13 +1,16 @@
-import { EdgeCase } from "@/types";
+interface EdgeCaseBoxProps {
+  question: string;
+  answer: string;
+}
 
-export default function EdgeCaseBox({ question, answer }: EdgeCase) {
+export default function EdgeCaseBox({ question, answer }: EdgeCaseBoxProps) {
   return (
     <div className="edge-case-box">
       <div className="flex items-start gap-3">
-        <span className="text-ark-amber text-lg mt-0.5">❓</span>
+        <div className="flex-shrink-0 text-lg mt-0.5">⚠️</div>
         <div>
-          <p className="font-bold text-ark-amber/90 text-sm mb-1">{question}</p>
-          <p className="text-ark-text-dim text-[15px] leading-relaxed">{answer}</p>
+          <p className="font-decorative font-semibold text-sm mb-1" style={{ color: "#e8a830" }}>{question}</p>
+          <p className="text-ark-text-dim text-sm leading-relaxed">{answer}</p>
         </div>
       </div>
     </div>

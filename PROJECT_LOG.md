@@ -15,7 +15,9 @@
 
 ---
 
-## CURRENT STATUS (Updated: April 2, 2026)
+## CURRENT STATUS (Updated: April 2, 2026 — DEPLOYED)
+
+### Live URL: https://arkham-horror-2026.vercel.app
 
 ### ✅ COMPLETED
 - [x] Full Next.js 14 + TypeScript + Tailwind CSS codebase (39 files)
@@ -30,12 +32,15 @@
 - [x] Row Level Security + real-time replication enabled
 - [x] Local dev server confirmed working (localhost:3000)
 - [x] .env.local configured with Supabase credentials
-- [x] deploy.ps1 script created (GitHub + Vercel full automation)
+- [x] Pushed to GitHub (github.com/aali2162/arkham-horror-2026)
+- [x] Deployed to Vercel — https://arkham-horror-2026.vercel.app
+- [x] Build verified: 22 pages, 0 errors, all routes generated
 
 ### 🔲 NOT YET DONE
-- [ ] Run deploy.ps1 to push to GitHub + deploy to Vercel
-- [ ] Confirm public Vercel URL is live
-- [ ] Add Vercel environment variables (handled by deploy.ps1)
+- [ ] Add Supabase env vars to Vercel project settings (NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY)
+- [ ] Test real-time sync across multiple browsers
+- [ ] Test session creation and player tracking end-to-end
+- [ ] Mobile responsiveness testing
 - [ ] Test real-time sync across multiple browsers
 - [ ] Test session creation and player tracking end-to-end
 - [ ] Mobile responsiveness testing

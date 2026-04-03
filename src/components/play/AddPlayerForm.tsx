@@ -11,59 +11,34 @@ interface AddPlayerFormProps {
 export default function AddPlayerForm({ sessionId }: AddPlayerFormProps) {
   const [name, setName] = useState("");
   const [investigator, setInvestigator] = useState(investigators[0].name);
-  const [loading, setLoading] = useState(false);
+  const [adding, setAdding] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleAdd = async () => {
     if (!name.trim()) return;
-    setLoading(true);
+    setAdding(true);
     await addPlayer(sessionId, name.trim(), investigator);
     setName("");
-    setLoading(false);
+    setAdding(false);
   };
 
   return (
-    <div className="card p-5">
-      <h3 className="font-display font-bold text-base text-ark-text mb-4">
-        Add Player
-      </h3>
-      <div className="space-y-3">
-        <div>
-          <label className="block text-xs uppercase tracking-wider text-ark-text-muted mb-1">
-            Player Name
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            placeholder="Enter name…"
-            className="w-full px-3 py-2 bg-ark-surface border border-ark-border rounded-lg text-ark-text placeholder-ark-text-muted text-sm focus:outline-none focus:border-ark-blue transition-colors"
-          />
-        </div>
-        <div>
-          <label className="block text-xs uppercase tracking-wider text-ark-text-muted mb-1">
-            Investigator
-          </label>
-          <select
-            value={investigator}
-            onChange={(e) => setInvestigator(e.target.value)}
-            className="w-full px-3 py-2 bg-ark-surface border border-ark-border rounded-lg text-ark-text text-sm focus:outline-none focus:border-ark-blue transition-colors"
-          >
-            {investigators.map((inv) => (
-              <option key={inv.name} value={inv.name}>
-                {inv.name} — {inv.class} (♥{inv.health} 🧠{inv.sanity})
-              </option>
-            ))}
-          </select>
-        </div>
-        <button
-          onClick={handleSubmit}
-          disabled={loading || !name.trim()}
-          className="w-full py-2.5 bg-ark-blue hover:bg-ark-blue-dim text-white font-semibold rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-sm"
-        >
-          {loading ? "Adding…" : "Add Player"}
-        </button>
-      </div>
+    <div className="rounded-xl p-4 space-y-3"
+      style={{ background: "rgba(26,20,16,0.8)", border: "1px solid rgba(201,151,58,0.25)" }}>
+      <h3 className="font-decorative font-bold text-sm text-ark-text">Add Investigator</h3>
+      <input value={name} onChange={e => setName(e.target.value)}
+        onKeyDown={e => e.key === "Enter" && handleAdd()}
+        placeholder="Player name"
+        className="ark-input w-full px-3 py-2.5 rounded-lg text-sm" />
+      <select value={investigator} onChange={e => setInvestigator(e.target.value)}
+        className="ark-input w-full px-3 py-2.5 rounded-lg text-sm">
+        {investigators.map(inv => (
+          <option key={inv.name} value={inv.name}>{inv.name} — {inv.class}</option>
+        ))}
+      </select>
+      <button onClick={handleAdd} disabled={adding || !name.trim()}
+        className="btn-gold w-full py-2.5 text-sm rounded-lg disabled:opacity-40">
+        {adding ? "Adding…" : "Add to Session"}
+      </button>
     </div>
   );
 }

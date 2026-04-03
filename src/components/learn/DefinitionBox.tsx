@@ -1,15 +1,19 @@
-import { Definition } from "@/types";
+interface DefinitionBoxProps {
+  term: string;
+  definition: string;
+}
 
-export default function DefinitionBox({ term, meaning }: Definition) {
+export default function DefinitionBox({ term, definition }: DefinitionBoxProps) {
   return (
-    <div className="definition-box">
+    <div className="definition-box my-3">
       <div className="flex items-start gap-3">
-        <span className="text-ark-blue text-lg mt-0.5">📘</span>
+        <div className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
+          style={{ background: "rgba(74,143,212,0.2)", border: "1px solid rgba(74,143,212,0.4)" }}>
+          <span className="text-[10px] font-bold text-ark-blue">i</span>
+        </div>
         <div>
-          <p className="font-bold text-ark-blue text-sm uppercase tracking-wide mb-1">
-            {term}
-          </p>
-          <p className="text-ark-text text-[15px] leading-relaxed">{meaning}</p>
+          <span className="font-decorative font-semibold text-sm" style={{ color: "#6ab4f5" }}>{term}</span>
+          <p className="text-ark-text-dim text-sm leading-relaxed mt-1">{definition}</p>
         </div>
       </div>
     </div>
