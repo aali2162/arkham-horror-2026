@@ -1,39 +1,44 @@
-# Auto-deploy script for Game Train
-# Double-click this file to push all changes to GitHub + auto-deploy to Vercel
-# Requires: git installed
+# Game Train - Auto Deploy
+# Reads GitHub token and pushes all changes
 
-$token = Get-Content "$PSScriptRoot\.github-token" -Raw -ErrorAction SilentlyContinue
-if (-not $token) { $token = "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" }
-$token = $token.Trim()
+$token = "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"
+$repo = "aali2162/arkham-horror-2026"
 
-$env:GIT_ASKPASS = "echo"
-$env:GIT_USERNAME = "aali2162"
-$env:GIT_PASSWORD = $token
+Write-Host "=== Game Train Deploy ===" -ForegroundColor Cyan
+Write-Host ""
 
 Set-Location $PSScriptRoot
 
-# Set remote with token embedded
-$remote = "https://aali2162:$token@github.com/aali2162/arkham-horror-2026.git"
-git remote set-url origin $remote 2>$null
+# Embed token in remote URL so no password prompt
+$remote = "https://aali2162:$token@github.com/$repo.git"
+git remote set-url origin $remote
 
+# Stage everything
 git add .
-$status = git status --porcelain
-if (-not $status) {
-    Write-Host "Nothing to deploy - no changes detected." -ForegroundColor Yellow
-    Start-Sleep 2
+
+# Check if there is anything to commit
+$changes = git status --porcelain
+if (-not $changes) {
+    Write-Host "No changes to deploy." -ForegroundColor Yellow
+    Write-Host ""
     exit 0
 }
 
+# Commit
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 git commit -m "Deploy: $timestamp"
+
+# Push
+Write-Host "Pushing to GitHub..." -ForegroundColor Yellow
 git push origin main
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""
-    Write-Host "Deployed! Vercel will be live in ~30 seconds." -ForegroundColor Green
+    Write-Host "Done! Vercel will be live in ~30 seconds:" -ForegroundColor Green
     Write-Host "https://arkham-horror-2026.vercel.app" -ForegroundColor Cyan
+    Write-Host ""
 } else {
-    Write-Host "Push failed - check output above." -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Push failed. See error above." -ForegroundColor Red
+    Write-Host ""
 }
-
-Start-Sleep 3
