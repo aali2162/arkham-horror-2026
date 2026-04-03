@@ -28,23 +28,11 @@ export default function TopicCard({ href, icon, title, tagline, color, detail, d
       style={{ animationDelay: `${delay * 0.07}s` }}
     >
       <div
-        className="h-full rounded-xl p-5 flex flex-col gap-3 transition-all duration-300 relative overflow-hidden"
+        className="h-full rounded-xl p-5 flex flex-col gap-3 transition-all duration-300 relative overflow-hidden hover:-translate-y-0.5"
         style={{
           background: "linear-gradient(135deg, #1a1410 0%, #120e09 100%)",
           border: `1px solid #3d3020`,
           boxShadow: "0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(201,151,58,0.04)"
-        }}
-        onMouseEnter={e => {
-          const el = e.currentTarget as HTMLElement;
-          el.style.borderColor = c.border;
-          el.style.boxShadow = `0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${c.glow}, inset 0 1px 0 ${c.glow}`;
-          el.style.transform = "translateY(-3px)";
-        }}
-        onMouseLeave={e => {
-          const el = e.currentTarget as HTMLElement;
-          el.style.borderColor = "#3d3020";
-          el.style.boxShadow = "0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(201,151,58,0.04)";
-          el.style.transform = "translateY(0)";
         }}
       >
         {/* Corner ornament */}
@@ -59,25 +47,19 @@ export default function TopicCard({ href, icon, title, tagline, color, detail, d
 
         {/* Content */}
         <div className="flex-1">
-          <h3 className="font-decorative font-bold text-base text-ark-text mb-1.5 group-hover:text-ark-gold-bright transition-colors"
+          <h3 className="font-decorative font-bold text-base mb-1.5 transition-colors"
             style={{ color: "#e8dcc8" }}>
             {title}
           </h3>
-          <p className="text-ark-text-muted text-sm leading-relaxed">{tagline}</p>
+          <p className="text-sm leading-relaxed" style={{ color: "#7a6a58" }}>{tagline}</p>
+          {detail && (
+            <p className="text-xs mt-2 leading-relaxed" style={{ color: "#5a4a38" }}>{detail}</p>
+          )}
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: "#2e2318" }}>
-          {detail && (
-            <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: c.hex }}>
-              {detail}
-            </span>
-          )}
-          <span className="text-xs font-semibold flex items-center gap-1 ml-auto transition-all duration-200 group-hover:gap-2"
-            style={{ color: c.hex }}>
-            Read more <span>→</span>
-          </span>
-        </div>
+        {/* Bottom accent */}
+        <div className="h-px w-full mt-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{ background: `linear-gradient(90deg, transparent, ${c.border}, transparent)` }} />
       </div>
     </Link>
   );
