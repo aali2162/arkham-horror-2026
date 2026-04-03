@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import { createSession, getSessionByCode } from "@/lib/session";
@@ -11,12 +11,20 @@ export default function PlayPage() {
   const [creating, setCreating] = useState(false);
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState("");
+  const [lastSession, setLastSession] = useState<string | null>(null);
+
+  // Load last session from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("ark_last_session");
+    if (saved) setLastSession(saved);
+  }, []);
 
   const handleCreate = async () => {
     setCreating(true);
     setError("");
     const session = await createSession();
     if (session) {
+      localStorage.setItem("ark_last_session", session.session_code);
       router.push(`/play/${session.session_code}`);
     } else {
       setError("Failed to create session. Check your Supabase configuration.");
@@ -31,6 +39,7 @@ export default function PlayPage() {
     const formatted = joinCode.trim().toUpperCase();
     const session = await getSessionByCode(formatted);
     if (session) {
+      localStorage.setItem("ark_last_session", session.session_code);
       router.push(`/play/${session.session_code}`);
     } else {
       setError(`No session found with code "${formatted}". Check the code and try again.`);
@@ -54,6 +63,28 @@ export default function PlayPage() {
             Track investigators turn-by-turn with live sync across all devices. Log actions, damage, horror, and resources as you play.
           </p>
         </div>
+
+        {/* Rejoin last session */}
+        {lastSession && (
+          <div className="rounded-xl p-4 mb-6 flex items-center justify-between gap-4"
+            style={{ background: "rgba(58,158,107,0.07)", border: "1px solid rgba(58,158,107,0.3)" }}>
+            <div>
+              <p className="text-xs font-mono uppercase tracking-wider mb-0.5" style={{ color: "#5bbf8a" }}>Last Session</p>
+              <p className="font-mono font-bold text-base tracking-widest text-ark-text">{lastSession}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => router.push(`/play/${lastSession}`)}
+                className="px-4 py-2 rounded-lg text-sm font-semibold font-decorative transition-all"
+                style={{ background: "rgba(58,158,107,0.15)", border: "1px solid rgba(58,158,107,0.4)", color: "#5bbf8a" }}>
+                Rejoin →
+              </button>
+              <button onClick={() => { localStorage.removeItem("ark_last_session"); setLastSession(null); }}
+                className="w-8 h-8 rounded-lg text-xs flex items-center justify-center transition-all"
+                style={{ background: "rgba(26,20,16,0.5)", border: "1px solid #3d3020", color: "#5a4838" }}
+                title="Clear saved session">✕</button>
+            </div>
+          </div>
+        )}
 
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">

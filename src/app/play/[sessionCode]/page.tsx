@@ -11,6 +11,31 @@ import {
 import { GameSession, GamePlayer, TurnState, ActionLogEntry } from "@/types";
 import { investigators } from "@/data/investigators";
 
+// ─── Campaigns & Scenarios ────────────────────────────────────────────────────
+const CAMPAIGNS = [
+  {
+    id: "night-of-the-zealot",
+    name: "Night of the Zealot",
+    subtitle: "Core Set Campaign",
+    scenarios: [
+      { id: "the-gathering", name: "The Gathering", agendaName: "What's Going On?!", actName: "Trapped", doomThreshold: 3, cluesRequired: 2 },
+      { id: "midnight-masks", name: "The Midnight Masks", agendaName: "Predator or Prey?", actName: "Your Soul for His Ascension", doomThreshold: 5, cluesRequired: 3 },
+      { id: "devourer-below", name: "The Devourer Below", agendaName: "The Devourer Below", actName: "Into the Darkness", doomThreshold: 5, cluesRequired: 3 },
+    ]
+  },
+  {
+    id: "brethren-of-ash",
+    name: "Brethren of Ash",
+    subtitle: "Standalone Expansion",
+    scenarios: [
+      { id: "ash-1", name: "Scenario I", agendaName: "Past Curfew", actName: "Where There Is Smoke…", doomThreshold: 3, cluesRequired: 2 },
+      { id: "ash-2", name: "Scenario II", agendaName: "The Brethren Awakens", actName: "Following the Ash", doomThreshold: 4, cluesRequired: 3 },
+      { id: "ash-3", name: "Scenario III", agendaName: "The Final Hour", actName: "Into the Flame", doomThreshold: 4, cluesRequired: 4 },
+    ]
+  },
+  { id: "custom", name: "Custom / Freeform", subtitle: "Enter your own names", scenarios: [] }
+];
+
 // ─── Class colours ───────────────────────────────────────────────────────────
 const CLASS_COLORS: Record<string, { hex: string; bg: string; border: string; glow: string }> = {
   Guardian: { hex: "#4a8fd4", bg: "rgba(74,143,212,0.12)",  border: "rgba(74,143,212,0.4)",  glow: "rgba(74,143,212,0.2)"  },
@@ -245,6 +270,13 @@ export default function SessionPage() {
   // Phase transition animation
   const [phaseFlash, setPhaseFlash] = useState(false);
 
+  // Player reorder mode
+  const [reorderMode, setReorderMode] = useState(false);
+
+  // Campaign picker modal
+  const [showCampaignPicker, setShowCampaignPicker] = useState(false);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+
   // ── Data loading ──────────────────────────────────────────
   const loadSession = useCallback(async () => {
     if (!sessionCode) return;
@@ -256,6 +288,10 @@ export default function SessionPage() {
     const p = await getPlayers(s.id);
     setPlayers(p);
     setLoading(false);
+    // Save session code to localStorage for recovery
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ark_last_session", sessionCode);
+    }
   }, [sessionCode]);
 
   useEffect(() => { loadSession(); }, [loadSession]);
@@ -274,6 +310,13 @@ export default function SessionPage() {
     return () => { unsubPlayers(); unsubSession(); };
   }, [session]);
 
+  // Identity onboarding
+  useEffect(() => {
+    if (!loading && players.length > 0 && !myPlayerName) {
+      setShowNamePicker(true);
+    }
+  }, [loading, players.length, myPlayerName]);
+
   // ── Derived values ────────────────────────────────────────
   const currentPlayer = players[turnState.currentPlayerIdx] ?? null;
   const leadPlayer = players[turnState.leadInvestigatorIdx] ?? null;
@@ -283,6 +326,9 @@ export default function SessionPage() {
   const doomPct = Math.min((turnState.doom / Math.max(1, turnState.doomThreshold)) * 100, 100);
   const doomDanger = turnState.doom >= turnState.doomThreshold;
   const currentPhase = PHASES.find(p => p.id === turnState.phase)!;
+
+  // Ordered players for turn order
+  const orderedPlayers = turnState.playerOrder ? [...players].sort((a,b) => (turnState.playerOrder!.indexOf(a.id) - turnState.playerOrder!.indexOf(b.id))) : players;
 
   // ── Turn management ───────────────────────────────────────
   const pushTurnState = useCallback(async (next: TurnState) => {
@@ -396,6 +442,34 @@ export default function SessionPage() {
     await handleLeadPhaseAction("Phase Advance", `Moved to ${nextPhase.toUpperCase()} Phase — Round ${nextRound}`);
   };
 
+  const handleAdvanceAct = async () => {
+    const ts = turnStateRef.current;
+    const nextScenarioNumber = (ts.scenarioNumber ?? 1) + 1;
+    const next = { ...ts, scenarioNumber: nextScenarioNumber };
+    await pushTurnState(next);
+    await handleLeadPhaseAction("Act Advanced", `Advanced to Act ${nextScenarioNumber}`);
+  };
+
+  const handleSelectScenario = async (campaignId: string, scenarioId: string) => {
+    const campaign = CAMPAIGNS.find(c => c.id === campaignId);
+    const scenario = campaign?.scenarios.find(s => s.id === scenarioId);
+    if (!scenario) return;
+
+    const next = {
+      ...turnState,
+      agendaName: scenario.agendaName,
+      actName: scenario.actName,
+      doomThreshold: scenario.doomThreshold,
+      cluesRequired: scenario.cluesRequired,
+      scenarioNumber: 1,
+      campaignId,
+      scenarioId,
+    };
+    await pushTurnState(next);
+    setShowCampaignPicker(false);
+    setSelectedCampaignId(null);
+  };
+
   // ── Player management ─────────────────────────────────────
   const handleAddPlayer = async () => {
     if (!session || !addingName.trim()) return;
@@ -418,6 +492,20 @@ export default function SessionPage() {
 
   const handleStatChange = async (player: GamePlayer, field: "damage" | "horror" | "resources" | "clues" | "xp", delta: number) => {
     await updatePlayerStat(player.id, field, Math.max(0, player[field] + delta));
+  };
+
+  const handleReorderPlayer = async (playerId: string, direction: "up" | "down") => {
+    const currentOrder = turnState.playerOrder ? [...turnState.playerOrder] : players.map(p => p.id);
+    const idx = currentOrder.indexOf(playerId);
+    if (idx === -1) return;
+
+    if (direction === "up" && idx > 0) {
+      [currentOrder[idx], currentOrder[idx - 1]] = [currentOrder[idx - 1], currentOrder[idx]];
+    } else if (direction === "down" && idx < currentOrder.length - 1) {
+      [currentOrder[idx], currentOrder[idx + 1]] = [currentOrder[idx + 1], currentOrder[idx]];
+    }
+
+    await pushTurnState({ ...turnState, playerOrder: currentOrder });
   };
 
   // ── Enemy helpers ─────────────────────────────────────────
@@ -606,6 +694,12 @@ export default function SessionPage() {
             </div>
           )}
 
+          <a href={`/learn/investigation/${selectedAction.id}`} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all"
+            style={{ background: `${selectedAction.color}10`, border: `1px solid ${selectedAction.color}30`, color: selectedAction.color }}>
+            📖 Learn more about this action →
+          </a>
+
           <div>
             <label className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted block mb-2">Add detail (optional)</label>
             <input value={actionDetail} onChange={e => setActionDetail(e.target.value)}
@@ -646,6 +740,17 @@ export default function SessionPage() {
           </div>
         )}
 
+        {/* ── Identity banner (pulsing if not identified) ── */}
+        {!myPlayer && (
+          <div onClick={() => setShowNamePicker(true)}
+            className="w-full rounded-xl p-4 mb-4 cursor-pointer transition-all"
+            style={{ background: "rgba(201,151,58,0.15)", border: "2px solid rgba(201,151,58,0.5)", animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}>
+            <p className="text-center font-decorative font-bold text-base" style={{ color: "#c9973a" }}>
+              Tap to identify yourself →
+            </p>
+          </div>
+        )}
+
         {/* ── Identity bar ── */}
         <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
           <div className="flex items-center gap-3 flex-wrap">
@@ -666,6 +771,15 @@ export default function SessionPage() {
               <span className="font-mono font-bold text-xs" style={{ color: currentPhase.color }}>{currentPhase.label} Phase</span>
             </div>
             <div className="h-8 w-px" style={{ background: "#3d3020" }} />
+            {/* Act badge */}
+            {turnState.scenarioNumber && (
+              <>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl" style={{ background: "rgba(124,92,191,0.12)", border: "1px solid rgba(124,92,191,0.35)" }}>
+                  <span className="font-mono font-bold text-xs" style={{ color: "#a888e8" }}>Act {turnState.scenarioNumber}</span>
+                </div>
+                <div className="h-8 w-px" style={{ background: "#3d3020" }} />
+              </>
+            )}
             {/* Doom */}
             <div className="flex items-center gap-1.5">
               <DoomIcon size={14} color={doomDanger ? "#d96b6b" : "#a888e8"} />
@@ -678,11 +792,19 @@ export default function SessionPage() {
 
           <div className="flex items-center gap-2">
             {/* Identity: who am I */}
-            <button onClick={() => setShowNamePicker(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all"
-              style={{ background: myPlayer ? `${CLASS_COLORS[investigators.find(i=>i.name===myPlayer.investigator)?.class??"Guardian"].bg}` : "rgba(201,151,58,0.08)", border: myPlayer ? `1px solid ${CLASS_COLORS[investigators.find(i=>i.name===myPlayer.investigator)?.class??"Guardian"].border}` : "1px solid rgba(201,151,58,0.3)", color: myPlayer ? CLASS_COLORS[investigators.find(i=>i.name===myPlayer.investigator)?.class??"Guardian"].hex : "#c9973a" }}>
-              {myPlayer ? `👤 ${myPlayer.player_name}` : "👤 Who am I?"}
-            </button>
+            {myPlayer ? (
+              <button onClick={() => setShowNamePicker(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all"
+                style={{ background: `${CLASS_COLORS[investigators.find(i=>i.name===myPlayer.investigator)?.class??"Guardian"].bg}`, border: `1px solid ${CLASS_COLORS[investigators.find(i=>i.name===myPlayer.investigator)?.class??"Guardian"].border}`, color: CLASS_COLORS[investigators.find(i=>i.name===myPlayer.investigator)?.class??"Guardian"].hex }}>
+                👤 You: {myPlayer.player_name}
+              </button>
+            ) : (
+              <button onClick={() => setShowNamePicker(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all border-2 animate-pulse"
+                style={{ background: "rgba(201,151,58,0.1)", border: "2px solid rgba(201,151,58,0.5)", color: "#c9973a" }}>
+                👤 Identify Me
+              </button>
+            )}
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs" style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.25)" }}>
               <span className="live-dot" />
               <span style={{ color: "#5bbf8a" }}>Live</span>
@@ -747,58 +869,77 @@ export default function SessionPage() {
                     className="w-7 h-7 rounded flex items-center justify-center transition-all duration-300"
                     style={i < turnState.doom
                       ? { background: doomDanger ? "rgba(192,57,43,0.6)" : "rgba(124,92,191,0.6)", border: `1px solid ${doomDanger ? "#d96b6b" : "#7c5cbf"}`, boxShadow: `0 0 8px ${doomDanger ? "rgba(192,57,43,0.3)" : "rgba(124,92,191,0.3)"}` }
-                      : { background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020" }}>
-                    <DoomIcon size={12} color={i < turnState.doom ? (doomDanger ? "#d96b6b" : "#a888e8") : "#2e2318"} />
+                      : { background: "rgba(10,8,5,0.4)", border: "1px solid #3d3020" }}>
+                    {i < turnState.doom && <DoomIcon size={12} color={doomDanger ? "#d96b6b" : "#a888e8"} />}
                   </button>
                 ))}
-                {isLead && (
-                  <div className="flex items-center gap-1 ml-2">
-                    <button onClick={() => pushTurnState({ ...turnState, doom: Math.max(0, turnState.doom - 1) })} className="w-7 h-7 rounded text-sm font-bold" style={{ background: "rgba(124,92,191,0.1)", border: "1px solid rgba(124,92,191,0.25)", color: "#a888e8" }}>−</button>
-                    <button onClick={() => pushTurnState({ ...turnState, doom: turnState.doom + 1 })} className="w-7 h-7 rounded text-sm font-bold" style={{ background: "rgba(124,92,191,0.1)", border: "1px solid rgba(124,92,191,0.25)", color: "#a888e8" }}>+</button>
-                  </div>
-                )}
               </div>
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(124,92,191,0.12)" }}>
-                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${doomPct}%`, background: doomDanger ? "linear-gradient(90deg, #8e1a0e, #c05050)" : "linear-gradient(90deg, #4a3578, #9070c0)" }} />
-              </div>
+              <p className="text-[9px] text-ark-text-muted">{turnState.actName}</p>
             </div>
 
-            <div className="w-px h-12 hidden sm:block" style={{ background: "#3d3020" }} />
-
-            {/* Agenda / Act — lead editable */}
-            <div className="flex gap-4 text-xs">
-              <div className="space-y-1">
-                <p className="text-[10px] font-decorative uppercase tracking-wider" style={{ color: "#a888e8" }}>Agenda</p>
-                {isLead
-                  ? <input value={turnState.agendaName} onChange={e => setTurnState(p => ({ ...p, agendaName: e.target.value }))} onBlur={() => pushTurnState(turnState)} className="ark-input px-2 py-1 rounded text-xs w-32" />
-                  : <p className="text-ark-text text-xs font-semibold">{turnState.agendaName}</p>}
-                <div className="flex items-center gap-1">
-                  <span className="text-ark-text-muted text-[10px]">Doom:</span>
-                  {isLead ? <>
-                    <button onClick={() => pushTurnState({ ...turnState, doomThreshold: Math.max(1, turnState.doomThreshold - 1) })} className="w-5 h-5 rounded text-xs font-bold" style={{ background: "rgba(124,92,191,0.1)", color: "#a888e8" }}>−</button>
-                    <span className="font-mono text-sm font-bold" style={{ color: "#a888e8" }}>{turnState.doomThreshold}</span>
-                    <button onClick={() => pushTurnState({ ...turnState, doomThreshold: turnState.doomThreshold + 1 })} className="w-5 h-5 rounded text-xs font-bold" style={{ background: "rgba(124,92,191,0.1)", color: "#a888e8" }}>+</button>
-                  </> : <span className="font-mono font-bold" style={{ color: "#a888e8" }}>{turnState.doomThreshold}</span>}
-                </div>
+            {isLead && (
+              <div className="flex flex-col gap-2 flex-shrink-0">
+                <button onClick={() => setShowCampaignPicker(true)}
+                  className="px-4 py-2 rounded-xl text-sm font-bold font-decorative transition-all"
+                  style={{ background: "rgba(124,92,191,0.15)", border: "1px solid rgba(124,92,191,0.4)", color: "#a888e8" }}>
+                  📖 Campaign
+                </button>
+                <button onClick={handleAdvanceAct}
+                  className="px-4 py-2 rounded-xl text-sm font-bold font-decorative transition-all"
+                  style={{ background: "rgba(124,92,191,0.15)", border: "1px solid rgba(124,92,191,0.4)", color: "#a888e8" }}>
+                  Advance Act →
+                </button>
               </div>
-              <div className="space-y-1">
-                <p className="text-[10px] font-decorative uppercase tracking-wider" style={{ color: "#6aabf7" }}>Act</p>
-                {isLead
-                  ? <input value={turnState.actName} onChange={e => setTurnState(p => ({ ...p, actName: e.target.value }))} onBlur={() => pushTurnState(turnState)} className="ark-input px-2 py-1 rounded text-xs w-32" />
-                  : <p className="text-ark-text text-xs font-semibold">{turnState.actName}</p>}
-                <div className="flex items-center gap-1">
-                  <ClueIcon size={10} color="#6aabf7" />
-                  <span className="text-ark-text-muted text-[10px]">Clues needed:</span>
-                  {isLead ? <>
-                    <button onClick={() => pushTurnState({ ...turnState, cluesRequired: Math.max(1, turnState.cluesRequired - 1) })} className="w-5 h-5 rounded text-xs font-bold" style={{ background: "rgba(106,171,247,0.1)", color: "#6aabf7" }}>−</button>
-                    <span className="font-mono text-sm font-bold" style={{ color: "#6aabf7" }}>{turnState.cluesRequired}</span>
-                    <button onClick={() => pushTurnState({ ...turnState, cluesRequired: turnState.cluesRequired + 1 })} className="w-5 h-5 rounded text-xs font-bold" style={{ background: "rgba(106,171,247,0.1)", color: "#6aabf7" }}>+</button>
-                  </> : <span className="font-mono font-bold" style={{ color: "#6aabf7" }}>{turnState.cluesRequired}</span>}
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
+
+        {/* ── Campaign picker modal ── */}
+        {showCampaignPicker && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}>
+            <div className="w-full max-w-md rounded-2xl p-6 space-y-4" style={{ background: "#1a1410", border: "1px solid rgba(124,92,191,0.3)" }}>
+              <h3 className="font-decorative font-bold text-lg text-ark-text">Select Campaign & Scenario</h3>
+
+              {selectedCampaignId === null ? (
+                <div className="space-y-2">
+                  {CAMPAIGNS.map(campaign => (
+                    <button key={campaign.id}
+                      onClick={() => setSelectedCampaignId(campaign.id)}
+                      className="w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left"
+                      style={{ background: "rgba(124,92,191,0.08)", border: "1px solid rgba(124,92,191,0.25)" }}>
+                      <div className="flex-1">
+                        <p className="font-decorative font-bold text-sm text-ark-text">{campaign.name}</p>
+                        <p className="text-xs text-ark-text-muted">{campaign.subtitle}</p>
+                      </div>
+                      <span className="text-ark-text-muted text-xs">→</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setSelectedCampaignId(null)}
+                    className="text-xs text-ark-text-muted hover:text-ark-text mb-2">
+                    ← Back to campaigns
+                  </button>
+                  {CAMPAIGNS.find(c => c.id === selectedCampaignId)?.scenarios.map(scenario => (
+                    <button key={scenario.id}
+                      onClick={() => handleSelectScenario(selectedCampaignId, scenario.id)}
+                      className="w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left"
+                      style={{ background: "rgba(91,191,138,0.08)", border: "1px solid rgba(91,191,138,0.25)" }}>
+                      <div className="flex-1">
+                        <p className="font-decorative font-bold text-sm text-ark-text">{scenario.name}</p>
+                        <p className="text-xs text-ark-text-muted">{scenario.agendaName}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <button onClick={() => { setShowCampaignPicker(false); setSelectedCampaignId(null); }} className="btn-ghost w-full py-2 text-sm rounded-lg">Close</button>
+            </div>
+          </div>
+        )}
 
         {/* ── Phase banner (non-investigation or not-your-turn) ── */}
         {turnState.phase !== "investigation" && (
@@ -927,23 +1068,32 @@ export default function SessionPage() {
                       <p className="text-xs text-ark-text-muted">{leadPlayer.investigator}</p>
                     </div>
                   </div>
-                  {players.length > 1 && (
-                    <div className="flex flex-col gap-1 sm:ml-auto">
-                      <p className="text-[10px] font-mono uppercase tracking-wider text-ark-text-muted">Change Lead</p>
-                      <div className="flex flex-wrap gap-1">
-                        {players.map((p, idx) => (
-                          <button key={p.id}
-                            onClick={() => pushTurnState({ ...turnState, leadInvestigatorIdx: idx })}
-                            className="px-2 py-1 rounded text-[10px] font-decorative font-semibold transition-all"
-                            style={idx === turnState.leadInvestigatorIdx
-                              ? { background: "rgba(201,151,58,0.25)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }
-                              : { background: "transparent", border: "1px solid #3d3020", color: "#5a4838" }}>
-                            {p.player_name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <div className="flex flex-col gap-2 sm:ml-auto">
+                    {players.length > 1 && (
+                      <>
+                        <p className="text-[10px] font-mono uppercase tracking-wider text-ark-text-muted">Change Lead</p>
+                        <div className="flex flex-wrap gap-1">
+                          {players.map((p, idx) => (
+                            <button key={p.id}
+                              onClick={() => pushTurnState({ ...turnState, leadInvestigatorIdx: idx })}
+                              className="px-2 py-1 rounded text-[10px] font-decorative font-semibold transition-all"
+                              style={idx === turnState.leadInvestigatorIdx
+                                ? { background: "rgba(201,151,58,0.25)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }
+                                : { background: "transparent", border: "1px solid #3d3020", color: "#5a4838" }}>
+                              {p.player_name}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    {isLead && (
+                      <button onClick={() => setReorderMode(!reorderMode)}
+                        className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
+                        style={{ background: reorderMode ? "rgba(91,191,138,0.15)" : "rgba(201,151,58,0.08)", border: reorderMode ? "1px solid rgba(91,191,138,0.4)" : "1px solid rgba(201,151,58,0.25)", color: reorderMode ? "#5bbf8a" : "#c9973a" }}>
+                        {reorderMode ? "✓ Done" : "⇅ Reorder Turn"}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -982,7 +1132,7 @@ export default function SessionPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {players.map((player, idx) => {
+                  {orderedPlayers.map((player, idx) => {
                     const inv = investigators.find(i => i.name === player.investigator);
                     const isActive = idx === turnState.currentPlayerIdx && turnState.phase === "investigation";
                     const isThisLead = idx === turnState.leadInvestigatorIdx;
@@ -1010,8 +1160,26 @@ export default function SessionPage() {
                           ✕
                         </button>
 
+                        {/* Reorder buttons (if in reorderMode and isLead) */}
+                        {reorderMode && isLead && (
+                          <div className="absolute left-3 top-3 flex flex-col gap-1">
+                            <button onClick={() => handleReorderPlayer(player.id, "up")}
+                              disabled={orderedPlayers[0]?.id === player.id}
+                              className="w-5 h-5 rounded text-xs flex items-center justify-center transition-all disabled:opacity-30"
+                              style={{ background: "rgba(91,191,138,0.2)", border: "1px solid rgba(91,191,138,0.4)", color: "#5bbf8a" }}>
+                              ↑
+                            </button>
+                            <button onClick={() => handleReorderPlayer(player.id, "down")}
+                              disabled={orderedPlayers[orderedPlayers.length - 1]?.id === player.id}
+                              className="w-5 h-5 rounded text-xs flex items-center justify-center transition-all disabled:opacity-30"
+                              style={{ background: "rgba(91,191,138,0.2)", border: "1px solid rgba(91,191,138,0.4)", color: "#5bbf8a" }}>
+                              ↓
+                            </button>
+                          </div>
+                        )}
+
                         {/* Header */}
-                        <div className="flex items-center gap-2 mb-3" style={{ paddingRight: "28px" }}>
+                        <div className="flex items-center gap-2 mb-3" style={{ paddingRight: "28px", paddingLeft: reorderMode ? "48px" : "0" }}>
                           <div className="w-10 h-10 rounded-lg flex items-center justify-center font-decorative font-bold text-sm flex-shrink-0"
                             style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex, boxShadow: `0 0 10px ${cls.glow}` }}>
                             {player.investigator[0]}
@@ -1051,52 +1219,54 @@ export default function SessionPage() {
                           </div>
                         )}
 
-                        {/* Damage */}
-                        <div className="mb-2">
-                          <div className="flex justify-between items-center mb-1">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[11px]" style={{ color: "#c06060" }}>DMG {player.damage}/{inv?.health ?? 9}</span>
+                        {/* Health bar */}
+                        <div className="mb-2 flex gap-2">
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-0.5">
+                              <span className="text-[9px] font-mono text-ark-text-muted">Health</span>
+                              <span className="text-[9px] font-mono" style={{ color: healthPct > 66 ? "#5bbf8a" : healthPct > 33 ? "#d4922a" : "#c05050" }}>{player.damage}/{inv?.health ?? 9}</span>
                             </div>
-                            <div className="flex gap-1">
-                              <button onClick={() => handleStatChange(player, "damage", -1)} className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style={{ background: "rgba(192,57,43,0.1)", color: "#d96b6b", border: "1px solid rgba(192,57,43,0.2)" }}>−</button>
-                              <button onClick={() => handleStatChange(player, "damage", 1)} className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style={{ background: "rgba(192,57,43,0.1)", color: "#d96b6b", border: "1px solid rgba(192,57,43,0.2)" }}>+</button>
+                            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(10,8,5,0.4)" }}>
+                              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${healthPct}%`, background: healthPct > 66 ? "linear-gradient(90deg, #2a7048, #5bbf8a)" : healthPct > 33 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
                             </div>
                           </div>
-                          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(192,57,43,0.1)" }}>
-                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${healthPct}%`, background: "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
+                          <div className="flex gap-0.5">
+                            <button onClick={() => handleStatChange(player, "damage", -1)} className="w-5 h-5 rounded text-[9px] font-bold" style={{ background: "rgba(58,158,107,0.1)", color: "#5bbf8a" }}>−</button>
+                            <button onClick={() => handleStatChange(player, "damage", 1)} className="w-5 h-5 rounded text-[9px] font-bold" style={{ background: "rgba(217,107,107,0.1)", color: "#d96b6b" }}>+</button>
                           </div>
                         </div>
 
-                        {/* Horror */}
-                        <div className="mb-3">
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-[11px]" style={{ color: "#9070c0" }}>HOR {player.horror}/{inv?.sanity ?? 7}</span>
-                            <div className="flex gap-1">
-                              <button onClick={() => handleStatChange(player, "horror", -1)} className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style={{ background: "rgba(124,92,191,0.1)", color: "#a888e8", border: "1px solid rgba(124,92,191,0.2)" }}>−</button>
-                              <button onClick={() => handleStatChange(player, "horror", 1)} className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style={{ background: "rgba(124,92,191,0.1)", color: "#a888e8", border: "1px solid rgba(124,92,191,0.2)" }}>+</button>
+                        {/* Sanity bar */}
+                        <div className="mb-2 flex gap-2">
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-0.5">
+                              <span className="text-[9px] font-mono text-ark-text-muted">Sanity</span>
+                              <span className="text-[9px] font-mono" style={{ color: sanityPct > 66 ? "#5bbf8a" : sanityPct > 33 ? "#d4922a" : "#c05050" }}>{player.horror}/{inv?.sanity ?? 7}</span>
+                            </div>
+                            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(10,8,5,0.4)" }}>
+                              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${sanityPct}%`, background: sanityPct > 66 ? "linear-gradient(90deg, #4a68b8, #6aabf7)" : sanityPct > 33 ? "linear-gradient(90deg, #5c6eb5, #8ab3f5)" : "linear-gradient(90deg, #6c4280, #a888e8)" }} />
                             </div>
                           </div>
-                          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(124,92,191,0.1)" }}>
-                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${sanityPct}%`, background: "linear-gradient(90deg, #4a3578, #8868c8)" }} />
+                          <div className="flex gap-0.5">
+                            <button onClick={() => handleStatChange(player, "horror", -1)} className="w-5 h-5 rounded text-[9px] font-bold" style={{ background: "rgba(58,158,107,0.1)", color: "#5bbf8a" }}>−</button>
+                            <button onClick={() => handleStatChange(player, "horror", 1)} className="w-5 h-5 rounded text-[9px] font-bold" style={{ background: "rgba(124,92,191,0.1)", color: "#a888e8" }}>+</button>
                           </div>
                         </div>
 
-                        {/* Resources, Clues, XP */}
-                        <div className="grid grid-cols-3 gap-2 pt-2.5 mb-3" style={{ borderTop: "1px solid #2e2318" }}>
+                        {/* Resource stats */}
+                        <div className="grid grid-cols-2 gap-1 mb-2.5">
                           {[
-                            { label: "RES", val: player.resources, color: "#c9973a", field: "resources" as const, Icon: () => <ResourceIcon size={10} color="#c9973a" /> },
-                            { label: "CLU", val: player.clues,     color: "#6aabf7", field: "clues" as const,     Icon: () => <ClueIcon size={10} color="#6aabf7" /> },
-                            { label: "XP",  val: player.xp,        color: "#5bbf8a", field: "xp" as const,        Icon: () => <span className="text-[9px]" style={{ color: "#5bbf8a" }}>XP</span> },
-                          ].map(stat => (
-                            <div key={stat.label} className="flex flex-col items-center gap-1 py-1.5 rounded" style={{ background: "rgba(10,8,5,0.3)" }}>
-                              <div className="flex items-center gap-0.5">
-                                <stat.Icon />
-                                <span className="text-[9px] font-mono text-ark-text-muted uppercase">{stat.label}</span>
+                            { label: "Resources", val: player.resources, color: "#c9973a", field: "resources" as const },
+                            { label: "Clues", val: player.clues, color: "#6aabf7", field: "clues" as const },
+                          ].map(s => (
+                            <div key={s.label} className="flex items-center gap-1 py-1 px-2 rounded" style={{ background: "rgba(10,8,5,0.35)" }}>
+                              <div className="flex-1">
+                                <div className="text-[9px] font-mono text-ark-text-muted">{s.label}</div>
+                                <div className="font-mono font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
                               </div>
-                              <div className="flex items-center gap-1">
-                                <button onClick={() => handleStatChange(player, stat.field, -1)} className="w-5 h-5 rounded text-xs font-bold" style={{ color: stat.color }}>−</button>
-                                <span className="font-mono font-bold text-sm w-5 text-center" style={{ color: stat.color }}>{stat.val}</span>
-                                <button onClick={() => handleStatChange(player, stat.field, 1)} className="w-5 h-5 rounded text-xs font-bold" style={{ color: stat.color }}>+</button>
+                              <div className="flex gap-0.5">
+                                <button onClick={() => handleStatChange(player, s.field, -1)} className="w-4 h-4 rounded text-[8px] font-bold" style={{ background: "rgba(10,8,5,0.5)" }}>−</button>
+                                <button onClick={() => handleStatChange(player, s.field, 1)} className="w-4 h-4 rounded text-[8px] font-bold" style={{ background: "rgba(10,8,5,0.5)" }}>+</button>
                               </div>
                             </div>
                           ))}
@@ -1380,7 +1550,7 @@ export default function SessionPage() {
             {/* Chaos bag */}
             <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #3d3020" }}>
               <div className="px-4 py-3" style={{ background: "rgba(26,20,16,0.6)", borderBottom: "1px solid #3d3020" }}>
-                <h3 className="font-decorative font-bold text-sm text-ark-text">Brethren of Ash Chaos Bag</h3>
+                <h3 className="font-decorative font-bold text-sm text-ark-text">{turnState.campaignId && CAMPAIGNS.find(c => c.id === turnState.campaignId)?.name ? CAMPAIGNS.find(c => c.id === turnState.campaignId)!.name : "Standard"} Chaos Bag</h3>
                 <p className="text-xs text-ark-text-muted">Standard difficulty</p>
               </div>
               <div className="p-4 flex flex-wrap gap-2" style={{ background: "rgba(10,8,5,0.5)" }}>

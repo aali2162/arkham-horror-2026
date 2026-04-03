@@ -124,6 +124,23 @@ export interface DamageSection {
   details: string[];
 }
 
+// --- Play Session: Campaign / Scenario ---
+export interface ScenarioConfig {
+  id: string;
+  name: string;
+  agendaName: string;
+  actName: string;
+  doomThreshold: number;
+  cluesRequired: number;
+}
+
+export interface CampaignConfig {
+  id: string;
+  name: string;
+  subtitle: string;
+  scenarios: ScenarioConfig[];
+}
+
 // --- Play Session: Turn State (synced via Supabase) ---
 export interface TurnState {
   currentPlayerIdx: number;
@@ -136,6 +153,14 @@ export interface TurnState {
   agendaName: string;
   actName: string;
   cluesRequired: number;
+  // campaign tracking
+  campaignId?: string;
+  scenarioId?: string;
+  scenarioNumber?: number;       // 1-indexed act number within scenario
+  // player turn order (array of player IDs)
+  playerOrder?: string[];
+  // scenario complete flag
+  scenarioComplete?: boolean;
 }
 
 export interface ActionLogEntry {
