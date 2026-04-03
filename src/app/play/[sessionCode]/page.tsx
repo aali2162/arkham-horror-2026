@@ -745,13 +745,24 @@ export default function SessionPage() {
 
   const handleEnemyAttack = async (enemy: EnemyState) => {
     const ts = turnStateRef.current;
-    const targets = enemy.engagedPlayerIds.map(id => players.find(p => p.id === id)?.player_name ?? id).join(", ");
+    const targetPlayers = enemy.engagedPlayerIds
+      .map(id => players.find(p => p.id === id))
+      .filter(Boolean) as typeof players;
+    if (targetPlayers.length === 0) return;
+
+    // Apply damage + horror to every engaged investigator
+    await Promise.all(targetPlayers.map(p => Promise.all([
+      updatePlayerStat(p.id, "damage", p.damage + enemy.damage),
+      updatePlayerStat(p.id, "horror", p.horror + enemy.horror),
+    ])));
+
+    const targetNames = targetPlayers.map(p => p.player_name).join(", ");
     await pushLog({
       id: `attack-${Date.now()}`,
       playerName: enemy.name,
       investigator: "",
       action: "Enemy Attack",
-      detail: `${enemy.name} attacked ${targets || "nobody"} — deals ${enemy.damage} DMG / ${enemy.horror} HOR each`,
+      detail: `${enemy.name} attacked ${targetNames} — dealt ${enemy.damage} damage + ${enemy.horror} horror to each`,
       timestamp: new Date().toISOString(),
       round: ts.round, actionNum: 0, phase: ts.phase,
     });
@@ -2806,7 +2817,7 @@ export default function SessionPage() {
                       )}
                     </div>
 
-                    {/* ── Row 5: Exhaust toggle + Log Attack (lead only) ── */}
+                    {/* ── Row 5: Exhaust toggle + Attack button (lead only) ── */}
                     {isLead && (
                       <div className="flex gap-2">
                         <button onClick={() => handleToggleExhaust(enemy.id)}
@@ -2814,13 +2825,35 @@ export default function SessionPage() {
                           style={enemy.exhausted
                             ? { background: "rgba(91,191,138,0.12)", border: "1px solid rgba(91,191,138,0.3)", color: "#5bbf8a" }
                             : { background: "rgba(106,171,247,0.07)", border: "1px solid rgba(106,171,247,0.25)", color: "#6aabf7" }}>
-                          {enemy.exhausted ? "✓ Ready (Upkeep)" : "Exhaust — Evaded"}
+                          {enemy.exhausted ? "✓ Ready" : "Exhaust"}
                         </button>
-                        <button onClick={() => handleEnemyAttack(enemy)}
-                          className="flex-1 py-2 rounded-lg text-xs font-semibold font-decorative transition-all"
-                          style={{ background: "rgba(217,107,107,0.08)", border: "1px solid rgba(217,107,107,0.25)", color: "#d96b6b" }}>
-                          Log Attack
-                        </button>
+                        {(() => {
+                          const hasTargets = enemy.engagedPlayerIds.length > 0;
+                          const isEnemyPhase = turnState.phase === "enemy";
+                          return (
+                            <button
+                              onClick={() => handleEnemyAttack(enemy)}
+                              disabled={!hasTargets || enemy.exhausted}
+                              title={
+                                enemy.exhausted ? "Exhausted enemies can't attack" :
+                                !hasTargets ? "No one is engaged with this enemy" :
+                                `Deal ${enemy.damage} damage + ${enemy.horror} horror to ${enemy.engagedPlayerIds.map(id => players.find(p => p.id === id)?.player_name ?? "?").join(", ")}`
+                              }
+                              className="flex-1 py-2 rounded-lg text-xs font-bold font-decorative transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                              style={hasTargets && !enemy.exhausted
+                                ? { background: isEnemyPhase ? "rgba(217,107,107,0.2)" : "rgba(217,107,107,0.1)", border: `1px solid ${isEnemyPhase ? "rgba(217,107,107,0.6)" : "rgba(217,107,107,0.3)"}`, color: "#d96b6b", boxShadow: isEnemyPhase ? "0 0 8px rgba(217,107,107,0.2)" : "none" }
+                                : { background: "rgba(10,8,5,0.4)", border: "1px solid #2e2318", color: "#5a4838" }}>
+                              ⚔ Attacks!
+                            </button>
+                          );
+                        })()}
+                      </div>
+                    )}
+                    {/* ── What this enemy deals — reminder for non-lead too ── */}
+                    {enemy.engagedPlayerIds.length > 0 && !isLead && (
+                      <div className="mt-2 px-3 py-2 rounded-lg text-xs"
+                        style={{ background: "rgba(217,107,107,0.07)", border: "1px solid rgba(217,107,107,0.2)", color: "#c8a890" }}>
+                        ⚔ Deals <span style={{ color: "#d96b6b", fontWeight: "bold" }}>{enemy.damage} damage</span> + <span style={{ color: "#a888e8", fontWeight: "bold" }}>{enemy.horror} horror</span> per attack — lead applies it
                       </div>
                     )}
                   </div>

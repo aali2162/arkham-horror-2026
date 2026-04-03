@@ -20,6 +20,12 @@
 ### Live URL: https://arkham-horror-2026.vercel.app
 ### Last commit: `650aa5e` — "feat: 6 UX fixes — lobby/start game, turn order setup, view board toggle, Game Train rebrand, Inter font overhaul, improved text contrast"
 ### Session 11 changes (pending deploy — run deploy.ps1):
+- **Enemy attack fixed:** "⚔ Attacks!" button now actually applies `enemy.damage` to damage and `enemy.horror` to horror for every engaged investigator via `updatePlayerStat`. Previously only logged, never hurt anyone.
+- **Attack button UX:** disabled (greyed) when no one is engaged or enemy is exhausted; tooltip shows exact damage preview; glows red during Enemy phase
+- **Non-lead reminder:** engaged investigators see a passive reminder strip showing what the enemy deals per attack
+- **Exhaust button** relabelled from "Exhaust — Evaded / ✓ Ready (Upkeep)" to cleaner "Exhaust / ✓ Ready"
+- **Shroud picker on Investigate:** tap 1–5 to set location difficulty; colour-coded green/amber/red; auto-fills detail field
+- **Smart identity on game start:** creator auto-claimed as first player; all other devices get a mandatory full-screen "Who are you?" picker the moment game starts
 - **Enemy carryover fix:** `handleAdvanceScenario` now clears `enemies`, resets `cluesOnAct`, clears `scenarioEnded`/`scenarioResolution`
 - **Advance Act gating:** button disabled (greyed, tooltip) until `cluesOnAct >= cluesRequired`
 - **Ready All Enemies:** Upkeep phase shows "✓ Ready All Enemies" button (lead only) when any enemy is exhausted — readies all + logs
