@@ -242,6 +242,10 @@ export default function SessionPage() {
     }
     return "";
   });
+  // Is this the device that created the session? (set in play/page.tsx on Create)
+  const isCreator = typeof window !== "undefined"
+    ? localStorage.getItem(`ark_creator_${sessionCode}`) === "1"
+    : false;
   // Legacy name-based identity (kept for backwards compat + name picker modal)
   const [myPlayerName, setMyPlayerName] = useState<string>(() => {
     if (typeof window !== "undefined") return localStorage.getItem("ark_player_name") ?? "";
@@ -822,6 +826,47 @@ export default function SessionPage() {
     const orderedLobbyPlayers = turnState.playerOrder
       ? [...players].sort((a, b) => (turnState.playerOrder!.indexOf(a.id) - turnState.playerOrder!.indexOf(b.id)))
       : players;
+
+    // ── Non-creator waiting room ──────────────────────────────
+    if (!isCreator) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#0c0f14" }}>
+          <Navbar />
+          <div className="max-w-sm w-full text-center mt-16">
+            <div className="inline-flex items-center gap-2 text-xs font-mono tracking-widest mb-6 px-3 py-1.5 rounded-full"
+              style={{ background: "rgba(201,151,58,0.08)", border: "1px solid rgba(201,151,58,0.25)", color: "#c9973a" }}>
+              <span className="live-dot" /> LOBBY · {sessionCode}
+            </div>
+            <div className="text-5xl mb-4">⏳</div>
+            <h1 className="font-decorative font-bold text-xl text-ark-text mb-2">Waiting for host…</h1>
+            <p className="text-sm text-ark-text-muted mb-6">The session host is setting up the game. You'll be taken in automatically when they start.</p>
+
+            {/* Show who's already in the lobby */}
+            {players.length > 0 && (
+              <div className="rounded-xl p-4 mb-6 text-left space-y-2"
+                style={{ background: "rgba(26,20,16,0.8)", border: "1px solid #3d3020" }}>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-3">In the lobby</p>
+                {orderedLobbyPlayers.map((player) => {
+                  const inv = investigators.find(i => i.name === player.investigator);
+                  const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
+                  return (
+                    <div key={player.id} className="flex items-center gap-2 py-1">
+                      <div className="w-7 h-7 rounded flex items-center justify-center font-bold text-xs flex-shrink-0"
+                        style={{ background: cls.bg, color: cls.hex }}>{player.investigator[0]}</div>
+                      <div>
+                        <p className="font-decorative text-sm text-ark-text">{player.player_name}</p>
+                        <p className="text-[10px]" style={{ color: cls.hex }}>{player.investigator}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <p className="text-xs font-mono" style={{ color: "#5a4838" }}>Session code: <span style={{ color: "#c9973a" }}>{sessionCode}</span></p>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="min-h-screen flex flex-col" style={{ background: "#0c0f14" }}>
@@ -2064,32 +2109,32 @@ export default function SessionPage() {
                       <p className="text-xs text-ark-text-muted">{leadPlayer.investigator}</p>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2 sm:ml-auto">
-                    {players.length > 1 && (
-                      <>
-                        <p className="text-[10px] font-mono uppercase tracking-wider text-ark-text-muted">Change Lead</p>
-                        <div className="flex flex-wrap gap-1">
-                          {players.map((p, idx) => (
-                            <button key={p.id}
-                              onClick={() => pushTurnState({ ...turnState, leadInvestigatorIdx: idx })}
-                              className="px-2 py-1 rounded text-[10px] font-decorative font-semibold transition-all"
-                              style={idx === turnState.leadInvestigatorIdx
-                                ? { background: "rgba(201,151,58,0.25)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }
-                                : { background: "transparent", border: "1px solid #3d3020", color: "#5a4838" }}>
-                              {p.player_name}
-                            </button>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                    {isLead && (
+                  {isCreator && (
+                    <div className="flex flex-col gap-2 sm:ml-auto">
+                      {players.length > 1 && (
+                        <>
+                          <p className="text-[10px] font-mono uppercase tracking-wider text-ark-text-muted">Change Lead</p>
+                          <div className="flex flex-wrap gap-1">
+                            {players.map((p, idx) => (
+                              <button key={p.id}
+                                onClick={() => pushTurnState({ ...turnState, leadInvestigatorIdx: idx })}
+                                className="px-2 py-1 rounded text-[10px] font-decorative font-semibold transition-all"
+                                style={idx === turnState.leadInvestigatorIdx
+                                  ? { background: "rgba(201,151,58,0.25)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }
+                                  : { background: "transparent", border: "1px solid #3d3020", color: "#5a4838" }}>
+                                {p.player_name}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
                       <button onClick={() => setReorderMode(!reorderMode)}
                         className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
                         style={{ background: reorderMode ? "rgba(91,191,138,0.15)" : "rgba(201,151,58,0.08)", border: reorderMode ? "1px solid rgba(91,191,138,0.4)" : "1px solid rgba(201,151,58,0.25)", color: reorderMode ? "#5bbf8a" : "#c9973a" }}>
                         {reorderMode ? "✓ Done" : "⇅ Reorder Turn"}
                       </button>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -2098,14 +2143,16 @@ export default function SessionPage() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-[10px] font-decorative uppercase tracking-widest text-ark-text-muted">Investigators ({players.length})</h3>
-                <button onClick={() => setShowAddPlayer(!showAddPlayer)}
-                  className="text-xs font-semibold font-decorative px-3 py-1.5 rounded-lg transition-all"
-                  style={{ background: "rgba(201,151,58,0.08)", border: "1px solid rgba(201,151,58,0.25)", color: "#c9973a" }}>
-                  + Add Investigator
-                </button>
+                {isCreator && (
+                  <button onClick={() => setShowAddPlayer(!showAddPlayer)}
+                    className="text-xs font-semibold font-decorative px-3 py-1.5 rounded-lg transition-all"
+                    style={{ background: "rgba(201,151,58,0.08)", border: "1px solid rgba(201,151,58,0.25)", color: "#c9973a" }}>
+                    + Add Investigator
+                  </button>
+                )}
               </div>
 
-              {showAddPlayer && (
+              {isCreator && showAddPlayer && (
                 <div className="rounded-xl p-4 mb-4 space-y-3" style={{ background: "rgba(26,20,16,0.8)", border: "1px solid rgba(201,151,58,0.2)" }}>
                   <h4 className="font-decorative font-semibold text-sm text-ark-text">Add Investigator</h4>
                   <input value={addingName} onChange={e => setAddingName(e.target.value)} placeholder="Player name"
@@ -2152,16 +2199,18 @@ export default function SessionPage() {
                           boxShadow: isMe ? `0 0 24px ${cls.glow}, 0 4px 20px rgba(0,0,0,0.5)` : isActive ? `0 0 14px ${cls.glow}` : "none",
                         }}>
 
-                        {/* Delete button */}
-                        <button onClick={() => handleRemove(player)}
-                          className="absolute top-3 right-3 w-6 h-6 rounded-full text-xs flex items-center justify-center opacity-0 hover:opacity-100 focus:opacity-100 transition-all"
-                          style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#d96b6b" }}
-                          aria-label={`Remove ${player.player_name}`}>
-                          ✕
-                        </button>
+                        {/* Delete button — creator only */}
+                        {isCreator && (
+                          <button onClick={() => handleRemove(player)}
+                            className="absolute top-3 right-3 w-6 h-6 rounded-full text-xs flex items-center justify-center opacity-0 hover:opacity-100 focus:opacity-100 transition-all"
+                            style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#d96b6b" }}
+                            aria-label={`Remove ${player.player_name}`}>
+                            ✕
+                          </button>
+                        )}
 
-                        {/* Reorder buttons (if in reorderMode and isLead) */}
-                        {reorderMode && isLead && (
+                        {/* Reorder buttons (if in reorderMode and isCreator) */}
+                        {reorderMode && isCreator && (
                           <div className="absolute left-3 top-3 flex flex-col gap-1">
                             <button onClick={() => handleReorderPlayer(player.id, "up")}
                               disabled={orderedPlayers[0]?.id === player.id}

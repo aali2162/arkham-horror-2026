@@ -25,6 +25,7 @@ export default function PlayPage() {
     const session = await createSession();
     if (session) {
       localStorage.setItem("ark_last_session", session.session_code);
+      localStorage.setItem(`ark_creator_${session.session_code}`, "1");
       router.push(`/play/${session.session_code}`);
     } else {
       setError("Failed to create session. Check your Supabase configuration.");
