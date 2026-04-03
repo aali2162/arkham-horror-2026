@@ -15,10 +15,22 @@
 
 ---
 
-## CURRENT STATUS (Updated: April 3, 2026 — Session 11 COMPLETE)
+## CURRENT STATUS (Updated: April 3, 2026 — Session 13 COMPLETE)
 
 ### Live URL: https://arkham-horror-2026.vercel.app
 ### Last commit: `650aa5e` — "feat: 6 UX fixes — lobby/start game, turn order setup, view board toggle, Game Train rebrand, Inter font overhaul, improved text contrast"
+### Session 13 changes — SYMBOL SYSTEM:
+- **Homepage (page.tsx)**: replaced plain "All Topics" divider + TopicCard grid with Elder Sign chapter markers (Variant A). Each topic entry is a full-width row: left colour accent bar, Elder Sign ring with roman numeral (I–VI) in class colour, topic title + tagline + difficulty badge.
+- **Play session (play/[sessionCode]/page.tsx)**: added Celestial Orrery as centred session header illustration above the Doom/Act bar (Variant D). Orrery shows all 5 class-coloured orbital planets. Doom pips replaced with Elder Sign SVG icons — filled pips show the full sign in purple (or red when doom danger), empty pips show ghosted lines only. Red eye in filled pips when doom is at threshold.
+
+### Session 12 changes — PARCHMENT DARK BOX FIXES:
+- Lobby setup boxes (Set Turn Order, Choose Lead Investigator): dark `rgba(26,20,16,0.7)` → parchment `rgba(236,220,176,0.92)`
+- Nav active pill: was black `#2a1808`, now gold gradient matching all other primary buttons
+- Doom status bar: removed dark half of linear-gradient, now fully parchment
+- End Turn button: was dark brown gradient, now gold gradient
+- Enemy keyword reference dropdown: dark interior now parchment
+- Start Game disabled state: near-black → light gold tint
+
 ### Session 11 changes — FULL PARCHMENT REDESIGN (pending deploy — run deploy.ps1):
 **End-to-end Full Parchment visual overhaul — Option A selected by Ahsan:**
 - **Homepage (page.tsx)**: removed all hardcoded dark `#161008`/`#0f0c07` backgrounds; hero, step cards, investigator cards, play CTA, footer all now warm parchment `#ecdcb0`/`#f2e8cc`

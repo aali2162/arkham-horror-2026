@@ -367,22 +367,72 @@ export default function HomePage() {
 
           </section>
 
-          {/* ── Divider ───────────────────────────────────── */}
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-8">
-            <div className="flex items-center gap-4">
-              <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, #c8a860)" }} />
-              <span className="text-xs font-heading tracking-widest uppercase" style={{ color: "#8a7040" }}>All Topics</span>
-              <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, #c8a860, transparent)" }} />
-            </div>
-          </div>
-
-          {/* ── Topic grid ───────────────────────────────── */}
+          {/* ── Chapter Markers + Topic Cards ────────────── */}
           <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-14">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {topics.map((topic, i) => (
-                <TopicCard key={topic.href} {...topic} delay={i + 1} />
-              ))}
-            </div>
+            {topics.map((topic, i) => {
+              const romans = ["I", "II", "III", "IV", "V", "VI"];
+              const subtitles = [
+                "The Mythos Phase",
+                "The Investigation Phase",
+                "The Enemy Phase",
+                "The Upkeep Phase",
+                "Skill Tests",
+                "Damage & Trauma",
+              ];
+              const c = {
+                blue:   { hex: "#4a8fd4", bg: "rgba(74,143,212,0.08)",  border: "rgba(74,143,212,0.25)" },
+                green:  { hex: "#2e8a50", bg: "rgba(46,138,80,0.08)",   border: "rgba(46,138,80,0.25)" },
+                red:    { hex: "#b82020", bg: "rgba(184,32,32,0.08)",   border: "rgba(184,32,32,0.25)" },
+                purple: { hex: "#7050b8", bg: "rgba(112,80,184,0.08)",  border: "rgba(112,80,184,0.25)" },
+                amber:  { hex: "#c8871a", bg: "rgba(200,135,26,0.08)",  border: "rgba(200,135,26,0.25)" },
+              }[topic.color];
+              const roman = romans[i] ?? String(i + 1);
+              const subtitle = subtitles[i] ?? "";
+              const fontSize = roman.length === 1 ? 14 : roman.length === 2 ? 12 : 10;
+              return (
+                <div key={topic.href} className="mb-3">
+                  {/* Chapter marker row */}
+                  <Link href={topic.href} className="group flex items-center gap-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5 relative overflow-hidden px-4 py-3"
+                    style={{ background: c.bg, border: `1px solid ${c.border}` }}>
+                    {/* Left colour accent */}
+                    <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: c.hex }} />
+                    {/* Elder Sign with roman numeral */}
+                    <div className="flex-shrink-0 relative" style={{ width: 44, height: 44 }}>
+                      <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+                        <circle cx="22" cy="22" r="20" stroke={c.hex} strokeWidth="1.1" fill={c.bg} />
+                        <circle cx="22" cy="22" r="14" stroke={c.hex} strokeWidth="0.5" fill="none" opacity="0.6" />
+                        <line x1="22" y1="2" x2="22" y2="42" stroke={c.hex} strokeWidth="0.7" opacity="0.35" />
+                        <line x1="2" y1="22" x2="42" y2="22" stroke={c.hex} strokeWidth="0.7" opacity="0.35" />
+                        <line x1="7.4" y1="7.4" x2="36.6" y2="36.6" stroke={c.hex} strokeWidth="0.7" opacity="0.35" />
+                        <line x1="36.6" y1="7.4" x2="7.4" y2="36.6" stroke={c.hex} strokeWidth="0.7" opacity="0.35" />
+                        <text x="22" y={fontSize === 14 ? 28 : fontSize === 12 ? 27 : 26}
+                          textAnchor="middle"
+                          fontFamily="Cinzel, serif"
+                          fontSize={fontSize}
+                          fontWeight="700"
+                          fill={c.hex}>{roman}</text>
+                      </svg>
+                    </div>
+                    {/* Text */}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[9px] font-heading font-semibold tracking-[2.5px] uppercase mb-0.5" style={{ color: c.hex }}>{subtitle}</div>
+                      <div className="font-heading font-bold text-sm mb-0.5" style={{ color: "#2a1808" }}>{topic.title}</div>
+                      <div className="text-xs font-body truncate" style={{ color: "#6a5030" }}>{topic.tagline}</div>
+                    </div>
+                    {/* Detail tag + arrow */}
+                    <div className="flex-shrink-0 flex flex-col items-end gap-1.5">
+                      {topic.difficulty && (
+                        <span className="text-[9px] font-heading font-semibold tracking-wide uppercase px-2 py-0.5 rounded-full whitespace-nowrap"
+                          style={{ background: c.bg, color: c.hex, border: `1px solid ${c.border}` }}>{topic.difficulty}</span>
+                      )}
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 opacity-0 group-hover:opacity-70 transition-opacity" fill="none" stroke={c.hex} strokeWidth="1.8" strokeLinecap="round">
+                        <path d="M3 8 L13 8 M9 4 L13 8 L9 12"/>
+                      </svg>
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
           </section>
 
           {/* ── 5 Investigators quick reference ──────────── */}

@@ -25,7 +25,7 @@ $status = git status --porcelain 2>&1
 if ($status) {
     Write-Host "Committing staged changes..." -ForegroundColor Yellow
     git add -A
-    git commit -m "Session 12: Fix dark boxes — lobby steps, nav pill, doom bar now full parchment palette"
+    git commit -m "Session 13: Elder Sign chapter markers on Learn page; Orrery header + Elder Sign doom pips on Play session"
     Write-Host "Committed." -ForegroundColor Green
 } else {
     Write-Host "Nothing to commit." -ForegroundColor Gray

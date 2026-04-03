@@ -1851,6 +1851,53 @@ export default function SessionPage() {
         {/* ══ DOOM & ACT STATUS BAR — always prominent ══ */}
         <div className="rounded-2xl mb-4 overflow-hidden" style={{ border: `2px solid ${doomDanger ? "rgba(192,57,43,0.5)" : "rgba(112,80,184,0.35)"}`, background: "rgba(236,220,176,0.98)", boxShadow: doomDanger ? "0 0 24px rgba(192,57,43,0.15)" : "0 0 16px rgba(112,80,184,0.08)" }}>
 
+          {/* ── Orrery session header ── */}
+          <div className="flex flex-col items-center pt-4 pb-3 px-4 relative overflow-hidden" style={{ borderBottom: `1px solid rgba(200,168,96,0.3)` }}>
+            {/* Orrery SVG — centred illustration */}
+            <svg width="120" height="96" viewBox="0 0 120 96" fill="none" className="mb-2" style={{ opacity: doomDanger ? 0.7 : 1 }}>
+              {/* Base stand */}
+              <rect x="51" y="86" width="18" height="4" rx="2" fill="#c8a860" opacity="0.5"/>
+              <rect x="55" y="78" width="10" height="9" rx="1.5" fill="#c8a860" opacity="0.4"/>
+              <line x1="60" y1="78" x2="60" y2="68" stroke="#c8a860" strokeWidth="1.2" opacity="0.4"/>
+              <circle cx="60" cy="68" r="1.8" fill="#c8a860" opacity="0.5"/>
+              {/* Sun */}
+              <circle cx="60" cy="52" r="10" fill="rgba(201,151,58,0.12)" stroke="#c8a860" strokeWidth="0.7"/>
+              <circle cx="60" cy="52" r="5.5" fill="rgba(201,151,58,0.3)" stroke="#c8a860" strokeWidth="1"/>
+              <circle cx="60" cy="52" r="3" fill={doomDanger ? "rgba(192,57,43,0.7)" : "rgba(201,151,58,0.65)"}/>
+              {/* Sun rays */}
+              {[[60,41,60,38],[60,63,60,66],[50,52,47,52],[70,52,73,52],[53,45,51,43],[67,59,69,61],[67,45,69,43],[53,59,51,61]].map(([x1,y1,x2,y2],i) => (
+                <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#c8a860" strokeWidth="0.9" strokeLinecap="round" opacity={i < 4 ? 0.55 : 0.35}/>
+              ))}
+              {/* Orbit ring 1 — equatorial */}
+              <ellipse cx="60" cy="52" rx="22" ry="8" stroke="#c8a860" strokeWidth="1.1" fill="none" opacity="0.4" transform="rotate(-10 60 52)"/>
+              <circle cx="81" cy="47" r="4" fill="#4a8fd4" opacity="0.85" stroke="#f2e8cc" strokeWidth="0.7"/>
+              {/* Orbit ring 2 — polar tilt */}
+              <ellipse cx="60" cy="52" rx="8" ry="28" stroke="#9070b8" strokeWidth="0.9" fill="none" opacity="0.3" transform="rotate(18 60 52)"/>
+              <circle cx="52" cy="25" r="3.2" fill="#7050b8" opacity="0.85" stroke="#f2e8cc" strokeWidth="0.7"/>
+              {/* Orbit ring 3 — diagonal */}
+              <ellipse cx="60" cy="52" rx="36" ry="13" stroke="#c8a860" strokeWidth="0.8" fill="none" opacity="0.25" transform="rotate(30 60 52)"/>
+              <circle cx="28" cy="64" r="3.5" fill="#c8871a" opacity="0.8" stroke="#f2e8cc" strokeWidth="0.7"/>
+              {/* Orbit ring 4 — inner */}
+              <ellipse cx="60" cy="52" rx="14" ry="5" stroke="#c8a860" strokeWidth="0.7" fill="none" opacity="0.3" transform="rotate(-25 60 52)"/>
+              <circle cx="74" cy="57" r="2.5" fill="#b82020" opacity="0.75" stroke="#f2e8cc" strokeWidth="0.6"/>
+              {/* Outer ring */}
+              <ellipse cx="60" cy="52" rx="50" ry="18" stroke="#c8a860" strokeWidth="0.6" fill="none" opacity="0.18" transform="rotate(8 60 52)"/>
+              <circle cx="12" cy="47" r="3" fill="#2e8a50" opacity="0.75" stroke="#f2e8cc" strokeWidth="0.6"/>
+              {/* Meridian bands */}
+              <path d="M60 18 Q72 35 60 52 Q48 69 60 86" stroke="#c8a860" strokeWidth="0.5" fill="none" opacity="0.2"/>
+              <path d="M60 18 Q48 35 60 52 Q72 69 60 86" stroke="#c8a860" strokeWidth="0.5" fill="none" opacity="0.2"/>
+            </svg>
+            {/* Session info */}
+            <div className="text-center">
+              <div className="text-[8px] font-mono uppercase tracking-[3px] mb-0.5" style={{ color: doomDanger ? "#c03028" : "#8a6820" }}>
+                Round {turnState.round} · {turnState.phase}
+              </div>
+              <div className="text-[12px] font-decorative font-bold" style={{ color: "#2a1808" }}>
+                {players.length} Investigator{players.length !== 1 ? "s" : ""} · {turnState.doom}/{turnState.doomThreshold} Doom
+              </div>
+            </div>
+          </div>
+
           {/* Top strip: Agenda + Act side by side */}
           <div className="grid grid-cols-2" style={{ borderBottom: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "rgba(112,80,184,0.2)"}` }}>
             {/* DOOM side */}
@@ -1861,20 +1908,37 @@ export default function SessionPage() {
                 {doomDanger && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(192,57,43,0.2)", color: "#c03028" }}>ADVANCE!</span>}
               </div>
               <p className="text-[11px] font-decorative font-bold text-ark-text truncate mb-1.5">{turnState.agendaName}</p>
-              {/* Doom pips */}
+              {/* Doom pips — Elder Sign style */}
               <div className="flex items-center gap-1 flex-wrap">
-                {Array.from({ length: turnState.doomThreshold }).map((_, i) => (
-                  <button key={i}
-                    onClick={() => isLead && pushTurnState({ ...turnState, doom: i < turnState.doom ? i : i + 1 })}
-                    disabled={!isLead}
-                    className="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200"
-                    style={i < turnState.doom
-                      ? { background: doomDanger ? "rgba(192,57,43,0.7)" : "rgba(112,80,184,0.7)", border: `1px solid ${doomDanger ? "#c03028" : "#7c5cbf"}`, boxShadow: `0 0 6px ${doomDanger ? "rgba(192,57,43,0.4)" : "rgba(112,80,184,0.4)"}` }
-                      : { background: "rgba(236,220,176,0.75)", border: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "rgba(138,104,32,0.3)"}` }}>
-                    {i < turnState.doom && <DoomIcon size={10} color={doomDanger ? "#c03028" : "#9070d8"} />}
-                  </button>
-                ))}
-                <span className="text-[10px] font-mono font-bold ml-1" style={{ color: doomDanger ? "#c03028" : "#9070d8" }}>{turnState.doom}/{turnState.doomThreshold}</span>
+                {Array.from({ length: turnState.doomThreshold }).map((_, i) => {
+                  const filled = i < turnState.doom;
+                  const pipColor = filled ? (doomDanger ? "#c03028" : "#7050b8") : undefined;
+                  return (
+                    <button key={i}
+                      onClick={() => isLead && pushTurnState({ ...turnState, doom: i < turnState.doom ? i : i + 1 })}
+                      disabled={!isLead}
+                      className="transition-all duration-200 flex-shrink-0"
+                      style={{ opacity: isLead ? 1 : 0.85 }}>
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="9"
+                          fill={filled ? (doomDanger ? "rgba(192,57,43,0.15)" : "rgba(112,80,184,0.15)") : "rgba(236,220,176,0.8)"}
+                          stroke={filled ? pipColor : "rgba(138,104,32,0.3)"}
+                          strokeWidth="0.9"/>
+                        <line x1="10" y1="1.5" x2="10" y2="18.5" stroke={filled ? pipColor : "rgba(138,104,32,0.2)"} strokeWidth={filled ? "1.1" : "0.8"}/>
+                        <line x1="1.5" y1="10" x2="18.5" y2="10" stroke={filled ? pipColor : "rgba(138,104,32,0.2)"} strokeWidth={filled ? "1.1" : "0.8"}/>
+                        <line x1="3.5" y1="3.5" x2="16.5" y2="16.5" stroke={filled ? pipColor : "rgba(138,104,32,0.2)"} strokeWidth={filled ? "1.1" : "0.8"}/>
+                        <line x1="16.5" y1="3.5" x2="3.5" y2="16.5" stroke={filled ? pipColor : "rgba(138,104,32,0.2)"} strokeWidth={filled ? "1.1" : "0.8"}/>
+                        {filled && (
+                          <>
+                            <ellipse cx="10" cy="10" rx="2" ry="1.3" fill={pipColor}/>
+                            <circle cx="10" cy="10" r="0.7" fill={doomDanger ? "#f2e8cc" : "#f2e8cc"}/>
+                          </>
+                        )}
+                      </svg>
+                    </button>
+                  );
+                })}
+                <span className="text-[10px] font-mono font-bold ml-0.5" style={{ color: doomDanger ? "#c03028" : "#9070d8" }}>{turnState.doom}/{turnState.doomThreshold}</span>
               </div>
             </div>
 
