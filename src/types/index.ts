@@ -153,6 +153,7 @@ export interface TurnState {
   agendaName: string;
   actName: string;
   cluesRequired: number;
+  cluesOnAct?: number;  // clues investigators have committed to the act (spending toward advance)
   // lobby — game hasn't started until lead clicks "Start Game"
   gameStarted?: boolean;
   // campaign tracking

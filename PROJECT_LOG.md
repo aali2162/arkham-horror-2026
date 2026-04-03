@@ -15,11 +15,17 @@
 
 ---
 
-## CURRENT STATUS (Updated: April 3, 2026 — Session 8 IN PROGRESS)
+## CURRENT STATUS (Updated: April 3, 2026 — Session 11 IN PROGRESS)
 
 ### Live URL: https://arkham-horror-2026.vercel.app
 ### Last commit: `650aa5e` — "feat: 6 UX fixes — lobby/start game, turn order setup, view board toggle, Game Train rebrand, Inter font overhaul, improved text contrast"
-### Session 8 changes (pending deploy):
+### Session 11 changes (pending deploy — run deploy.ps1):
+- **Enemy carryover fix:** `handleAdvanceScenario` now clears `enemies`, resets `cluesOnAct`, clears `scenarioEnded`/`scenarioResolution`
+- **Advance Act gating:** button disabled (greyed, tooltip) until `cluesOnAct >= cluesRequired`
+- **Ready All Enemies:** Upkeep phase shows "✓ Ready All Enemies" button (lead only) when any enemy is exhausted — readies all + logs
+- **Audit confirmed:** Doom pips (`disabled={!isLead}`), all phase buttons inside `{isLead && (...)}`, clue pips interactive for all players
+
+### Session 8 changes (deployed):
 - Latecomer join screen: game started + not in session → clean "Join the Game" screen (not overwhelmed by board)
 - Undo last action button next to End Turn on YOUR TURN screen
 - Advance Scenario button (alongside Advance Act) — only shown when a campaign is selected

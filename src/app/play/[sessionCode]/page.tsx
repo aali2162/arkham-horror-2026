@@ -513,7 +513,8 @@ export default function SessionPage() {
   const handleAdvanceAct = async () => {
     const ts = turnStateRef.current;
     const nextScenarioNumber = (ts.scenarioNumber ?? 1) + 1;
-    const next = { ...ts, scenarioNumber: nextScenarioNumber };
+    // Reset clues on act when advancing
+    const next = { ...ts, scenarioNumber: nextScenarioNumber, cluesOnAct: 0 };
     await pushTurnState(next);
     await handleLeadPhaseAction("Act Advanced", `Advanced to Act ${nextScenarioNumber}`);
   };
@@ -540,10 +541,14 @@ export default function SessionPage() {
       cluesRequired: nextScenario.cluesRequired,
       doom: 0,
       scenarioNumber: 1,
+      cluesOnAct: 0,
       round: 1,
       phase: "investigation",
       currentPlayerIdx: 0,
       actionsUsed: 0,
+      enemies: [],             // clear all enemies between scenarios
+      scenarioEnded: false,
+      scenarioResolution: "",
     };
     await pushTurnState(next);
     await handleLeadPhaseAction("Scenario Advanced", `Now playing: ${nextScenario.name}`);
@@ -756,6 +761,22 @@ export default function SessionPage() {
   const toggleEnemyKeyword = (k: string) => setNewEnemy(prev => ({
     ...prev, keywords: prev.keywords.includes(k) ? prev.keywords.filter(x => x !== k) : [...prev.keywords, k],
   }));
+
+  const handleReadyAllEnemies = async () => {
+    const ts = turnStateRef.current;
+    if (!(ts.enemies ?? []).some(e => e.exhausted)) return;
+    const next = (ts.enemies ?? []).map(e => ({ ...e, exhausted: false }));
+    await pushTurnState({ ...ts, enemies: next });
+    await pushLog({
+      id: `ready-${Date.now()}`,
+      playerName: leadPlayer?.player_name ?? "",
+      investigator: leadPlayer?.investigator ?? "",
+      action: "Enemies Readied",
+      detail: "All exhausted enemies are now ready",
+      timestamp: new Date().toISOString(),
+      round: ts.round, actionNum: 0, phase: ts.phase,
+    });
+  };
 
   // ── Scenario end helpers ──────────────────────────────────
   const handleEndScenario = async () => {
@@ -1378,11 +1399,62 @@ export default function SessionPage() {
             📖 Learn more about this action →
           </button>
 
+          {/* ── Enemy picker for Fight / Evade / Engage ── */}
+          {(["fight","evade","engage"].includes(selectedAction.id)) && enemies.length > 0 && (
+            <div>
+              <label className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted block mb-2">
+                {selectedAction.id === "fight" ? "Which enemy are you fighting?" :
+                 selectedAction.id === "evade" ? "Which enemy are you evading?" :
+                 "Which enemy are you engaging?"}
+              </label>
+              <div className="space-y-1.5">
+                {enemies.map(e => {
+                  const isEngaged = e.engagedPlayerIds.includes(myPlayer?.id ?? "");
+                  const isSelected = actionDetail.includes(e.name);
+                  return (
+                    <button key={e.id}
+                      onClick={() => setActionDetail(`${e.name} (Fight ${e.fightVal} / Evade ${e.evadeVal})`)}
+                      className="w-full text-left px-3 py-2 rounded-lg transition-all"
+                      style={isSelected
+                        ? { background: `${selectedAction.color}20`, border: `1px solid ${selectedAction.color}60`, color: selectedAction.color }
+                        : { background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020", color: "#c8b090" }}>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-decorative font-bold text-sm">{e.name}</span>
+                        <span className="text-[10px] font-mono text-ark-text-muted shrink-0">
+                          ⚔{e.fightVal} 🏃{e.evadeVal} ❤{e.health - e.currentDamage}hp
+                        </span>
+                      </div>
+                      {isEngaged && <span className="text-[9px]" style={{ color: "#5bbf8a" }}>⚔ Currently engaged with you</span>}
+                      {e.exhausted && <span className="text-[9px]" style={{ color: "#6aabf7" }}> · Exhausted</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── When no enemies but trying to engage/fight ── */}
+          {(["fight","evade","engage"].includes(selectedAction.id)) && enemies.length === 0 && (
+            <div className="px-3 py-2 rounded-lg text-xs text-ark-text-muted"
+              style={{ background: "rgba(10,8,5,0.4)", border: "1px solid #3d3020" }}>
+              No enemies in play — the lead investigator can spawn one in the Enemies tab.
+            </div>
+          )}
+
           <div>
-            <label className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted block mb-2">Add detail (optional)</label>
+            <label className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted block mb-2">
+              {(["fight","evade","engage"].includes(selectedAction.id)) && enemies.length > 0
+                ? "Outcome / notes (optional)"
+                : "Add detail (optional)"}
+            </label>
             <input value={actionDetail} onChange={e => setActionDetail(e.target.value)}
               onKeyDown={e => e.key === "Enter" && handleLogAction()}
-              placeholder={`e.g. "Investigated Library — passed +2"`}
+              placeholder={
+                selectedAction.id === "fight" ? `e.g. "Hit for 2 damage — 1 HP left"` :
+                selectedAction.id === "evade" ? `e.g. "Evaded — enemy exhausted"` :
+                selectedAction.id === "engage" ? `e.g. "Engaged — drew AoO"` :
+                `e.g. "Investigated Library — passed +2"`
+              }
               className="ark-input w-full px-3 py-2.5 rounded-lg text-sm" />
           </div>
 
@@ -1690,29 +1762,53 @@ export default function SessionPage() {
             {/* ACT side */}
             <div className="px-4 py-3">
               {(() => {
-                const totalClues = players.reduce((sum, p) => sum + p.clues, 0);
+                const cluesOnAct = turnState.cluesOnAct ?? 0;
                 const needed = turnState.cluesRequired ?? 0;
-                const canAdvance = totalClues >= needed;
+                const canAdvance = cluesOnAct >= needed;
+                const myClues = myPlayer?.clues ?? 0;
+                // Tap a filled pip to take back a clue; tap an empty pip to commit one
+                const handlePipTap = async (i: number) => {
+                  if (i < cluesOnAct) {
+                    // remove a clue from act → give back to current player
+                    if (!myPlayer) return;
+                    await updatePlayerStat(myPlayer.id, "clues", myPlayer.clues + 1);
+                    await pushTurnState({ ...turnState, cluesOnAct: cluesOnAct - 1 });
+                  } else {
+                    // commit a clue from current player to act
+                    if (!myPlayer || myPlayer.clues < 1) return;
+                    await updatePlayerStat(myPlayer.id, "clues", myPlayer.clues - 1);
+                    await pushTurnState({ ...turnState, cluesOnAct: cluesOnAct + 1 });
+                  }
+                };
                 return (
                   <>
                     <div className="flex items-center gap-1.5 mb-1">
                       <ClueIcon size={12} color={canAdvance ? "#6aabf7" : "#4a6a8a"} />
                       <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: canAdvance ? "#6aabf7" : "#4a6a8a" }}>Act</span>
                       {turnState.scenarioNumber && <span className="text-[9px] font-mono" style={{ color: "#6a5840" }}>#{turnState.scenarioNumber}</span>}
-                      {canAdvance && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(106,171,247,0.15)", color: "#6aabf7" }}>READY!</span>}
+                      {canAdvance && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(106,171,247,0.2)", color: "#6aabf7" }}>READY!</span>}
                     </div>
-                    <p className="text-[11px] font-decorative font-bold text-ark-text truncate mb-1.5">{turnState.actName}</p>
-                    {/* Clue pips (like doom pips) */}
+                    <p className="text-[11px] font-decorative font-bold text-ark-text truncate mb-1">{turnState.actName}</p>
+                    <p className="text-[9px] text-ark-text-muted mb-1.5">Tap a pip to spend a clue ({myClues} in hand)</p>
+                    {/* Tappable clue pips */}
                     <div className="flex items-center gap-1 flex-wrap">
-                      {Array.from({ length: needed }).map((_, i) => (
-                        <div key={i} className="w-5 h-5 rounded-md flex items-center justify-center transition-all duration-200"
-                          style={i < totalClues
-                            ? { background: canAdvance ? "rgba(106,171,247,0.75)" : "rgba(74,138,184,0.5)", border: `1px solid ${canAdvance ? "#6aabf7" : "#4a8ab8"}`, boxShadow: canAdvance ? "0 0 6px rgba(106,171,247,0.4)" : "none" }
-                            : { background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020" }}>
-                          {i < totalClues && <ClueIcon size={9} color={canAdvance ? "#6aabf7" : "#4a8ab8"} />}
-                        </div>
-                      ))}
-                      {needed > 0 && <span className="text-[10px] font-mono font-bold ml-1" style={{ color: canAdvance ? "#6aabf7" : "#4a6a8a" }}>{totalClues}/{needed}</span>}
+                      {Array.from({ length: needed }).map((_, i) => {
+                        const filled = i < cluesOnAct;
+                        const canFill = !filled && myClues > 0;
+                        return (
+                          <button key={i}
+                            onClick={() => handlePipTap(i)}
+                            disabled={!filled && myClues < 1}
+                            title={filled ? "Tap to take back" : canFill ? "Tap to spend a clue" : "No clues in hand"}
+                            className="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 disabled:opacity-30"
+                            style={filled
+                              ? { background: canAdvance ? "rgba(106,171,247,0.75)" : "rgba(74,138,184,0.5)", border: `1px solid ${canAdvance ? "#6aabf7" : "#4a8ab8"}`, boxShadow: canAdvance ? "0 0 6px rgba(106,171,247,0.4)" : "none" }
+                              : { background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020", cursor: canFill ? "pointer" : "default" }}>
+                            {filled && <ClueIcon size={10} color={canAdvance ? "#6aabf7" : "#4a8ab8"} />}
+                          </button>
+                        );
+                      })}
+                      {needed > 0 && <span className="text-[10px] font-mono font-bold ml-1" style={{ color: canAdvance ? "#6aabf7" : "#4a6a8a" }}>{cluesOnAct}/{needed}</span>}
                     </div>
                   </>
                 );
@@ -1728,11 +1824,19 @@ export default function SessionPage() {
                 style={{ background: "rgba(124,92,191,0.12)", border: "1px solid rgba(124,92,191,0.3)", color: "#a888e8" }}>
                 Campaign
               </button>
-              <button onClick={handleAdvanceAct}
-                className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
-                style={{ background: "rgba(106,171,247,0.12)", border: "1px solid rgba(106,171,247,0.3)", color: "#6aabf7" }}>
-                Advance Act →
-              </button>
+              {(() => {
+                const _cluesOnAct = turnState.cluesOnAct ?? 0;
+                const _needed = turnState.cluesRequired ?? 0;
+                const _canAdvance = _needed === 0 || _cluesOnAct >= _needed;
+                return (
+                  <button onClick={handleAdvanceAct} disabled={!_canAdvance}
+                    title={_canAdvance ? "Advance the Act" : `Need ${_needed - _cluesOnAct} more clue(s) on the Act`}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all disabled:opacity-35 disabled:cursor-not-allowed"
+                    style={{ background: _canAdvance ? "rgba(106,171,247,0.15)" : "rgba(106,171,247,0.06)", border: `1px solid ${_canAdvance ? "rgba(106,171,247,0.4)" : "rgba(106,171,247,0.15)"}`, color: _canAdvance ? "#6aabf7" : "#4a6a8a" }}>
+                    Advance Act →
+                  </button>
+                );
+              })()}
               {turnState.campaignId && turnState.campaignId !== "custom" && (
                 <button onClick={handleAdvanceScenario}
                   className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
@@ -1977,11 +2081,20 @@ export default function SessionPage() {
                     </button>
                   )}
                   {turnState.phase === "upkeep" && (
-                    <button onClick={() => handleLeadPhaseAction("Upkeep Resolved", "All cards readied, each investigator drew 1 card and gained 1 resource")}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                      style={{ background: "rgba(91,191,138,0.12)", border: "1px solid rgba(91,191,138,0.4)", color: "#5bbf8a" }}>
-                      Log Upkeep Done
-                    </button>
+                    <>
+                      {(enemies.some(e => e.exhausted)) && (
+                        <button onClick={handleReadyAllEnemies}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
+                          style={{ background: "rgba(91,191,138,0.15)", border: "1px solid rgba(91,191,138,0.5)", color: "#5bbf8a" }}>
+                          ✓ Ready All Enemies
+                        </button>
+                      )}
+                      <button onClick={() => handleLeadPhaseAction("Upkeep Resolved", "All cards readied, each investigator drew 1 card and gained 1 resource")}
+                        className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
+                        style={{ background: "rgba(91,191,138,0.12)", border: "1px solid rgba(91,191,138,0.4)", color: "#5bbf8a" }}>
+                        Log Upkeep Done
+                      </button>
+                    </>
                   )}
                   <button onClick={handleAdvancePhase}
                     className="px-4 py-2 rounded-xl text-sm font-bold font-decorative transition-all"
