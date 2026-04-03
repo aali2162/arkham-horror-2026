@@ -383,52 +383,8 @@ export const actions: GameAction[] = [
     ],
   },
   {
-    id: "parley",
-    number: 10,
-    name: "Parley",
-    icon: "🗣️",
-    tagline: "Negotiate with an enemy instead of fighting",
-    description:
-      "Attempt to resolve an encounter with an enemy through words, bribery, or deception rather than violence. Parley is a special action that only works when a card, location, or scenario rule explicitly offers it — you can't Parley just any enemy. When available, it lets you test a skill (usually Willpower or Intellect) against the enemy. Success means the enemy is pacified, bypassed, or removed without combat.",
-    requirements: [
-      "A card, location, or scenario rule must explicitly allow Parley against this enemy",
-      "The enemy must be at your location",
-    ],
-    steps: [
-      { number: 1, instruction: "Check if Parley is allowed", detail: "Look for 'Parley' text on the enemy card, your location, or an active scenario rule. Without this, you cannot attempt Parley." },
-      { number: 2, instruction: "Spend 1 action" },
-      { number: 3, instruction: "Perform the skill test listed", detail: "The card or scenario specifying Parley will also name the skill tested and the difficulty. Common tests: Willpower, Intellect, or Agility." },
-      { number: 4, instruction: "Apply the result", detail: "Success: the enemy is pacified, removed, or the Parley effect resolves as described. Failure: the Parley fails — the enemy remains and will attack as normal." },
-    ],
-    definitions: [
-      { term: "Parley", meaning: "A special action allowing you to negotiate or interact non-violently with an enemy. Only available when a card or scenario rule specifically grants it. Counts as a valid action while engaged (no AoO)." },
-      { term: "Pacify", meaning: "When an enemy is pacified via Parley, it may be exhausted, removed from play, or have its threat neutralized — as described by the card or scenario that granted the Parley option." },
-    ],
-    example: {
-      title: "Talking your way past a Cultist",
-      narrative: "A Cultist enemy card says: 'Parley: Test Willpower (3). If successful, discard this enemy.' You're engaged with the Cultist. Your Willpower is 4. Action 1: Parley — test Willpower (4) vs difficulty 3. You draw a chaos token: +0. Total: 4 ≥ 3 — Success! The Cultist is discarded. You avoided the fight entirely and saved actions and health.",
-    },
-    edgeCases: [
-      { question: "Does Parley count as a 'safe' action while engaged?", answer: "Yes! Parley is one of the four 'safe' actions while engaged (along with Fight, Evade, and Resign). Taking the Parley action does NOT trigger an Attack of Opportunity." },
-      { question: "Can I Parley any enemy?", answer: "No. You can only Parley when a card, location, or scenario rule explicitly says you may. Most enemies have no Parley option — you must fight or evade them." },
-      { question: "What if Parley fails?", answer: "The enemy remains engaged and will attack during the Enemy Phase as normal. You've spent an action with no benefit. Some enemies may have extra penalties for failed Parley — check the card text." },
-      { question: "Can Parley replace fighting entirely in a scenario?", answer: "Some scenarios are designed with Parley-heavy solutions — certain suspects or cultists can be fully resolved through Parley. The Brethren of Ash campaign has some of these moments." },
-    ],
-    whenToUse: [
-      "The enemy card or your location has 'Parley' text — always read it first",
-      "Your combat stats are low but your Willpower/Intellect are high",
-      "You want to resolve an enemy without spending multiple fight actions",
-      "You're low on health and want to avoid taking damage",
-    ],
-    specialInteractions: [
-      "Dexter Drake and Isabelle Barnes have high Willpower, making Parley tests easier",
-      "Parley does NOT exhaust the enemy or deal damage — it resolves or removes it outright on success",
-      "Some scenario enemies can ONLY be resolved through Parley (not defeatable by damage)",
-    ],
-  },
-  {
     id: "resign",
-    number: 11,
+    number: 10,
     name: "Resign",
     icon: "🚪",
     tagline: "Leave the scenario voluntarily",

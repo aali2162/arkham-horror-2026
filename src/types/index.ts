@@ -124,63 +124,10 @@ export interface DamageSection {
   details: string[];
 }
 
-// --- Play Session: Campaign / Scenario ---
-export interface ScenarioConfig {
-  id: string;
-  name: string;
-  agendaName: string;
-  actName: string;
-  doomThreshold: number;
-  cluesRequired: number;
-}
-
-export interface CampaignConfig {
-  id: string;
-  name: string;
-  subtitle: string;
-  scenarios: ScenarioConfig[];
-}
-
-// --- Play Session: Turn State (synced via Supabase) ---
-export interface TurnState {
-  currentPlayerIdx: number;
-  actionsUsed: number;
-  round: number;
-  phase: "mythos" | "investigation" | "enemy" | "upkeep";
-  leadInvestigatorIdx: number;
-  doom: number;
-  doomThreshold: number;
-  agendaName: string;
-  actName: string;
-  cluesRequired: number;
-  // campaign tracking
-  campaignId?: string;
-  scenarioId?: string;
-  scenarioNumber?: number;       // 1-indexed act number within scenario
-  // player turn order (array of player IDs)
-  playerOrder?: string[];
-  // scenario complete flag
-  scenarioComplete?: boolean;
-}
-
-export interface ActionLogEntry {
-  id: string;
-  playerName: string;
-  investigator: string;
-  action: string;
-  detail: string;
-  timestamp: string; // ISO string for JSON serialisation
-  round: number;
-  actionNum: number;
-  phase: TurnState["phase"];
-}
-
 // --- Play Session (Supabase) ---
 export interface GameSession {
   id: string;
   session_code: string;
-  turn_state: TurnState;
-  action_log: ActionLogEntry[];
   created_at: string;
   updated_at: string;
 }
@@ -193,9 +140,6 @@ export interface GamePlayer {
   damage: number;
   horror: number;
   resources: number;
-  clues: number;
-  xp: number;
-  is_lead: boolean;
   created_at: string;
   updated_at: string;
 }

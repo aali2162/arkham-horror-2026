@@ -15,40 +15,39 @@
 
 ---
 
-## CURRENT STATUS (Updated: April 3, 2026 — DEPLOYED)
+## CURRENT STATUS (Updated: April 2, 2026 — DEPLOYED)
 
 ### Live URL: https://arkham-horror-2026.vercel.app
 
 ### ✅ COMPLETED
-- [x] Full Next.js 14 + TypeScript + Tailwind CSS codebase
+- [x] Full Next.js 14 + TypeScript + Tailwind CSS codebase (39 files)
 - [x] All 4 phase detail pages (Mythos, Investigation, Enemy, Upkeep)
-- [x] All 11 action detail pages (Draw, Gain Resource, Investigate, Move, Fight, Evade, Engage, Play Card, Activate Ability, **Parley**, Resign)
+- [x] All 10 action detail pages (Draw, Gain Resource, Investigate, Move, Fight, Evade, Engage, Play Card, Activate Ability, Resign)
 - [x] Skill Tests detail page (5-step process, all 12 chaos tokens)
 - [x] Damage/Horror/Trauma detail page with investigator reference
-- [x] PhaseNav component — smooth in-page phase switcher on all phase pages
-- [x] Full rules audit — AoO obligation, Aloof/Massive/Patrol/Elusive keywords, Treachery, Upkeep costs, all enemy movement rules
 - [x] Play Session hub (create/join sessions)
-- [x] **Multiplayer Play Session — complete overhaul:**
-  - Per-device identity via localStorage (each player on their own phone)
-  - Real-time sync via Supabase (both `game_players` and `game_sessions`)
-  - YOUR TURN full-screen takeover with 3-action flow + End Turn button
-  - Action selection → confirmation modal → auto-log → advance action count
-  - Lead investigator manages Mythos/Enemy/Upkeep phases with quick-log buttons
-  - Doom tracker, agenda/act names, clue threshold (lead-only editable)
-  - Delete player functionality (✕ button with confirm)
-  - Clue + XP tracking per player
-  - Rulebook-accurate SVG symbols (ActionSymbol, skill icons, DoomIcon, ClueIcon, ResourceIcon)
+- [x] Real-time player tracker (damage/horror/resources with +/- buttons)
 - [x] Supabase project "Game Train" created (ca-central-1 region)
-- [x] Database schema: game_sessions (with turn_state JSONB + action_log JSONB) + game_players
+- [x] Database schema applied (game_sessions + game_players tables)
 - [x] Row Level Security + real-time replication enabled
+- [x] Local dev server confirmed working (localhost:3000)
+- [x] .env.local configured with Supabase credentials
+- [x] Pushed to GitHub (github.com/aali2162/arkham-horror-2026)
 - [x] Deployed to Vercel — https://arkham-horror-2026.vercel.app
+- [x] Build verified: 22 pages, 0 errors, all routes generated
 
 ### 🔲 NOT YET DONE
-- [ ] Test real-time sync across multiple devices end-to-end
+- [ ] Add Supabase env vars to Vercel project settings (NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY)
+- [ ] Test real-time sync across multiple browsers
+- [ ] Test session creation and player tracking end-to-end
+- [ ] Mobile responsiveness testing
+- [ ] Test real-time sync across multiple browsers
+- [ ] Test session creation and player tracking end-to-end
 - [ ] Mobile responsiveness testing
 - [ ] Campaign/scenario tracking (Brethren of Ash: 3 scenarios)
 - [ ] Investigator detail pages (5 investigators with full abilities)
 - [ ] Chaos bag simulator / practice tool
+- [ ] Round tracker integration in Play session
 - [ ] XP tracking between scenarios
 - [ ] Polish: loading states, error boundaries, animations
 
@@ -219,8 +218,8 @@ C:\Users\alix4\Game Train\arkham-horror-2026\
 Phase 1 (Mythos) → Phase 2 (Investigation) → Phase 3 (Enemy) → Phase 4 (Upkeep) → repeat
 - Round 1 SKIPS Mythos Phase
 
-### 11 Investigation Actions
-1. Draw, 2. Gain Resource, 3. Investigate, 4. Move, 5. Fight, 6. Evade, 7. Engage, 8. Play Card, 9. Activate Ability, 10. Parley, 11. Resign
+### 10 Investigation Actions
+1. Draw, 2. Gain Resource, 3. Investigate, 4. Move, 5. Fight, 6. Evade, 7. Engage, 8. Play Card, 9. Activate Ability, 10. Resign
 
 ### Brethren of Ash Campaign (3 Scenarios)
 1. Spreading Flames — Your Friend's Room start
@@ -235,7 +234,7 @@ Phase 1 (Mythos) → Phase 2 (Investigation) → Phase 3 (Enemy) → Phase 4 (Up
 |-------|------|--------|
 | `/` | Homepage — hero + 6 topic cards | ✅ Built |
 | `/learn/mythos` | Phase 1: Mythos | ✅ Built |
-| `/learn/investigation` | Phase 2: Investigation + 11 action grid | ✅ Built |
+| `/learn/investigation` | Phase 2: Investigation + 10 action grid | ✅ Built |
 | `/learn/investigation/draw` | Action 1: Draw | ✅ Built |
 | `/learn/investigation/gain-resource` | Action 2: Gain Resource | ✅ Built |
 | `/learn/investigation/investigate` | Action 3: Investigate | ✅ Built |
@@ -245,9 +244,7 @@ Phase 1 (Mythos) → Phase 2 (Investigation) → Phase 3 (Enemy) → Phase 4 (Up
 | `/learn/investigation/engage` | Action 7: Engage | ✅ Built |
 | `/learn/investigation/play-card` | Action 8: Play Card | ✅ Built |
 | `/learn/investigation/activate-ability` | Action 9: Activate Ability | ✅ Built |
-| `/learn/investigation/parley` | Action 10: Parley | ✅ Built |
-| `/learn/investigation/resign` | Action 11: Resign | ✅ Built |
-
+| `/learn/investigation/resign` | Action 10: Resign | ✅ Built |
 | `/learn/enemy` | Phase 3: Enemy | ✅ Built |
 | `/learn/upkeep` | Phase 4: Upkeep | ✅ Built |
 | `/learn/skill-tests` | Skill Tests mechanic | ✅ Built |
@@ -336,13 +333,3 @@ cd "C:\Users\alix4\Game Train\arkham-horror-2026"
 - Walked through local setup on Windows (node v24.14.0)
 - Resolved file path issues (zip extracted to subfolder)
 - Confirmed local dev server running at localhost:3000
-
-**Chat 2 (April 3, 2026) — Rules Audit + Phase Nav + Play Overhaul:**
-- Created PhaseNav component (smooth in-page 4-tab phase navigator)
-- Added PhaseNav to all 4 phase pages (Mythos, Investigation, Enemy, Upkeep)
-- Full rulebook rules audit: AoO obligation (engage = must Fight/Evade/Parley/Resign), red warning banner on investigation page, Step 3 in phases.ts; Aloof/Massive/Patrol/Elusive enemy keywords; Treachery definition; Upkeep costs; non-Hunter enemy movement rule
-- Added Parley as Action 10 (full detail page content); Resign renumbered to 11
-- Updated action count references throughout (10 → 11)
-- Complete multiplayer Play Session overhaul: per-device identity, YOUR TURN takeover, action selection flow, Lead phase management, doom/clue tracking, delete player, rulebook SVG icons
-- Updated TurnState, ActionLogEntry, GameSession, GamePlayer types
-- Added updateTurnState, appendActionLog, subscribeToSession to session.ts

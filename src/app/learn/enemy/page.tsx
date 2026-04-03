@@ -1,6 +1,5 @@
 import Navbar from "@/components/layout/Navbar";
 import BackButton from "@/components/learn/BackButton";
-import PhaseNav from "@/components/learn/PhaseNav";
 import StepCard from "@/components/learn/StepCard";
 import DefinitionBox from "@/components/learn/DefinitionBox";
 import ExampleBox from "@/components/learn/ExampleBox";
@@ -15,7 +14,6 @@ export default function EnemyPage() {
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <BackButton href="/" label="All Topics" />
-        <PhaseNav />
 
         <div className="mb-8 opacity-0 animate-fade-in">
           <div className="flex items-center gap-3 mb-3">
