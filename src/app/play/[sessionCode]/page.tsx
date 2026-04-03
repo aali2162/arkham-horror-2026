@@ -11,6 +11,7 @@ import {
 import { GameSession, GamePlayer, TurnState, ActionLogEntry, EnemyState } from "@/types";
 import { investigators } from "@/data/investigators";
 import { actions as ACTION_DATA } from "@/data/actions";
+import { searchCards, getEnemyPreset, CardEntry } from "@/data/cards";
 
 // ─── Campaigns & Scenarios ────────────────────────────────────────────────────
 const CAMPAIGNS = [
@@ -272,6 +273,9 @@ export default function SessionPage() {
   const enemies: EnemyState[] = turnState.enemies ?? [];
   const [showAddEnemy, setShowAddEnemy] = useState(false);
   const [newEnemy, setNewEnemy] = useState({ name: "", fightVal: 3, evadeVal: 3, health: 3, damage: 1, horror: 1, keywords: [] as string[], engagedPlayerIds: [] as string[], massive: false });
+  const [cardSearch, setCardSearch] = useState("");
+  const [cardResults, setCardResults] = useState<CardEntry[]>([]);
+  const [showCardDropdown, setShowCardDropdown] = useState(false);
   // Scenario end flow
   const [showEndScenario, setShowEndScenario] = useState(false);
   const [scenarioResolutionText, setScenarioResolutionText] = useState("");
@@ -2130,10 +2134,14 @@ export default function SessionPage() {
                     const isThisLead = idx === turnState.leadInvestigatorIdx;
                     const isMe = player.player_name === myPlayerName;
                     const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
-                    const healthPct = Math.min((player.damage / (inv?.health ?? 9)) * 100, 100);
-                    const sanityPct = Math.min((player.horror / (inv?.sanity ?? 7)) * 100, 100);
-                    const isDefeated = player.damage >= (inv?.health ?? 9);
-                    const isInsane = player.horror >= (inv?.sanity ?? 7);
+                    const maxHealth = inv?.health ?? 9;
+                    const maxSanity = inv?.sanity ?? 7;
+                    const healthRemaining = Math.max(0, maxHealth - player.damage);
+                    const sanityRemaining = Math.max(0, maxSanity - player.horror);
+                    const healthPct = Math.min((healthRemaining / maxHealth) * 100, 100);
+                    const sanityPct = Math.min((sanityRemaining / maxSanity) * 100, 100);
+                    const isDefeated = player.damage >= maxHealth;
+                    const isInsane = player.horror >= maxSanity;
                     const engagedEnemies = enemies.filter(e => e.engagedPlayerIds?.includes(player.id));
 
                     return (
@@ -2212,36 +2220,52 @@ export default function SessionPage() {
                         )}
 
                         {/* Health bar */}
-                        <div className="mb-2 flex gap-2">
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-0.5">
-                              <span className="text-[9px] font-mono text-ark-text-muted">Health</span>
-                              <span className="text-[9px] font-mono" style={{ color: healthPct > 66 ? "#5bbf8a" : healthPct > 33 ? "#d4922a" : "#c05050" }}>{player.damage}/{inv?.health ?? 9}</span>
-                            </div>
-                            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(10,8,5,0.4)" }}>
-                              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${healthPct}%`, background: healthPct > 66 ? "linear-gradient(90deg, #2a7048, #5bbf8a)" : healthPct > 33 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
-                            </div>
+                        <div className="mb-2">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-[9px] font-mono text-ark-text-muted">❤ Health</span>
+                            <span className="text-[9px] font-mono" style={{ color: healthPct > 66 ? "#5bbf8a" : healthPct > 33 ? "#d4922a" : "#c05050" }}>
+                              {healthRemaining}/{maxHealth}
+                            </span>
                           </div>
-                          <div className="flex gap-0.5">
-                            <button onClick={() => handleStatChange(player, "damage", -1)} className="w-5 h-5 rounded text-[9px] font-bold" style={{ background: "rgba(58,158,107,0.1)", color: "#5bbf8a" }}>−</button>
-                            <button onClick={() => handleStatChange(player, "damage", 1)} className="w-5 h-5 rounded text-[9px] font-bold" style={{ background: "rgba(217,107,107,0.1)", color: "#d96b6b" }}>+</button>
+                          <div className="h-1.5 rounded-full overflow-hidden mb-1" style={{ background: "rgba(10,8,5,0.4)" }}>
+                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${healthPct}%`, background: healthPct > 66 ? "linear-gradient(90deg, #2a7048, #5bbf8a)" : healthPct > 33 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
+                          </div>
+                          <div className="flex gap-1">
+                            <button onClick={() => handleStatChange(player, "damage", 1)}
+                              className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
+                              style={{ background: "rgba(217,107,107,0.15)", color: "#d96b6b", border: "1px solid rgba(217,107,107,0.3)" }}>
+                              − Hurt
+                            </button>
+                            <button onClick={() => handleStatChange(player, "damage", -1)}
+                              className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
+                              style={{ background: "rgba(58,158,107,0.1)", color: "#5bbf8a", border: "1px solid rgba(58,158,107,0.25)" }}>
+                              + Heal
+                            </button>
                           </div>
                         </div>
 
                         {/* Sanity bar */}
-                        <div className="mb-2 flex gap-2">
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-0.5">
-                              <span className="text-[9px] font-mono text-ark-text-muted">Sanity</span>
-                              <span className="text-[9px] font-mono" style={{ color: sanityPct > 66 ? "#5bbf8a" : sanityPct > 33 ? "#d4922a" : "#c05050" }}>{player.horror}/{inv?.sanity ?? 7}</span>
-                            </div>
-                            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(10,8,5,0.4)" }}>
-                              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${sanityPct}%`, background: sanityPct > 66 ? "linear-gradient(90deg, #4a68b8, #6aabf7)" : sanityPct > 33 ? "linear-gradient(90deg, #5c6eb5, #8ab3f5)" : "linear-gradient(90deg, #6c4280, #a888e8)" }} />
-                            </div>
+                        <div className="mb-2">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-[9px] font-mono text-ark-text-muted">🧠 Sanity</span>
+                            <span className="text-[9px] font-mono" style={{ color: sanityPct > 66 ? "#5bbf8a" : sanityPct > 33 ? "#d4922a" : "#c05050" }}>
+                              {sanityRemaining}/{maxSanity}
+                            </span>
                           </div>
-                          <div className="flex gap-0.5">
-                            <button onClick={() => handleStatChange(player, "horror", -1)} className="w-5 h-5 rounded text-[9px] font-bold" style={{ background: "rgba(58,158,107,0.1)", color: "#5bbf8a" }}>−</button>
-                            <button onClick={() => handleStatChange(player, "horror", 1)} className="w-5 h-5 rounded text-[9px] font-bold" style={{ background: "rgba(124,92,191,0.1)", color: "#a888e8" }}>+</button>
+                          <div className="h-1.5 rounded-full overflow-hidden mb-1" style={{ background: "rgba(10,8,5,0.4)" }}>
+                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${sanityPct}%`, background: sanityPct > 66 ? "linear-gradient(90deg, #4a68b8, #6aabf7)" : sanityPct > 33 ? "linear-gradient(90deg, #5c6eb5, #8ab3f5)" : "linear-gradient(90deg, #6c4280, #a888e8)" }} />
+                          </div>
+                          <div className="flex gap-1">
+                            <button onClick={() => handleStatChange(player, "horror", 1)}
+                              className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
+                              style={{ background: "rgba(168,136,232,0.15)", color: "#a888e8", border: "1px solid rgba(168,136,232,0.3)" }}>
+                              − Horror
+                            </button>
+                            <button onClick={() => handleStatChange(player, "horror", -1)}
+                              className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
+                              style={{ background: "rgba(58,158,107,0.1)", color: "#5bbf8a", border: "1px solid rgba(58,158,107,0.25)" }}>
+                              + Recover
+                            </button>
                           </div>
                         </div>
 
@@ -2317,9 +2341,96 @@ export default function SessionPage() {
             {showAddEnemy && (
               <div className="rounded-xl p-4 space-y-3" style={{ background: "rgba(217,107,107,0.05)", border: "1px solid rgba(217,107,107,0.25)" }}>
                 <h4 className="font-decorative font-bold text-sm" style={{ color: "#d96b6b" }}>Spawn Enemy</h4>
-                <input value={newEnemy.name} onChange={e => setNewEnemy(p => ({ ...p, name: e.target.value }))}
-                  onKeyDown={e => e.key === "Enter" && handleAddEnemy()}
-                  placeholder="Enemy name (from encounter card)" className="ark-input w-full px-3 py-2 rounded-lg text-sm" autoFocus />
+
+                {/* ── Card Autocomplete Search ── */}
+                <div className="relative">
+                  <input
+                    value={cardSearch}
+                    onChange={e => {
+                      const v = e.target.value;
+                      setCardSearch(v);
+                      const results = searchCards(v, ["enemy", "story-enemy"]);
+                      setCardResults(results);
+                      setShowCardDropdown(results.length > 0);
+                      // also update the manual name field as user types
+                      setNewEnemy(p => ({ ...p, name: v }));
+                    }}
+                    onBlur={() => setTimeout(() => setShowCardDropdown(false), 150)}
+                    onFocus={() => {
+                      if (cardSearch.length > 0) {
+                        const results = searchCards(cardSearch, ["enemy", "story-enemy"]);
+                        setCardResults(results);
+                        setShowCardDropdown(results.length > 0);
+                      }
+                    }}
+                    onKeyDown={e => { if (e.key === "Enter" && !showCardDropdown) handleAddEnemy(); }}
+                    placeholder="Search card name (e.g. Servant of Flame…)"
+                    className="ark-input w-full px-3 py-2 rounded-lg text-sm pr-8"
+                    autoFocus
+                  />
+                  {cardSearch && (
+                    <button onClick={() => { setCardSearch(""); setNewEnemy(p => ({ ...p, name: "" })); setShowCardDropdown(false); }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-ark-text-muted text-xs">✕</button>
+                  )}
+                  {showCardDropdown && cardResults.length > 0 && (
+                    <ul className="absolute z-50 left-0 right-0 top-full mt-1 rounded-xl overflow-hidden shadow-lg"
+                      style={{ background: "#1a1814", border: "1px solid rgba(217,107,107,0.35)" }}>
+                      {cardResults.map(card => {
+                        const preset = getEnemyPreset(card.id);
+                        return (
+                          <li key={card.id}>
+                            <button
+                              className="w-full text-left px-3 py-2 hover:bg-white/5 transition-colors"
+                              onMouseDown={() => {
+                                if (preset) {
+                                  setNewEnemy(p => ({
+                                    ...p,
+                                    name: preset.name,
+                                    fightVal: preset.fightVal,
+                                    evadeVal: preset.evadeVal,
+                                    health: preset.health,
+                                    damage: preset.damage,
+                                    horror: preset.horror,
+                                    keywords: preset.keywords,
+                                    massive: preset.keywords.includes("Massive"),
+                                  }));
+                                  setCardSearch(preset.name);
+                                } else {
+                                  setNewEnemy(p => ({ ...p, name: card.name }));
+                                  setCardSearch(card.name);
+                                }
+                                setShowCardDropdown(false);
+                              }}
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="font-decorative text-sm" style={{ color: "#e8d5b0" }}>{card.name}</span>
+                                {preset && (
+                                  <span className="text-[10px] font-mono text-ark-text-muted shrink-0">
+                                    ⚔{preset.fightVal} 🏃{preset.evadeVal} ❤{preset.health}
+                                  </span>
+                                )}
+                              </div>
+                              {card.keywords && card.keywords.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-0.5">
+                                  {card.keywords.map(k => (
+                                    <span key={k} className="text-[9px] font-mono px-1 rounded"
+                                      style={{ background: "rgba(217,107,107,0.12)", color: "#d96b6b" }}>{k}</span>
+                                  ))}
+                                </div>
+                              )}
+                              {card.notes && (
+                                <p className="text-[9px] text-ark-text-muted mt-0.5 line-clamp-1">{card.notes}</p>
+                              )}
+                            </button>
+                          </li>
+                        );
+                      })}
+                      <li className="px-3 py-1.5 border-t" style={{ borderColor: "rgba(217,107,107,0.15)" }}>
+                        <span className="text-[9px] text-ark-text-muted">Not listed? Edit stats manually below ↓</span>
+                      </li>
+                    </ul>
+                  )}
+                </div>
                 <div className="grid grid-cols-3 gap-2">
                   {(["fightVal","evadeVal","health","damage","horror"] as const).map(f => (
                     <div key={f}>
