@@ -163,6 +163,25 @@ export interface TurnState {
   playerOrder?: string[];
   // scenario complete flag
   scenarioComplete?: boolean;
+  // scenario ended by lead (with resolution text)
+  scenarioEnded?: boolean;
+  scenarioResolution?: string;
+  // enemies synced to all devices
+  enemies?: EnemyState[];
+}
+
+export interface EnemyState {
+  id: string;
+  name: string;
+  fightVal: number;
+  evadeVal: number;
+  health: number;
+  damage: number;   // damage it deals per attack
+  horror: number;   // horror it deals per attack
+  currentDamage: number;
+  keywords: string[];
+  engagedPlayerIds: string[];  // array — supports Massive (multiple) and normal (one)
+  exhausted: boolean;
 }
 
 export interface ActionLogEntry {

@@ -1,26 +1,37 @@
-# Game Train — One-click deploy
-# Double-click DEPLOY.bat on your desktop to run this silently.
-# Requirements: .github-token file in project root (one-time setup, already done if push works)
+# Game Train - One-click deploy
+# Double-click DEPLOY.bat on your desktop to run this.
 
 Set-Location $PSScriptRoot
 
 Write-Host ""
 Write-Host "=== Game Train Deploy ===" -ForegroundColor Cyan
 
-# Use stored token for auth (avoids interactive prompts)
+# Use stored token for auth
 $tokenFile = Join-Path $PSScriptRoot ".github-token"
 if (Test-Path $tokenFile) {
     $token = (Get-Content $tokenFile -Raw).Trim()
-    $remote = "https://aali2162:$token@github.com/aali2162/arkham-horror-2026.git"
+    $remote = "https://aali2162:${token}@github.com/aali2162/arkham-horror-2026.git"
     git remote set-url origin $remote
 }
 
 # Clear stale lock files
-".git\index.lock", ".git\HEAD.lock", ".git\refs\heads\main.lock" | ForEach-Object {
-    if (Test-Path $_) { Remove-Item $_ -Force }
+$locks = @(".git\index.lock", ".git\HEAD.lock", ".git\refs\heads\main.lock")
+foreach ($lock in $locks) {
+    if (Test-Path $lock) { Remove-Item $lock -Force }
 }
 
-# Push (commits are already prepared by Claude in the sandbox)
+# Stage and commit any pending changes
+$status = git status --porcelain 2>&1
+if ($status) {
+    Write-Host "Committing staged changes..." -ForegroundColor Yellow
+    git add -A
+    git commit -m "Session 10: enemy overhaul, scenario end flow, real-time improvements"
+    Write-Host "Committed." -ForegroundColor Green
+} else {
+    Write-Host "Nothing to commit." -ForegroundColor Gray
+}
+
+# Push
 git push origin main 2>&1
 
 if ($LASTEXITCODE -eq 0) {
@@ -29,9 +40,9 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "https://arkham-horror-2026.vercel.app" -ForegroundColor Cyan
     Start-Process "https://arkham-horror-2026.vercel.app"
 } else {
-    Write-Host "Push failed — check output above." -ForegroundColor Red
+    Write-Host "Push failed - check output above." -ForegroundColor Red
 }
 
 Write-Host ""
 Write-Host "Press any key to close..."
-$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+$x = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

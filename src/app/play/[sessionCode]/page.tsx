@@ -8,7 +8,7 @@ import {
   getSessionByCode, getPlayers, subscribeToPlayers, subscribeToSession,
   addPlayer, removePlayer, updatePlayerStat, updateTurnState, appendActionLog, updateActionLog,
 } from "@/lib/session";
-import { GameSession, GamePlayer, TurnState, ActionLogEntry } from "@/types";
+import { GameSession, GamePlayer, TurnState, ActionLogEntry, EnemyState } from "@/types";
 import { investigators } from "@/data/investigators";
 import { actions as ACTION_DATA } from "@/data/actions";
 
@@ -81,12 +81,6 @@ const ENEMY_KEYWORDS = [
   { key: "Patrol",    color: "#6aabf7", desc: "Moves between designated locations each phase" },
   { key: "Doomed",    color: "#c9973a", desc: "When defeated, place 1 doom on current agenda" },
 ];
-
-interface Enemy {
-  id: string; name: string; fightVal: number; evadeVal: number;
-  health: number; damage: number; horror: number; currentDamage: number;
-  keywords: string[]; engagedPlayerId: string;
-}
 
 // ─── SVG Rulebook Symbols ─────────────────────────────────────────────────────
 function ActionSymbol({ size = 20 }: { size?: number }) {
@@ -274,10 +268,15 @@ export default function SessionPage() {
   // Tabs
   const [activeTab, setActiveTab] = useState<"board" | "enemies" | "log" | "reference">("board");
 
-  // Enemies (local for now — can extend to Supabase later)
-  const [enemies, setEnemies] = useState<Enemy[]>([]);
+  // Enemies — synced via TurnState (Supabase real-time to all devices)
+  const enemies: EnemyState[] = turnState.enemies ?? [];
   const [showAddEnemy, setShowAddEnemy] = useState(false);
-  const [newEnemy, setNewEnemy] = useState({ name: "", fightVal: 3, evadeVal: 3, health: 3, damage: 1, horror: 1, keywords: [] as string[], engagedPlayerId: "" });
+  const [newEnemy, setNewEnemy] = useState({ name: "", fightVal: 3, evadeVal: 3, health: 3, damage: 1, horror: 1, keywords: [] as string[], engagedPlayerIds: [] as string[], massive: false });
+  // Scenario end flow
+  const [showEndScenario, setShowEndScenario] = useState(false);
+  const [scenarioResolutionText, setScenarioResolutionText] = useState("");
+  const [showScenarioSummary, setShowScenarioSummary] = useState(false);
+  const [showCarryOverModal, setShowCarryOverModal] = useState(false);
 
   // Phase transition animation
   const [phaseFlash, setPhaseFlash] = useState(false);
@@ -376,6 +375,13 @@ export default function SessionPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMyTurn, turnState.phase]);
+
+  // Scenario ended: show summary on all devices when lead ends scenario
+  useEffect(() => {
+    if (turnState.scenarioEnded && !showScenarioSummary) {
+      setShowScenarioSummary(true);
+    }
+  }, [turnState.scenarioEnded]);
   const doomPct = Math.min((turnState.doom / Math.max(1, turnState.doomThreshold)) * 100, 100);
   const doomDanger = turnState.doom >= turnState.doomThreshold;
   const currentPhase = PHASES.find(p => p.id === turnState.phase)!;
@@ -637,25 +643,128 @@ export default function SessionPage() {
     await pushTurnState({ ...turnState, playerOrder: currentOrder });
   };
 
-  // ── Enemy helpers ─────────────────────────────────────────
-  const handleAddEnemy = () => {
+  // ── Enemy helpers (all synced to Supabase via pushTurnState) ─────────────────
+  const handleAddEnemy = async () => {
     if (!newEnemy.name.trim()) return;
-    setEnemies(prev => [...prev, { id: `e-${Date.now()}`, ...newEnemy, currentDamage: 0, engagedPlayerId: newEnemy.engagedPlayerId || (players[0]?.id ?? "") }]);
-    setNewEnemy({ name: "", fightVal: 3, evadeVal: 3, health: 3, damage: 1, horror: 1, keywords: [], engagedPlayerId: "" });
+    const spawned: EnemyState = {
+      id: `e-${Date.now()}`,
+      name: newEnemy.name.trim(),
+      fightVal: newEnemy.fightVal,
+      evadeVal: newEnemy.evadeVal,
+      health: newEnemy.health,
+      damage: newEnemy.damage,
+      horror: newEnemy.horror,
+      currentDamage: 0,
+      keywords: newEnemy.keywords,
+      engagedPlayerIds: newEnemy.engagedPlayerIds,
+      exhausted: false,
+    };
+    const ts = turnStateRef.current;
+    await pushTurnState({ ...ts, enemies: [...(ts.enemies ?? []), spawned] });
+    await pushLog({
+      id: `spawn-${Date.now()}`,
+      playerName: leadPlayer?.player_name ?? "",
+      investigator: leadPlayer?.investigator ?? "",
+      action: "Enemy Spawned",
+      detail: `${spawned.name} appeared${spawned.engagedPlayerIds.length ? ` — engaged with ${spawned.engagedPlayerIds.map(id => players.find(p => p.id === id)?.player_name ?? id).join(", ")}` : " — unengaged"}`,
+      timestamp: new Date().toISOString(),
+      round: ts.round, actionNum: 0, phase: ts.phase,
+    });
+    setNewEnemy({ name: "", fightVal: 3, evadeVal: 3, health: 3, damage: 1, horror: 1, keywords: [], engagedPlayerIds: [], massive: false });
     setShowAddEnemy(false);
   };
 
-  const handleEnemyDamage = (id: string, delta: number) => {
-    setEnemies(prev => prev.map(e => e.id !== id ? e : { ...e, currentDamage: Math.max(0, e.currentDamage + delta) }));
+  const handleEnemyDamage = async (id: string, delta: number) => {
+    const ts = turnStateRef.current;
+    const next = (ts.enemies ?? []).map(e => e.id !== id ? e : { ...e, currentDamage: Math.max(0, e.currentDamage + delta) });
+    await pushTurnState({ ...ts, enemies: next });
   };
-  const handleDefeatEnemy = (id: string) => {
-    const e = enemies.find(x => x.id === id);
-    if (e?.keywords.includes("Doomed")) pushTurnState({ ...turnStateRef.current, doom: turnStateRef.current.doom + 1 });
-    setEnemies(prev => prev.filter(x => x.id !== id));
+
+  const handleToggleExhaust = async (id: string) => {
+    const ts = turnStateRef.current;
+    const next = (ts.enemies ?? []).map(e => e.id !== id ? e : { ...e, exhausted: !e.exhausted });
+    await pushTurnState({ ...ts, enemies: next });
   };
+
+  const handleEnemyEngage = async (enemyId: string, playerId: string) => {
+    const ts = turnStateRef.current;
+    const enemy = (ts.enemies ?? []).find(e => e.id === enemyId);
+    if (!enemy) return;
+    const isMassive = enemy.keywords.includes("Massive");
+    let newEngaged: string[];
+    if (isMassive) {
+      newEngaged = enemy.engagedPlayerIds.includes(playerId)
+        ? enemy.engagedPlayerIds.filter(id => id !== playerId)
+        : [...enemy.engagedPlayerIds, playerId];
+    } else {
+      newEngaged = enemy.engagedPlayerIds[0] === playerId ? [] : [playerId];
+    }
+    const next = (ts.enemies ?? []).map(e => e.id !== enemyId ? e : { ...e, engagedPlayerIds: newEngaged });
+    const pName = players.find(p => p.id === playerId)?.player_name ?? playerId;
+    await pushTurnState({ ...ts, enemies: next });
+    await pushLog({
+      id: `engage-${Date.now()}`,
+      playerName: pName,
+      investigator: players.find(p => p.id === playerId)?.investigator ?? "",
+      action: newEngaged.includes(playerId) ? "Engaged Enemy" : "Disengaged",
+      detail: `${newEngaged.includes(playerId) ? "Engaged with" : "Disengaged from"} ${enemy.name}`,
+      timestamp: new Date().toISOString(),
+      round: ts.round, actionNum: 0, phase: ts.phase,
+    });
+  };
+
+  const handleEnemyAttack = async (enemy: EnemyState) => {
+    const ts = turnStateRef.current;
+    const targets = enemy.engagedPlayerIds.map(id => players.find(p => p.id === id)?.player_name ?? id).join(", ");
+    await pushLog({
+      id: `attack-${Date.now()}`,
+      playerName: enemy.name,
+      investigator: "",
+      action: "Enemy Attack",
+      detail: `${enemy.name} attacked ${targets || "nobody"} — deals ${enemy.damage} DMG / ${enemy.horror} HOR each`,
+      timestamp: new Date().toISOString(),
+      round: ts.round, actionNum: 0, phase: ts.phase,
+    });
+  };
+
+  const handleDefeatEnemy = async (id: string) => {
+    const ts = turnStateRef.current;
+    const e = (ts.enemies ?? []).find(x => x.id === id);
+    if (!e) return;
+    const nextDoom = e.keywords.includes("Doomed") ? ts.doom + 1 : ts.doom;
+    const next = (ts.enemies ?? []).filter(x => x.id !== id);
+    await pushTurnState({ ...ts, enemies: next, doom: nextDoom });
+    await pushLog({
+      id: `defeat-${Date.now()}`,
+      playerName: leadPlayer?.player_name ?? "",
+      investigator: leadPlayer?.investigator ?? "",
+      action: "Enemy Defeated",
+      detail: `${e.name} defeated${e.keywords.includes("Doomed") ? " — placed 1 doom (Doomed keyword)" : ""}`,
+      timestamp: new Date().toISOString(),
+      round: ts.round, actionNum: 0, phase: ts.phase,
+    });
+  };
+
   const toggleEnemyKeyword = (k: string) => setNewEnemy(prev => ({
     ...prev, keywords: prev.keywords.includes(k) ? prev.keywords.filter(x => x !== k) : [...prev.keywords, k],
   }));
+
+  // ── Scenario end helpers ──────────────────────────────────
+  const handleEndScenario = async () => {
+    const ts = turnStateRef.current;
+    await pushTurnState({ ...ts, scenarioEnded: true, scenarioResolution: scenarioResolutionText });
+    await pushLog({
+      id: `scenario-end-${Date.now()}`,
+      playerName: leadPlayer?.player_name ?? "",
+      investigator: leadPlayer?.investigator ?? "",
+      action: "Scenario Ended",
+      detail: scenarioResolutionText || "Scenario concluded",
+      timestamp: new Date().toISOString(),
+      round: ts.round, actionNum: 0, phase: ts.phase,
+    });
+    setShowEndScenario(false);
+    setShowScenarioSummary(true);
+  };
 
   // ── Name identification ───────────────────────────────────
   // Primary identity: bind this device to a specific player UUID (per-session)
@@ -1544,13 +1653,17 @@ export default function SessionPage() {
                       {canAdvance && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(106,171,247,0.15)", color: "#6aabf7" }}>READY!</span>}
                     </div>
                     <p className="text-[11px] font-decorative font-bold text-ark-text truncate mb-1.5">{turnState.actName}</p>
-                    {/* Clue progress bar */}
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020" }}>
-                        <div className="h-full rounded-full transition-all duration-500"
-                          style={{ width: `${Math.min((totalClues / Math.max(1, needed)) * 100, 100)}%`, background: canAdvance ? "linear-gradient(90deg, #3a6ab8, #6aabf7)" : "linear-gradient(90deg, #2a4a68, #4a8ab8)" }} />
-                      </div>
-                      <span className="text-[10px] font-mono font-bold flex-shrink-0" style={{ color: canAdvance ? "#6aabf7" : "#4a6a8a" }}>{totalClues}/{needed}</span>
+                    {/* Clue pips (like doom pips) */}
+                    <div className="flex items-center gap-1 flex-wrap">
+                      {Array.from({ length: needed }).map((_, i) => (
+                        <div key={i} className="w-5 h-5 rounded-md flex items-center justify-center transition-all duration-200"
+                          style={i < totalClues
+                            ? { background: canAdvance ? "rgba(106,171,247,0.75)" : "rgba(74,138,184,0.5)", border: `1px solid ${canAdvance ? "#6aabf7" : "#4a8ab8"}`, boxShadow: canAdvance ? "0 0 6px rgba(106,171,247,0.4)" : "none" }
+                            : { background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020" }}>
+                          {i < totalClues && <ClueIcon size={9} color={canAdvance ? "#6aabf7" : "#4a8ab8"} />}
+                        </div>
+                      ))}
+                      {needed > 0 && <span className="text-[10px] font-mono font-bold ml-1" style={{ color: canAdvance ? "#6aabf7" : "#4a6a8a" }}>{totalClues}/{needed}</span>}
                     </div>
                   </>
                 );
@@ -1564,11 +1677,11 @@ export default function SessionPage() {
               <button onClick={() => setShowCampaignPicker(true)}
                 className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
                 style={{ background: "rgba(124,92,191,0.12)", border: "1px solid rgba(124,92,191,0.3)", color: "#a888e8" }}>
-                📖 Campaign
+                Campaign
               </button>
               <button onClick={handleAdvanceAct}
                 className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
-                style={{ background: "rgba(124,92,191,0.12)", border: "1px solid rgba(124,92,191,0.3)", color: "#a888e8" }}>
+                style={{ background: "rgba(106,171,247,0.12)", border: "1px solid rgba(106,171,247,0.3)", color: "#6aabf7" }}>
                 Advance Act →
               </button>
               {turnState.campaignId && turnState.campaignId !== "custom" && (
@@ -1578,9 +1691,150 @@ export default function SessionPage() {
                   Next Scenario ↗
                 </button>
               )}
+              <button onClick={() => setShowEndScenario(true)}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all ml-auto"
+                style={{ background: "rgba(192,57,43,0.1)", border: "1px solid rgba(192,57,43,0.3)", color: "#d96b6b" }}>
+                End Scenario
+              </button>
             </div>
           )}
         </div>
+
+        {/* ── End Scenario modal ── */}
+        {showEndScenario && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}>
+            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#1a1410", border: "1px solid rgba(192,57,43,0.4)" }}>
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.4)" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#d96b6b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </div>
+                <h3 className="font-decorative font-bold text-lg text-ark-text">End Scenario</h3>
+                <p className="text-xs text-ark-text-muted mt-1">This will lock the session and show the summary to all players.</p>
+              </div>
+              <div>
+                <label className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted block mb-2">How did it end? (optional)</label>
+                <input value={scenarioResolutionText} onChange={e => setScenarioResolutionText(e.target.value)}
+                  placeholder="e.g. Victory — Cultist defeated, 3 trauma taken"
+                  className="ark-input w-full px-3 py-2.5 rounded-lg text-sm" />
+              </div>
+              <div className="flex gap-3">
+                <button onClick={() => setShowEndScenario(false)} className="btn-ghost flex-1 py-2.5 text-sm rounded-xl">Cancel</button>
+                <button onClick={handleEndScenario}
+                  className="flex-1 py-2.5 text-sm rounded-xl font-bold font-decorative transition-all"
+                  style={{ background: "linear-gradient(135deg, rgba(192,57,43,0.8), rgba(140,30,20,0.8))", color: "#fff", border: "1px solid rgba(217,107,107,0.4)" }}>
+                  End Scenario
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Scenario Summary screen (shown to all devices) ── */}
+        {showScenarioSummary && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" style={{ background: "rgba(0,0,0,0.92)", backdropFilter: "blur(10px)" }}>
+            <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col" style={{ background: "#110d08", border: "1px solid rgba(201,151,58,0.35)", maxHeight: "90vh" }}>
+              <div className="px-5 py-4 text-center flex-shrink-0" style={{ background: "linear-gradient(135deg, rgba(201,151,58,0.12), rgba(10,8,5,0.95))", borderBottom: "1px solid rgba(201,151,58,0.2)" }}>
+                <div className="text-2xl mb-2">📜</div>
+                <h2 className="font-decorative font-bold text-xl text-ark-text">Scenario Complete</h2>
+                {turnState.scenarioResolution && (
+                  <p className="text-sm mt-1" style={{ color: "#c9973a" }}>{turnState.scenarioResolution}</p>
+                )}
+                <p className="text-xs text-ark-text-muted mt-1">Round {turnState.round} · {players.length} investigator{players.length !== 1 ? "s" : ""}</p>
+              </div>
+              <div className="overflow-y-auto flex-1 px-5 py-4 space-y-3">
+                {players.map(p => {
+                  const inv = investigators.find(i => i.name === p.investigator);
+                  const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
+                  const isDefeated = p.damage >= (inv?.health ?? 9);
+                  const isInsane = p.horror >= (inv?.sanity ?? 7);
+                  return (
+                    <div key={p.id} className="rounded-xl p-4" style={{ background: "rgba(26,20,16,0.8)", border: `1px solid ${cls.border}` }}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm" style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }}>{p.investigator[0]}</div>
+                        <div>
+                          <p className="font-decorative font-bold text-sm text-ark-text">{p.player_name}</p>
+                          <p className="text-[11px]" style={{ color: cls.hex }}>{p.investigator} · {inv?.class}</p>
+                        </div>
+                        {(isDefeated || isInsane) && (
+                          <span className="ml-auto text-[9px] font-mono font-bold px-2 py-0.5 rounded" style={{ background: isDefeated ? "rgba(192,57,43,0.2)" : "rgba(124,92,191,0.2)", color: isDefeated ? "#d96b6b" : "#a888e8" }}>
+                            {isDefeated ? "DEFEATED" : "INSANE"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[
+                          { label: "Damage", val: p.damage, max: inv?.health ?? 9, color: "#d96b6b" },
+                          { label: "Horror", val: p.horror, max: inv?.sanity ?? 7, color: "#a888e8" },
+                          { label: "Resources", val: p.resources, max: null, color: "#c9973a" },
+                          { label: "Clues", val: p.clues, max: null, color: "#6aabf7" },
+                        ].map(s => (
+                          <div key={s.label} className="text-center py-2 rounded-lg" style={{ background: "rgba(10,8,5,0.4)" }}>
+                            <div className="text-[8px] font-mono text-ark-text-muted">{s.label}</div>
+                            <div className="font-mono font-bold text-sm mt-0.5" style={{ color: s.color }}>{s.val}{s.max ? `/${s.max}` : ""}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+                {/* Log summary */}
+                <div className="rounded-xl p-3" style={{ background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020" }}>
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-2">{actionLog.length} actions logged this scenario</p>
+                  {actionLog.filter(e => e.action === "Enemy Defeated").length > 0 && (
+                    <p className="text-xs text-ark-text-muted">Enemies defeated: {actionLog.filter(e => e.action === "Enemy Defeated").map(e => e.detail.split(" defeated")[0]).join(", ")}</p>
+                  )}
+                </div>
+              </div>
+              <div className="px-5 py-4 flex-shrink-0 space-y-2" style={{ borderTop: "1px solid rgba(201,151,58,0.2)" }}>
+                {isLead && (
+                  <button onClick={() => { setShowScenarioSummary(false); setShowCarryOverModal(true); }}
+                    className="w-full py-3 rounded-xl font-bold font-decorative text-sm"
+                    style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#0a0805" }}>
+                    Continue to Next Scenario →
+                  </button>
+                )}
+                <button onClick={() => setShowScenarioSummary(false)}
+                  className="w-full py-2.5 rounded-xl text-sm btn-ghost">
+                  Close Summary
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Carry-Over modal (next session setup) ── */}
+        {showCarryOverModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}>
+            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#1a1410", border: "1px solid rgba(91,191,138,0.3)" }}>
+              <h3 className="font-decorative font-bold text-lg text-ark-text">Next Session Carry-Over</h3>
+              <p className="text-xs text-ark-text-muted">When starting the next session, remind your group which of these carry over between scenarios:</p>
+              <div className="space-y-2">
+                {[
+                  { label: "XP (experience points)", color: "#c9973a", carries: true, note: "Spend between scenarios on upgrades" },
+                  { label: "Trauma (physical + mental)", color: "#d96b6b", carries: true, note: "Reduce max HP/Sanity permanently" },
+                  { label: "Resources & Clues", color: "#6aabf7", carries: false, note: "Reset to starting values (5 resources, 0 clues)" },
+                  { label: "Damage & Horror", color: "#a888e8", carries: false, note: "Healed between scenarios (unless defeated/insane)" },
+                  { label: "Cards in hand & deck", color: "#5bbf8a", carries: true, note: "Keep your deck; some cards may be lost via trauma" },
+                  { label: "Earned campaign items", color: "#c9973a", carries: true, note: "Story items and campaign log entries carry over" },
+                ].map(item => (
+                  <div key={item.label} className="flex items-start gap-2.5 p-2.5 rounded-lg" style={{ background: item.carries ? "rgba(10,8,5,0.5)" : "rgba(26,20,16,0.4)", border: `1px solid ${item.carries ? item.color + "30" : "#3d302010"}` }}>
+                    <span className="text-sm flex-shrink-0">{item.carries ? "✓" : "✗"}</span>
+                    <div>
+                      <p className="text-xs font-semibold" style={{ color: item.carries ? item.color : "#5a4838" }}>{item.label}</p>
+                      <p className="text-[10px] text-ark-text-muted">{item.note}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => { setShowCarryOverModal(false); handleAdvanceScenario(); }}
+                className="w-full py-3 rounded-xl font-bold font-decorative text-sm"
+                style={{ background: "linear-gradient(135deg, rgba(91,191,138,0.8), rgba(58,158,107,0.8))", color: "#0a0805" }}>
+                Got it — Advance to Next Scenario
+              </button>
+              <button onClick={() => setShowCarryOverModal(false)} className="btn-ghost w-full py-2 text-sm rounded-xl">Close</button>
+            </div>
+          </div>
+        )}
 
         {/* ── Campaign picker modal ── */}
         {showCampaignPicker && (
@@ -1694,30 +1948,80 @@ export default function SessionPage() {
           </div>
         )}
 
-        {/* ── Active turn indicator (when it's NOT my turn during investigation) ── */}
+        {/* ── Active turn indicator + live recent action feed ── */}
         {turnState.phase === "investigation" && currentPlayer && !isMyTurn && (
-          <div className="rounded-xl p-3 mb-4 flex items-center gap-3"
-            style={{ background: "rgba(26,20,16,0.7)", border: "1px solid #3d3020" }}>
+          <div className="rounded-xl mb-4 overflow-hidden" style={{ border: "1px solid #3d3020" }}>
+            {/* Who's taking their turn */}
             {(() => {
               const inv = investigators.find(i => i.name === currentPlayer.investigator);
               const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
-              return (<>
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm" style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }}>{currentPlayer.investigator[0]}</div>
-                <div className="flex-1">
-                  <span className="font-decorative font-bold text-sm text-ark-text">{currentPlayer.player_name}</span>
-                  <span className="text-ark-text-muted text-xs ml-2">is taking their turn…</span>
+              return (
+                <div className="p-3 flex items-center gap-3" style={{ background: "rgba(26,20,16,0.7)" }}>
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0" style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }}>{currentPlayer.investigator[0]}</div>
+                  <div className="flex-1 min-w-0">
+                    <span className="font-decorative font-bold text-sm text-ark-text">{currentPlayer.player_name}</span>
+                    <span className="text-ark-text-muted text-xs ml-2">is taking their turn</span>
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {[0,1,2].map(i => (
+                      <div key={i} className="w-5 h-5 rounded-full flex items-center justify-center"
+                        style={i < (3 - turnState.actionsUsed)
+                          ? { background: cls.bg, border: `1px solid ${cls.border}` }
+                          : { background: "rgba(10,8,5,0.6)", border: "1px solid #2e2318", opacity: 0.4 }}>
+                        <ActionSymbol size={10} />
+                      </div>
+                    ))}
+                    <span className="text-[10px] text-ark-text-muted ml-1">{3 - turnState.actionsUsed} left</span>
+                  </div>
                 </div>
-                <div className="flex gap-1">
-                  {[0,1,2].map(i => (
-                    <div key={i} className="w-6 h-6 rounded-full flex items-center justify-center"
-                      style={i < (3 - turnState.actionsUsed) ? { background: cls.bg, border: `1px solid ${cls.border}` } : { background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020" }}>
-                      <ActionSymbol size={12} />
-                    </div>
-                  ))}
-                </div>
-                <span className="text-xs text-ark-text-muted">{3 - turnState.actionsUsed} left</span>
-              </>);
+              );
             })()}
+            {/* Live recent actions (last 3 actions from current player this round) */}
+            {(() => {
+              const recentActions = actionLog
+                .filter(e => e.playerName === currentPlayer.player_name && e.round === turnState.round && e.action !== "End Turn" && e.action !== "Enemy Spawned" && e.action !== "Enemy Attack" && e.action !== "Enemy Defeated")
+                .slice(0, 3);
+              if (recentActions.length === 0) return null;
+              const inv = investigators.find(i => i.name === currentPlayer.investigator);
+              const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
+              return (
+                <div className="px-3 pb-2 space-y-1" style={{ background: "rgba(16,12,8,0.6)", borderTop: "1px solid #2e2318" }}>
+                  {recentActions.map(e => {
+                    const adef = ACTIONS.find(a => a.label === e.action);
+                    return (
+                      <div key={e.id} className="flex items-center gap-2 py-1">
+                        <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+                          style={{ background: adef ? adef.bg : "rgba(61,48,32,0.3)" }}>
+                          {adef?.skill ? <SkillIcon skill={adef.skill} size={9} /> : <ActionSymbol size={9} />}
+                        </div>
+                        <span className="text-[10px] font-semibold flex-shrink-0" style={{ color: adef?.color ?? cls.hex }}>{e.action}</span>
+                        {e.detail && <span className="text-[10px] text-ark-text-muted truncate">{e.detail}</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* ── Quick-access bar: enemies count + log shortcut ── */}
+        {turnState.gameStarted && (
+          <div className="flex gap-2 mb-4">
+            <button onClick={() => setActiveTab("enemies")}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all flex-1 justify-center"
+              style={enemies.length > 0
+                ? { background: "rgba(217,107,107,0.1)", border: "1px solid rgba(217,107,107,0.35)", color: "#d96b6b" }
+                : { background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020", color: "#5a4838" }}>
+              <CombatIcon size={12} color={enemies.length > 0 ? "#d96b6b" : "#5a4838"} />
+              {enemies.length > 0 ? `${enemies.length} Enem${enemies.length === 1 ? "y" : "ies"} in Play` : "No Enemies"}
+            </button>
+            <button onClick={() => setActiveTab("log")}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all flex-1 justify-center"
+              style={{ background: "rgba(26,20,16,0.6)", border: "1px solid #3d3020", color: "#6b5840" }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              {actionLog.length} Action{actionLog.length !== 1 ? "s" : ""} Logged
+            </button>
           </div>
         )}
 
@@ -1830,7 +2134,7 @@ export default function SessionPage() {
                     const sanityPct = Math.min((player.horror / (inv?.sanity ?? 7)) * 100, 100);
                     const isDefeated = player.damage >= (inv?.health ?? 9);
                     const isInsane = player.horror >= (inv?.sanity ?? 7);
-                    const engagedEnemies = enemies.filter(e => e.engagedPlayerId === player.id);
+                    const engagedEnemies = enemies.filter(e => e.engagedPlayerIds?.includes(player.id));
 
                     return (
                       <div key={player.id} className="rounded-xl p-4 relative transition-all duration-300"
@@ -2000,8 +2304,8 @@ export default function SessionPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-decorative font-bold text-base text-ark-text">Enemy Tracker</h2>
-                <p className="text-xs text-ark-text-muted">Track active enemies, their stats, keywords, and engaged investigator</p>
+                <h2 className="font-decorative font-bold text-base text-ark-text">Enemies in Play</h2>
+                <p className="text-xs text-ark-text-muted">Tap a player button to engage/disengage · Exhaust after successful evade</p>
               </div>
               <button onClick={() => setShowAddEnemy(!showAddEnemy)}
                 className="text-xs font-semibold font-decorative px-3 py-1.5 rounded-lg"
@@ -2013,11 +2317,15 @@ export default function SessionPage() {
             {showAddEnemy && (
               <div className="rounded-xl p-4 space-y-3" style={{ background: "rgba(217,107,107,0.05)", border: "1px solid rgba(217,107,107,0.25)" }}>
                 <h4 className="font-decorative font-bold text-sm" style={{ color: "#d96b6b" }}>Spawn Enemy</h4>
-                <input value={newEnemy.name} onChange={e => setNewEnemy(p => ({ ...p, name: e.target.value }))} placeholder="Enemy name" className="ark-input w-full px-3 py-2 rounded-lg text-sm" />
+                <input value={newEnemy.name} onChange={e => setNewEnemy(p => ({ ...p, name: e.target.value }))}
+                  onKeyDown={e => e.key === "Enter" && handleAddEnemy()}
+                  placeholder="Enemy name (from encounter card)" className="ark-input w-full px-3 py-2 rounded-lg text-sm" autoFocus />
                 <div className="grid grid-cols-3 gap-2">
                   {(["fightVal","evadeVal","health","damage","horror"] as const).map(f => (
                     <div key={f}>
-                      <label className="text-[10px] font-mono uppercase text-ark-text-muted block mb-1">{{fightVal:"Fight",evadeVal:"Evade",health:"HP",damage:"DMG",horror:"HOR"}[f]}</label>
+                      <label className="text-[10px] font-mono uppercase text-ark-text-muted block mb-1">
+                        {({fightVal:"Fight",evadeVal:"Evade",health:"Max HP",damage:"Atk DMG",horror:"Atk HOR"} as Record<string,string>)[f]}
+                      </label>
                       <div className="flex items-center gap-1">
                         <button onClick={() => setNewEnemy(p => ({ ...p, [f]: Math.max(0, p[f] - 1) }))} className="w-6 h-6 rounded text-sm font-bold" style={{ background: "rgba(217,107,107,0.1)", color: "#d96b6b" }}>−</button>
                         <span className="font-mono font-bold text-sm w-6 text-center text-ark-text">{newEnemy[f]}</span>
@@ -2027,7 +2335,7 @@ export default function SessionPage() {
                   ))}
                 </div>
                 <div>
-                  <label className="text-[10px] font-mono uppercase text-ark-text-muted block mb-1">Keywords</label>
+                  <label className="text-[10px] font-mono uppercase text-ark-text-muted block mb-1">Keywords <span className="normal-case text-[9px]">(from card)</span></label>
                   <div className="flex flex-wrap gap-1.5">
                     {ENEMY_KEYWORDS.map(k => (
                       <button key={k.key} onClick={() => toggleEnemyKeyword(k.key)}
@@ -2040,11 +2348,46 @@ export default function SessionPage() {
                     ))}
                   </div>
                 </div>
+                {/* Initial engagement */}
                 {players.length > 0 && (
-                  <select value={newEnemy.engagedPlayerId} onChange={e => setNewEnemy(p => ({ ...p, engagedPlayerId: e.target.value }))} className="ark-input w-full px-3 py-2 rounded-lg text-sm">
-                    <option value="">-- Aloof / unengaged --</option>
-                    {players.map(p => <option key={p.id} value={p.id}>{p.player_name} ({p.investigator})</option>)}
-                  </select>
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-ark-text-muted block mb-1.5">
+                      Engaged with {newEnemy.keywords.includes("Massive") ? "(Massive — can select multiple)" : "(tap to select)"}
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {players.map(p => {
+                        const inv = investigators.find(i => i.name === p.investigator);
+                        const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
+                        const selected = newEnemy.engagedPlayerIds.includes(p.id);
+                        return (
+                          <button key={p.id}
+                            onClick={() => {
+                              const isMassive = newEnemy.keywords.includes("Massive");
+                              setNewEnemy(prev => ({
+                                ...prev,
+                                engagedPlayerIds: isMassive
+                                  ? selected ? prev.engagedPlayerIds.filter(id => id !== p.id) : [...prev.engagedPlayerIds, p.id]
+                                  : selected ? [] : [p.id]
+                              }));
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                            style={selected
+                              ? { background: cls.bg, border: `2px solid ${cls.border}`, color: cls.hex }
+                              : { background: "rgba(10,8,5,0.4)", border: "1px solid #3d3020", color: "#5a4838" }}>
+                            <span>{p.player_name}</span>
+                          </button>
+                        );
+                      })}
+                      <button
+                        onClick={() => setNewEnemy(prev => ({ ...prev, engagedPlayerIds: [] }))}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                        style={newEnemy.engagedPlayerIds.length === 0
+                          ? { background: "rgba(124,92,191,0.2)", border: "2px solid rgba(124,92,191,0.4)", color: "#a888e8" }
+                          : { background: "rgba(10,8,5,0.4)", border: "1px solid #3d3020", color: "#5a4838" }}>
+                        Aloof / unengaged
+                      </button>
+                    </div>
+                  </div>
                 )}
                 <div className="flex gap-2">
                   <button onClick={() => setShowAddEnemy(false)} className="btn-ghost flex-1 py-2 text-sm rounded-lg">Cancel</button>
@@ -2053,78 +2396,133 @@ export default function SessionPage() {
               </div>
             )}
 
-            {/* Keyword guide */}
-            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(217,107,107,0.2)" }}>
-              <div className="px-4 py-2 flex items-center gap-2" style={{ background: "rgba(217,107,107,0.05)", borderBottom: "1px solid rgba(217,107,107,0.2)" }}>
-                <h3 className="font-decorative font-bold text-sm text-ark-text">Enemy Keyword Guide</h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-y divide-ark-border" style={{ background: "rgba(26,20,16,0.6)" }}>
-                {ENEMY_KEYWORDS.map(kw => (
-                  <div key={kw.key} className="flex items-start gap-3 px-4 py-3">
-                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold flex-shrink-0 mt-0.5" style={{ background: `${kw.color}18`, border: `1px solid ${kw.color}40`, color: kw.color }}>{kw.key}</span>
-                    <p className="text-xs text-ark-text-muted leading-relaxed">{kw.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Active enemies */}
             {enemies.length === 0 ? (
               <div className="rounded-xl p-10 text-center" style={{ background: "rgba(26,20,16,0.5)", border: "1px dashed rgba(217,107,107,0.25)" }}>
-                <p className="text-ark-text-muted text-sm">No enemies in play.</p>
+                <CombatIcon size={28} color="#3a2a20" />
+                <p className="text-ark-text-muted text-sm mt-3">No enemies in play.</p>
+                <p className="text-[10px] text-ark-text-muted mt-1">Spawn one when an encounter card reveals an enemy.</p>
               </div>
             ) : enemies.map(enemy => {
-              const engagedPlayer = players.find(p => p.id === enemy.engagedPlayerId);
-              const hpPct = Math.min((enemy.currentDamage / enemy.health) * 100, 100);
+              const hpPct = Math.min((enemy.currentDamage / Math.max(1, enemy.health)) * 100, 100);
+              const isMassive = enemy.keywords.includes("Massive");
               return (
-                <div key={enemy.id} className="rounded-xl p-4" style={{ background: "rgba(26,16,10,0.8)", border: "1px solid rgba(217,107,107,0.25)" }}>
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div>
-                      <h4 className="font-decorative font-bold text-sm text-ark-text">{enemy.name}</h4>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {enemy.keywords.map(kw => {
+                <div key={enemy.id} className="rounded-xl overflow-hidden"
+                  style={{ border: enemy.exhausted ? "1px solid rgba(106,171,247,0.3)" : "1px solid rgba(217,107,107,0.3)", opacity: enemy.exhausted ? 0.75 : 1 }}>
+                  {/* Enemy header */}
+                  <div className="px-4 py-3 flex items-start justify-between gap-3"
+                    style={{ background: enemy.exhausted ? "rgba(10,20,30,0.8)" : "rgba(26,12,8,0.9)" }}>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="font-decorative font-bold text-sm text-ark-text">{enemy.name}</h4>
+                        {enemy.exhausted && <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(106,171,247,0.15)", border: "1px solid rgba(106,171,247,0.3)", color: "#6aabf7" }}>EXHAUSTED</span>}
+                        {isMassive && <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(232,168,74,0.15)", border: "1px solid rgba(232,168,74,0.3)", color: "#e8a84a" }}>MASSIVE</span>}
+                      </div>
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        {enemy.keywords.filter(k => k !== "Massive").map(kw => {
                           const kwDef = ENEMY_KEYWORDS.find(k => k.key === kw);
                           return <span key={kw} className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded" style={{ background: `${kwDef?.color ?? "#888"}18`, border: `1px solid ${kwDef?.color ?? "#888"}40`, color: kwDef?.color ?? "#888" }}>{kw}</span>;
                         })}
                       </div>
                     </div>
-                    <button onClick={() => handleDefeatEnemy(enemy.id)} className="text-[10px] font-decorative font-bold px-2.5 py-1.5 rounded-lg flex-shrink-0" style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.3)", color: "#5bbf8a" }}>Defeat</button>
+                    <button onClick={() => handleDefeatEnemy(enemy.id)}
+                      className="text-[10px] font-decorative font-bold px-2.5 py-1.5 rounded-lg flex-shrink-0 transition-all"
+                      style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.3)", color: "#5bbf8a" }}>
+                      Defeat ✓
+                    </button>
                   </div>
-                  <div className="grid grid-cols-5 gap-2 mb-3">
-                    {[
-                      { label: "Fight", val: enemy.fightVal, color: "#d96b6b" },
-                      { label: "Evade", val: enemy.evadeVal, color: "#e8a84a" },
-                      { label: "DMG",   val: enemy.damage,   color: "#d96b6b" },
-                      { label: "HOR",   val: enemy.horror,   color: "#a888e8" },
-                      { label: "HP",    val: `${enemy.currentDamage}/${enemy.health}`, color: "#5bbf8a" },
-                    ].map(s => (
-                      <div key={s.label} className="text-center py-2 rounded" style={{ background: "rgba(10,8,5,0.4)" }}>
-                        <div className="text-[9px] font-mono text-ark-text-muted">{s.label}</div>
-                        <div className="font-mono font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="h-1.5 rounded-full overflow-hidden mb-2" style={{ background: "rgba(58,158,107,0.12)" }}>
-                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${hpPct}%`, background: hpPct > 66 ? "linear-gradient(90deg, #2a7048, #5bbf8a)" : hpPct > 33 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
-                  </div>
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <div className="flex gap-1">
-                      <button onClick={() => handleEnemyDamage(enemy.id, -1)} className="w-6 h-6 rounded text-xs font-bold" style={{ background: "rgba(58,158,107,0.1)", color: "#5bbf8a", border: "1px solid rgba(58,158,107,0.2)" }}>−</button>
-                      <span className="text-[10px] text-ark-text-muted px-1 self-center">dmg</span>
-                      <button onClick={() => handleEnemyDamage(enemy.id, 1)} className="w-6 h-6 rounded text-xs font-bold" style={{ background: "rgba(217,107,107,0.1)", color: "#d96b6b", border: "1px solid rgba(217,107,107,0.2)" }}>+</button>
+
+                  {/* Stats row */}
+                  <div className="px-4 py-2" style={{ background: "rgba(10,8,5,0.5)" }}>
+                    <div className="grid grid-cols-5 gap-1.5 mb-2">
+                      {[
+                        { label: "Fight", val: enemy.fightVal, color: "#d96b6b", tip: "Your Combat vs this" },
+                        { label: "Evade", val: enemy.evadeVal, color: "#e8a84a", tip: "Your Agility vs this" },
+                        { label: "Atk DMG", val: enemy.damage, color: "#d96b6b", tip: "Physical damage per attack" },
+                        { label: "Atk HOR", val: enemy.horror, color: "#a888e8", tip: "Horror per attack" },
+                        { label: `HP ${enemy.currentDamage}/${enemy.health}`, val: null, color: "#5bbf8a", tip: "Current / max health" },
+                      ].map(s => (
+                        <div key={s.label} className="text-center py-1.5 rounded" style={{ background: "rgba(26,20,16,0.6)" }} title={s.tip}>
+                          <div className="text-[8px] font-mono text-ark-text-muted leading-tight">{s.label}</div>
+                          {s.val !== null && <div className="font-mono font-bold text-sm mt-0.5" style={{ color: s.color }}>{s.val}</div>}
+                        </div>
+                      ))}
                     </div>
-                    {players.length > 0 && (
-                      <select value={enemy.engagedPlayerId} onChange={e => setEnemies(prev => prev.map(en => en.id === enemy.id ? { ...en, engagedPlayerId: e.target.value } : en))}
-                        className="ark-input px-2 py-1 rounded text-xs flex-1 min-w-0 max-w-48">
-                        <option value="">-- unengaged --</option>
-                        {players.map(p => <option key={p.id} value={p.id}>{p.player_name}</option>)}
-                      </select>
-                    )}
-                    <span className="text-[10px] text-ark-text-muted">Engaged: <span className="font-semibold text-ark-text">{engagedPlayer?.player_name ?? "none"}</span></span>
+                    {/* HP bar */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <button onClick={() => handleEnemyDamage(enemy.id, -1)} className="w-6 h-6 rounded text-xs font-bold flex-shrink-0" style={{ background: "rgba(58,158,107,0.1)", color: "#5bbf8a", border: "1px solid rgba(58,158,107,0.2)" }}>−</button>
+                      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "rgba(10,8,5,0.5)" }}>
+                        <div className="h-full rounded-full transition-all duration-500"
+                          style={{ width: `${100 - hpPct}%`, background: (100 - hpPct) > 66 ? "linear-gradient(90deg, #2a7048, #5bbf8a)" : (100 - hpPct) > 33 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
+                      </div>
+                      <button onClick={() => handleEnemyDamage(enemy.id, 1)} className="w-6 h-6 rounded text-xs font-bold flex-shrink-0" style={{ background: "rgba(217,107,107,0.1)", color: "#d96b6b", border: "1px solid rgba(217,107,107,0.2)" }}>+</button>
+                      <span className="text-[10px] font-mono text-ark-text-muted flex-shrink-0 w-10 text-right">{enemy.health - enemy.currentDamage} HP left</span>
+                    </div>
+                  </div>
+
+                  {/* Engagement + controls */}
+                  <div className="px-4 py-3 space-y-2" style={{ background: "rgba(16,10,6,0.7)", borderTop: "1px solid rgba(217,107,107,0.15)" }}>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[9px] font-mono uppercase tracking-widest text-ark-text-muted flex-shrink-0">
+                        {isMassive ? "Engaged (Massive — all nearby)" : "Engaged with"}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {players.map(p => {
+                        const inv = investigators.find(i => i.name === p.investigator);
+                        const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
+                        const engaged = enemy.engagedPlayerIds.includes(p.id);
+                        return (
+                          <button key={p.id} onClick={() => handleEnemyEngage(enemy.id, p.id)}
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all"
+                            style={engaged
+                              ? { background: cls.bg, border: `2px solid ${cls.border}`, color: cls.hex, boxShadow: `0 0 8px ${cls.glow}` }
+                              : { background: "rgba(10,8,5,0.5)", border: "1px solid #3d3020", color: "#5a4838" }}>
+                            {engaged && <CombatIcon size={9} color={cls.hex} />}
+                            {p.player_name}
+                          </button>
+                        );
+                      })}
+                      {enemy.engagedPlayerIds.length === 0 && (
+                        <span className="text-[10px] text-ark-text-muted italic px-2 self-center">None — Aloof or unengaged</span>
+                      )}
+                    </div>
+                    {/* Action buttons */}
+                    <div className="flex gap-2 pt-1">
+                      <button onClick={() => handleToggleExhaust(enemy.id)}
+                        className="flex-1 py-1.5 rounded-lg text-[11px] font-semibold font-decorative transition-all"
+                        style={enemy.exhausted
+                          ? { background: "rgba(91,191,138,0.12)", border: "1px solid rgba(91,191,138,0.3)", color: "#5bbf8a" }
+                          : { background: "rgba(106,171,247,0.08)", border: "1px solid rgba(106,171,247,0.25)", color: "#6aabf7" }}>
+                        {enemy.exhausted ? "Ready (Upkeep)" : "Exhaust (Evaded)"}
+                      </button>
+                      {enemy.engagedPlayerIds.length > 0 && (
+                        <button onClick={() => handleEnemyAttack(enemy)}
+                          className="flex-1 py-1.5 rounded-lg text-[11px] font-semibold font-decorative transition-all"
+                          style={{ background: "rgba(217,107,107,0.1)", border: "1px solid rgba(217,107,107,0.3)", color: "#d96b6b" }}>
+                          Log Attack
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
             })}
+
+            {/* Collapsible keyword guide */}
+            <details className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(217,107,107,0.2)" }}>
+              <summary className="px-4 py-2 cursor-pointer flex items-center gap-2 text-xs font-decorative font-bold text-ark-text-muted" style={{ background: "rgba(217,107,107,0.04)" }}>
+                Enemy Keyword Guide
+              </summary>
+              <div className="grid grid-cols-1 sm:grid-cols-2" style={{ background: "rgba(26,20,16,0.6)" }}>
+                {ENEMY_KEYWORDS.map(kw => (
+                  <div key={kw.key} className="flex items-start gap-3 px-4 py-3" style={{ borderTop: "1px solid #2e2318" }}>
+                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold flex-shrink-0 mt-0.5" style={{ background: `${kw.color}18`, border: `1px solid ${kw.color}40`, color: kw.color }}>{kw.key}</span>
+                    <p className="text-xs text-ark-text-muted leading-relaxed">{kw.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </details>
           </div>
         )}
 
