@@ -322,6 +322,10 @@ export default function SessionPage() {
   // Tabs
   const [activeTab, setActiveTab] = useState<"board" | "enemies" | "log" | "reference">("board");
 
+  // Lead "Acting as" — lets the lead log actions on behalf of any player
+  // null = logging for the actual current player (default); a player ID = logging for that specific player
+  const [actingAsPlayerId, setActingAsPlayerId] = useState<string | null>(null);
+
   // Enemies — synced via TurnState (Supabase real-time to all devices)
   const enemies: EnemyState[] = turnState.enemies ?? [];
   const [showAddEnemy, setShowAddEnemy] = useState(false);
@@ -473,14 +477,22 @@ export default function SessionPage() {
   }, [session, actionLog]);
 
   const handleLogAction = async () => {
-    if (!currentPlayer || !selectedAction || !session) return;
+    if (!selectedAction || !session) return;
     const ts = turnStateRef.current;
+
+    // Determine which player this action is being logged for.
+    // Lead can act as any player; otherwise fall back to the current turn player.
+    const logForPlayer = actingAsPlayerId
+      ? (players.find(p => p.id === actingAsPlayerId) ?? currentPlayer)
+      : currentPlayer;
+    if (!logForPlayer) return;
+
     const newActionsUsed = ts.actionsUsed + 1;
 
     const entry: ActionLogEntry = {
       id: `${Date.now()}-${Math.random()}`,
-      playerName: currentPlayer.player_name,
-      investigator: currentPlayer.investigator,
+      playerName: logForPlayer.player_name,
+      investigator: logForPlayer.investigator,
       action: selectedAction.label,
       detail: actionDetail || selectedAction.desc,
       timestamp: new Date().toISOString(),
@@ -2542,6 +2554,51 @@ export default function SessionPage() {
               </div>
             )}
 
+            {/* ── "Acting as" switcher — lead only, Investigation phase ── */}
+            {isLead && turnState.phase === "investigation" && orderedPlayers.length > 1 && (
+              <div className="rounded-xl px-4 py-3 flex items-center gap-3 flex-wrap"
+                style={{ background: "rgba(112,80,184,0.07)", border: "1px solid rgba(112,80,184,0.25)" }}>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[9px] font-mono uppercase tracking-widest mb-1" style={{ color: "#9070d8" }}>
+                    ★ Lead — Logging actions for:
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {/* "Current player" option (default) */}
+                    <button
+                      onClick={() => setActingAsPlayerId(null)}
+                      className="px-2.5 py-1 rounded-lg text-[11px] font-decorative font-semibold transition-all"
+                      style={actingAsPlayerId === null
+                        ? { background: "rgba(112,80,184,0.22)", border: "1px solid rgba(112,80,184,0.55)", color: "#9070d8" }
+                        : { background: "transparent", border: "1px solid #c8a860", color: "#5a4838" }}>
+                      Current Player
+                    </button>
+                    {/* One button per player */}
+                    {orderedPlayers.map(p => {
+                      const pInv = investigators.find(i => i.name === p.investigator);
+                      const pCls = CLASS_COLORS[pInv?.class ?? "Guardian"];
+                      const isSelected = actingAsPlayerId === p.id;
+                      return (
+                        <button key={p.id}
+                          onClick={() => setActingAsPlayerId(isSelected ? null : p.id)}
+                          className="px-2.5 py-1 rounded-lg text-[11px] font-decorative font-semibold transition-all"
+                          style={isSelected
+                            ? { background: `${pCls.bg}`, border: `1px solid ${pCls.border}`, color: pCls.hex }
+                            : { background: "transparent", border: "1px solid #c8a860", color: "#5a4838" }}>
+                          {p.player_name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                {actingAsPlayerId && (
+                  <div className="text-[10px] font-mono px-2 py-1 rounded flex-shrink-0"
+                    style={{ background: "rgba(112,80,184,0.12)", color: "#9070d8", border: "1px solid rgba(112,80,184,0.25)" }}>
+                    Actions → {players.find(p => p.id === actingAsPlayerId)?.player_name}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Add investigator */}
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -2721,38 +2778,58 @@ export default function SessionPage() {
                           </div>
                         </div>
 
-                        {/* Resource stats */}
-                        <div className="grid grid-cols-2 gap-1 mb-2.5">
-                          {[
-                            { label: "Resources", val: player.resources, color: "#c9973a", field: "resources" as const },
-                            { label: "Clues", val: player.clues, color: "#4a8fd4", field: "clues" as const },
-                          ].map(s => (
-                            <div key={s.label} className="flex items-center gap-1 py-1 px-2 rounded" style={{ background: "rgba(236,220,176,0.35)" }}>
-                              <div className="flex-1">
-                                <div className="text-[9px] font-mono text-ark-text-muted">{s.label}</div>
-                                <div className="font-mono font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
-                              </div>
-                              <div className="flex gap-0.5">
-                                <button onClick={() => handleStatChange(player, s.field, -1)} className="w-4 h-4 rounded text-[8px] font-bold" style={{ background: "rgba(236,220,176,0.75)" }}>−</button>
-                                <button onClick={() => handleStatChange(player, s.field, 1)} className="w-4 h-4 rounded text-[8px] font-bold" style={{ background: "rgba(236,220,176,0.75)" }}>+</button>
-                              </div>
+                        {/* Resources — prominent token row */}
+                        <div className="flex items-center justify-between gap-2 mb-2 px-3 py-2 rounded-xl"
+                          style={{ background: "rgba(201,151,58,0.10)", border: "1px solid rgba(201,151,58,0.35)" }}>
+                          <div className="flex items-center gap-2">
+                            <ResourceIcon size={18} color="#c9973a" />
+                            <div>
+                              <div className="text-[9px] font-mono uppercase tracking-widest" style={{ color: "#8a6820" }}>Resources</div>
+                              <div className="font-mono font-bold text-xl leading-none" style={{ color: "#5a3a08" }}>{player.resources}</div>
                             </div>
-                          ))}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <button onClick={() => handleStatChange(player, "resources", -1)} disabled={player.resources === 0}
+                              className="w-7 h-7 rounded-lg font-bold text-sm transition-all disabled:opacity-30"
+                              style={{ background: "rgba(201,151,58,0.18)", border: "1px solid rgba(201,151,58,0.4)", color: "#8a6820" }}>−</button>
+                            <button onClick={() => handleStatChange(player, "resources", 1)}
+                              className="w-7 h-7 rounded-lg font-bold text-sm transition-all"
+                              style={{ background: "rgba(201,151,58,0.28)", border: "1px solid rgba(201,151,58,0.5)", color: "#5a3a08" }}>+</button>
+                          </div>
                         </div>
 
-                        {/* Skill stats */}
+                        {/* Clues — compact row */}
+                        <div className="flex items-center justify-between gap-2 mb-2.5 px-3 py-1.5 rounded-xl"
+                          style={{ background: "rgba(58,173,152,0.08)", border: "1px solid rgba(58,173,152,0.25)" }}>
+                          <div className="flex items-center gap-2">
+                            <ClueIcon size={15} color="#3aad98" />
+                            <div>
+                              <div className="text-[9px] font-mono uppercase tracking-widest" style={{ color: "#2a7060" }}>Clues</div>
+                              <div className="font-mono font-bold text-base leading-none" style={{ color: "#1a4038" }}>{player.clues}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <button onClick={() => handleStatChange(player, "clues", -1)} disabled={player.clues === 0}
+                              className="w-6 h-6 rounded font-bold text-xs transition-all disabled:opacity-30"
+                              style={{ background: "rgba(58,173,152,0.15)", border: "1px solid rgba(58,173,152,0.3)", color: "#3aad98" }}>−</button>
+                            <button onClick={() => handleStatChange(player, "clues", 1)}
+                              className="w-6 h-6 rounded font-bold text-xs transition-all"
+                              style={{ background: "rgba(58,173,152,0.25)", border: "1px solid rgba(58,173,152,0.4)", color: "#1a6050" }}>+</button>
+                          </div>
+                        </div>
+
+                        {/* Skill stats — icon only, no text label */}
                         {inv && (
                           <div className="grid grid-cols-4 gap-1 pt-2.5" style={{ borderTop: "1px solid rgba(138,104,32,0.2)" }}>
                             {[
-                              { label: "WIL", val: inv.willpower, color: "#9070d8", skill: "WIL" },
-                              { label: "INT", val: inv.intellect, color: "#4a8fd4", skill: "INT" },
-                              { label: "COM", val: inv.combat,    color: "#c03028", skill: "COM" },
-                              { label: "AGI", val: inv.agility,   color: "#3aad98", skill: "AGI" },
+                              { val: inv.willpower, color: "#9070d8", skill: "WIL", title: "Willpower" },
+                              { val: inv.intellect, color: "#c8871a", skill: "INT", title: "Intellect" },
+                              { val: inv.combat,    color: "#c03028", skill: "COM", title: "Combat"    },
+                              { val: inv.agility,   color: "#3aad98", skill: "AGI", title: "Agility"   },
                             ].map(s => (
-                              <div key={s.label} className="text-center py-1.5 rounded" style={{ background: "rgba(236,220,176,0.35)" }}>
-                                <SkillIcon skill={s.skill} size={12} />
-                                <div className="text-[9px] text-ark-text-muted font-mono mt-0.5">{s.label}</div>
-                                <div className="font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
+                              <div key={s.skill} className="text-center py-1.5 rounded" style={{ background: "rgba(236,220,176,0.35)" }} title={s.title}>
+                                <SkillIcon skill={s.skill} size={13} />
+                                <div className="font-bold text-sm mt-0.5" style={{ color: s.color }}>{s.val}</div>
                               </div>
                             ))}
                           </div>
