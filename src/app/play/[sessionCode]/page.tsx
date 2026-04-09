@@ -347,6 +347,13 @@ export default function SessionPage() {
   // Campaign picker modal
   const [showCampaignPicker, setShowCampaignPicker] = useState(false);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+  // Custom / Freeform campaign free-text fields
+  const [customCampaignName, setCustomCampaignName] = useState("");
+  const [customScenarioName, setCustomScenarioName] = useState("");
+  const [customAgendaName, setCustomAgendaName] = useState("");
+  const [customActName, setCustomActName] = useState("");
+  const [customDoomThreshold, setCustomDoomThreshold] = useState(4);
+  const [customCluesRequired, setCustomCluesRequired] = useState(2);
 
   // Round editing
   const [showRoundEdit, setShowRoundEdit] = useState(false);
@@ -660,6 +667,29 @@ export default function SessionPage() {
     await pushTurnState(next);
     setShowCampaignPicker(false);
     setSelectedCampaignId(null);
+  };
+
+  const handleSelectCustomScenario = async () => {
+    if (!customScenarioName.trim()) return;
+    const next = {
+      ...turnState,
+      agendaName: customAgendaName.trim() || customScenarioName.trim(),
+      actName: customActName.trim() || "Act 1",
+      doomThreshold: customDoomThreshold,
+      cluesRequired: customCluesRequired,
+      scenarioNumber: 1,
+      campaignId: "custom",
+      scenarioId: `custom-${Date.now()}`,
+    };
+    await pushTurnState(next);
+    setShowCampaignPicker(false);
+    setSelectedCampaignId(null);
+    setCustomCampaignName("");
+    setCustomScenarioName("");
+    setCustomAgendaName("");
+    setCustomActName("");
+    setCustomDoomThreshold(4);
+    setCustomCluesRequired(2);
   };
 
   const handleStartGame = async () => {
@@ -2176,8 +2206,9 @@ export default function SessionPage() {
         {showCampaignPicker && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}>
             <div className="w-full max-w-md rounded-2xl p-6 space-y-4" style={{ background: "#e8d8a8", border: "1px solid rgba(112,80,184,0.3)" }}>
-              <h3 className="font-decorative font-bold text-lg text-ark-text">Select Campaign & Scenario</h3>
+              <h3 className="font-decorative font-bold text-lg text-ark-text">Select Campaign &amp; Scenario</h3>
 
+              {/* Step 1 — Campaign list */}
               {selectedCampaignId === null ? (
                 <div className="space-y-2">
                   {CAMPAIGNS.map(campaign => (
@@ -2193,24 +2224,100 @@ export default function SessionPage() {
                     </button>
                   ))}
                 </div>
-              ) : (
-                <div className="space-y-2">
-                  <button
-                    onClick={() => setSelectedCampaignId(null)}
-                    className="text-xs text-ark-text-muted hover:text-ark-text mb-2">
+
+              ) : selectedCampaignId === "custom" ? (
+                /* Step 2b — Custom / Freeform entry form */
+                <div className="space-y-3">
+                  <button onClick={() => setSelectedCampaignId(null)} className="text-xs text-ark-text-muted hover:text-ark-text">
                     ← Back to campaigns
                   </button>
-                  {CAMPAIGNS.find(c => c.id === selectedCampaignId)?.scenarios.map(scenario => (
-                    <button key={scenario.id}
-                      onClick={() => handleSelectScenario(selectedCampaignId, scenario.id)}
-                      className="w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left"
-                      style={{ background: "rgba(58,173,152,0.08)", border: "1px solid rgba(58,173,152,0.25)" }}>
-                      <div className="flex-1">
-                        <p className="font-decorative font-bold text-sm text-ark-text">{scenario.name}</p>
-                        <p className="text-xs text-ark-text-muted">{scenario.agendaName}</p>
+                  <p className="text-xs text-ark-text-muted italic">Fill in the details for your custom scenario. Only the Scenario Name is required.</p>
+
+                  {/* Campaign name */}
+                  <div>
+                    <label className="block text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-1">Campaign Name (optional)</label>
+                    <input value={customCampaignName} onChange={e => setCustomCampaignName(e.target.value)}
+                      placeholder="e.g. The Dunwich Legacy"
+                      className="ark-input w-full px-3 py-2 rounded-lg text-sm" />
+                  </div>
+
+                  {/* Scenario name */}
+                  <div>
+                    <label className="block text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-1">Scenario Name *</label>
+                    <input value={customScenarioName} onChange={e => setCustomScenarioName(e.target.value)}
+                      placeholder="e.g. Extracurricular Activity"
+                      className="ark-input w-full px-3 py-2 rounded-lg text-sm" />
+                  </div>
+
+                  {/* Agenda name */}
+                  <div>
+                    <label className="block text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-1">Agenda Name (optional)</label>
+                    <input value={customAgendaName} onChange={e => setCustomAgendaName(e.target.value)}
+                      placeholder="e.g. Something Stirs…"
+                      className="ark-input w-full px-3 py-2 rounded-lg text-sm" />
+                  </div>
+
+                  {/* Act name */}
+                  <div>
+                    <label className="block text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-1">Act Name (optional)</label>
+                    <input value={customActName} onChange={e => setCustomActName(e.target.value)}
+                      placeholder="e.g. Investigating the Campus"
+                      className="ark-input w-full px-3 py-2 rounded-lg text-sm" />
+                  </div>
+
+                  {/* Doom threshold + Clues required */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-lg p-2 text-center" style={{ background: "rgba(112,80,184,0.08)", border: "1px solid rgba(112,80,184,0.25)" }}>
+                      <p className="text-[9px] font-mono uppercase tracking-wide text-ark-text-muted mb-1.5">Doom Threshold</p>
+                      <div className="flex items-center justify-center gap-2">
+                        <button onClick={() => setCustomDoomThreshold(v => Math.max(1, v - 1))} className="w-6 h-6 rounded font-bold" style={{ background: "rgba(112,80,184,0.15)", color: "#9070d8" }}>−</button>
+                        <span className="font-mono font-bold text-base text-ark-text w-5 text-center">{customDoomThreshold}</span>
+                        <button onClick={() => setCustomDoomThreshold(v => v + 1)} className="w-6 h-6 rounded font-bold" style={{ background: "rgba(112,80,184,0.15)", color: "#9070d8" }}>+</button>
                       </div>
-                    </button>
-                  ))}
+                    </div>
+                    <div className="rounded-lg p-2 text-center" style={{ background: "rgba(58,173,152,0.08)", border: "1px solid rgba(58,173,152,0.25)" }}>
+                      <p className="text-[9px] font-mono uppercase tracking-wide text-ark-text-muted mb-1.5">Clues Required</p>
+                      <div className="flex items-center justify-center gap-2">
+                        <button onClick={() => setCustomCluesRequired(v => Math.max(0, v - 1))} className="w-6 h-6 rounded font-bold" style={{ background: "rgba(58,173,152,0.15)", color: "#3aad98" }}>−</button>
+                        <span className="font-mono font-bold text-base text-ark-text w-5 text-center">{customCluesRequired}</span>
+                        <button onClick={() => setCustomCluesRequired(v => v + 1)} className="w-6 h-6 rounded font-bold" style={{ background: "rgba(58,173,152,0.15)", color: "#3aad98" }}>+</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleSelectCustomScenario}
+                    disabled={!customScenarioName.trim()}
+                    className="w-full py-3 rounded-xl text-sm font-bold font-decorative transition-all disabled:opacity-40"
+                    style={{ background: "linear-gradient(135deg, #5a3a8a, #3a2060)", color: "#fff", border: "1px solid rgba(112,80,184,0.4)" }}>
+                    Begin This Scenario
+                  </button>
+                </div>
+
+              ) : (
+                /* Step 2a — Named campaign scenario list */
+                <div className="space-y-2">
+                  <button onClick={() => setSelectedCampaignId(null)} className="text-xs text-ark-text-muted hover:text-ark-text mb-2">
+                    ← Back to campaigns
+                  </button>
+                  {(() => {
+                    const campaign = CAMPAIGNS.find(c => c.id === selectedCampaignId);
+                    return campaign?.scenarios.map((scenario, idx) => (
+                      <button key={scenario.id}
+                        onClick={() => handleSelectScenario(selectedCampaignId, scenario.id)}
+                        className="w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left"
+                        style={{ background: "rgba(58,173,152,0.08)", border: "1px solid rgba(58,173,152,0.25)" }}>
+                        <div className="flex items-center justify-center rounded-full flex-shrink-0 text-[10px] font-mono font-bold"
+                          style={{ width: 22, height: 22, background: "rgba(58,173,152,0.18)", color: "#3aad98", border: "1px solid rgba(58,173,152,0.35)" }}>
+                          {idx + 1}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-decorative font-bold text-sm text-ark-text">{scenario.name}</p>
+                          <p className="text-[10px] text-ark-text-muted">{scenario.agendaName} · Doom {scenario.doomThreshold} · {scenario.cluesRequired} clues</p>
+                        </div>
+                      </button>
+                    ));
+                  })()}
                 </div>
               )}
 
