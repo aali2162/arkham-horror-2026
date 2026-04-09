@@ -1180,16 +1180,25 @@ export default function SessionPage() {
                 const cls = CLASS_COLORS[selInv.class ?? "Guardian"];
                 return (
                   <div className="rounded-lg p-2.5 grid grid-cols-6 gap-1.5 text-center" style={{ background: cls.bg, border: `1px solid ${cls.border}` }}>
+                    {/* HP + SAN with text labels */}
                     {[
-                      { label: "HP", val: selInv.health, color: "#c03028" },
+                      { label: "HP",  val: selInv.health, color: "#c03028" },
                       { label: "SAN", val: selInv.sanity, color: "#9070d8" },
-                      { label: "WIL", val: selInv.willpower, color: "#9070d8" },
-                      { label: "INT", val: selInv.intellect, color: "#4a8fd4" },
-                      { label: "COM", val: selInv.combat, color: "#c03028" },
-                      { label: "AGI", val: selInv.agility, color: "#3aad98" },
                     ].map(s => (
                       <div key={s.label}>
                         <div className="text-[9px] font-mono text-ark-text-muted">{s.label}</div>
+                        <div className="font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
+                      </div>
+                    ))}
+                    {/* Skill stats — icon only */}
+                    {[
+                      { skill: "WIL", val: selInv.willpower, color: "#9070d8", title: "Willpower" },
+                      { skill: "INT", val: selInv.intellect, color: "#c8871a", title: "Intellect" },
+                      { skill: "COM", val: selInv.combat,    color: "#c03028", title: "Combat"    },
+                      { skill: "AGI", val: selInv.agility,   color: "#3aad98", title: "Agility"   },
+                    ].map(s => (
+                      <div key={s.skill} title={s.title}>
+                        <div className="flex justify-center mb-0.5"><SkillIcon skill={s.skill} size={12} /></div>
                         <div className="font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
                       </div>
                     ))}
@@ -1330,16 +1339,25 @@ export default function SessionPage() {
                   const cls = CLASS_COLORS[selInv.class ?? "Guardian"];
                   return (
                     <div className="rounded-lg p-2.5 grid grid-cols-6 gap-1.5 text-center" style={{ background: cls.bg, border: `1px solid ${cls.border}` }}>
+                      {/* HP + SAN with text labels */}
                       {[
-                        { label: "HP", val: selInv.health, color: "#c03028" },
+                        { label: "HP",  val: selInv.health, color: "#c03028" },
                         { label: "SAN", val: selInv.sanity, color: "#9070d8" },
-                        { label: "WIL", val: selInv.willpower, color: "#9070d8" },
-                        { label: "INT", val: selInv.intellect, color: "#4a8fd4" },
-                        { label: "COM", val: selInv.combat, color: "#c03028" },
-                        { label: "AGI", val: selInv.agility, color: "#3aad98" },
                       ].map(s => (
                         <div key={s.label}>
                           <div className="text-[9px] font-mono text-ark-text-muted">{s.label}</div>
+                          <div className="font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
+                        </div>
+                      ))}
+                      {/* Skill stats — icon only */}
+                      {[
+                        { skill: "WIL", val: selInv.willpower, color: "#9070d8", title: "Willpower" },
+                        { skill: "INT", val: selInv.intellect, color: "#c8871a", title: "Intellect" },
+                        { skill: "COM", val: selInv.combat,    color: "#c03028", title: "Combat"    },
+                        { skill: "AGI", val: selInv.agility,   color: "#3aad98", title: "Agility"   },
+                      ].map(s => (
+                        <div key={s.skill} title={s.title}>
+                          <div className="flex justify-center mb-0.5"><SkillIcon skill={s.skill} size={12} /></div>
                           <div className="font-bold text-sm" style={{ color: s.color }}>{s.val}</div>
                         </div>
                       ))}
@@ -1459,23 +1477,62 @@ export default function SessionPage() {
 
           {/* My stats peek */}
           {myPlayer && (
-            <div className="w-full mt-4 rounded-xl p-4 grid grid-cols-4 gap-2" style={{ background: "rgba(236,220,176,0.8)", border: "1px solid rgba(138,104,32,0.2)" }}>
-              {[
-                { label: "DMG", val: myPlayer.damage, max: inv?.health ?? 9, color: "#c03028", field: "damage" as const },
-                { label: "HOR", val: myPlayer.horror, max: inv?.sanity ?? 7, color: "#9070d8", field: "horror" as const },
-                { label: "RES", val: myPlayer.resources, max: null, color: "#c9973a", field: "resources" as const },
-                { label: "CLU", val: myPlayer.clues, max: null, color: "#4a8fd4", field: "clues" as const },
-              ].map(s => (
-                <div key={s.label} className="flex flex-col items-center gap-1 py-2 rounded-lg" style={{ background: "rgba(236,220,176,0.65)" }}>
-                  <span className="text-[9px] font-mono text-ark-text-muted">{s.label}</span>
-                  <div className="flex items-center gap-1">
-                    <button onClick={() => handleStatChange(myPlayer, s.field, -1)} className="w-5 h-5 rounded text-xs font-bold" style={{ color: s.color }}>−</button>
-                    <span className="font-mono font-bold text-base" style={{ color: s.color }}>{s.val}</span>
-                    <button onClick={() => handleStatChange(myPlayer, s.field, 1)} className="w-5 h-5 rounded text-xs font-bold" style={{ color: s.color }}>+</button>
+            <div className="w-full mt-4 space-y-2" style={{ background: "rgba(236,220,176,0.8)", borderRadius: 12, padding: 12, border: "1px solid rgba(138,104,32,0.2)" }}>
+              {/* Damage + Horror side by side */}
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { label: "Damage", icon: <DamageIcon size={14} color="#c03028" />, val: myPlayer.damage, max: inv?.health ?? 9, color: "#c03028", field: "damage" as const },
+                  { label: "Horror", icon: <HorrorIcon size={14} color="#7050b8" />, val: myPlayer.horror, max: inv?.sanity ?? 7, color: "#9070d8", field: "horror" as const },
+                ].map(s => (
+                  <div key={s.label} className="flex flex-col items-center gap-1 py-2 rounded-lg" style={{ background: "rgba(236,220,176,0.65)" }}>
+                    <div className="flex items-center gap-1">{s.icon}<span className="text-[9px] font-mono text-ark-text-muted">{s.label}</span></div>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => handleStatChange(myPlayer, s.field, -1)} className="w-5 h-5 rounded text-xs font-bold" style={{ color: s.color }}>−</button>
+                      <span className="font-mono font-bold text-base" style={{ color: s.color }}>{s.val}</span>
+                      <button onClick={() => handleStatChange(myPlayer, s.field, 1)} className="w-5 h-5 rounded text-xs font-bold" style={{ color: s.color }}>+</button>
+                    </div>
+                    <span className="text-[9px] text-ark-text-muted">/ {s.max}</span>
                   </div>
-                  {s.max && <span className="text-[9px] text-ark-text-muted">/ {s.max}</span>}
+                ))}
+              </div>
+              {/* Resources — prominent full-width row */}
+              <div className="flex items-center justify-between px-3 py-2 rounded-xl"
+                style={{ background: "rgba(201,151,58,0.12)", border: "1px solid rgba(201,151,58,0.35)" }}>
+                <div className="flex items-center gap-2">
+                  <ResourceIcon size={16} color="#c9973a" />
+                  <div>
+                    <div className="text-[9px] font-mono uppercase tracking-widest" style={{ color: "#8a6820" }}>Resources</div>
+                    <div className="font-mono font-bold text-xl leading-none" style={{ color: "#5a3a08" }}>{myPlayer.resources}</div>
+                  </div>
                 </div>
-              ))}
+                <div className="flex items-center gap-1">
+                  <button onClick={() => handleStatChange(myPlayer, "resources", -1)} disabled={myPlayer.resources === 0}
+                    className="w-7 h-7 rounded-lg font-bold text-sm disabled:opacity-30"
+                    style={{ background: "rgba(201,151,58,0.18)", border: "1px solid rgba(201,151,58,0.4)", color: "#8a6820" }}>−</button>
+                  <button onClick={() => handleStatChange(myPlayer, "resources", 1)}
+                    className="w-7 h-7 rounded-lg font-bold text-sm"
+                    style={{ background: "rgba(201,151,58,0.28)", border: "1px solid rgba(201,151,58,0.5)", color: "#5a3a08" }}>+</button>
+                </div>
+              </div>
+              {/* Clues — compact row */}
+              <div className="flex items-center justify-between px-3 py-1.5 rounded-xl"
+                style={{ background: "rgba(58,173,152,0.08)", border: "1px solid rgba(58,173,152,0.25)" }}>
+                <div className="flex items-center gap-2">
+                  <ClueIcon size={14} color="#3aad98" />
+                  <div>
+                    <div className="text-[9px] font-mono uppercase tracking-widest" style={{ color: "#2a7060" }}>Clues</div>
+                    <div className="font-mono font-bold text-base leading-none" style={{ color: "#1a4038" }}>{myPlayer.clues}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button onClick={() => handleStatChange(myPlayer, "clues", -1)} disabled={myPlayer.clues === 0}
+                    className="w-6 h-6 rounded font-bold text-xs disabled:opacity-30"
+                    style={{ background: "rgba(58,173,152,0.15)", border: "1px solid rgba(58,173,152,0.3)", color: "#3aad98" }}>−</button>
+                  <button onClick={() => handleStatChange(myPlayer, "clues", 1)}
+                    className="w-6 h-6 rounded font-bold text-xs"
+                    style={{ background: "rgba(58,173,152,0.25)", border: "1px solid rgba(58,173,152,0.4)", color: "#1a6050" }}>+</button>
+                </div>
+              </div>
             </div>
           )}
         </div>
