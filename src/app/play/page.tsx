@@ -50,176 +50,91 @@ export default function PlayPage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-xl mx-auto px-4 sm:px-6 pb-14">
+      <main className="d-page pb-12">
 
-        {/* ── HEADER ── */}
-        <div className="text-center" style={{ borderBottom: "2px solid #c8a860" }}>
-          {/* Ornament band */}
-          <div className="flex items-center justify-center gap-2 py-2 px-6"
-            style={{ background: "#d4b870", borderBottom: "1px solid #b89848" }}>
-            <div style={{ flex: 1, height: 1, background: "rgba(90,58,8,0.25)" }} />
-            <div style={{ width: 5, height: 5, background: "#5a3a08", transform: "rotate(45deg)", flexShrink: 0 }} />
-            <span className="font-heading text-[7px] font-bold tracking-[4px]" style={{ color: "#5a3a08", whiteSpace: "nowrap" }}>
-              ARKHAM HORROR · THE CARD GAME
-            </span>
-            <div style={{ width: 5, height: 5, background: "#5a3a08", transform: "rotate(45deg)", flexShrink: 0 }} />
-            <div style={{ flex: 1, height: 1, background: "rgba(90,58,8,0.25)" }} />
+        {/* ── TOP BAR ── */}
+        <div className="d-topbar">
+          <div>
+            <span className="d-topbar-title">PLAY SESSION</span>
+            <span className="d-topbar-sub">INVESTIGATOR&apos;S DOSSIER</span>
           </div>
-
-          {/* Medallion icon */}
-          <div className="pt-6 pb-1 flex flex-col items-center">
-            <div className="flex items-center justify-center mb-4"
-              style={{
-                width: 64, height: 64, borderRadius: "50%",
-                background: "radial-gradient(circle at 40% 35%, #dcc888, #c8aa60)",
-                border: "2px solid #8a6820",
-                boxShadow: "0 4px 16px rgba(90,58,8,0.25), inset 0 2px 6px rgba(255,240,180,0.5), 0 0 0 4px rgba(184,152,72,0.2)",
-                position: "relative",
-              }}>
-              {/* Inner ring */}
-              <div style={{
-                position: "absolute", inset: 6, borderRadius: "50%",
-                border: "1px solid rgba(90,58,8,0.3)"
-              }} />
-              <span className="font-heading text-[24px]" style={{ color: "#3a2808", lineHeight: 1 }}>◎</span>
-            </div>
-
-            <h1 className="font-title font-bold tracking-[3px] mb-2"
-              style={{ fontSize: 22, color: "#2a1808", textShadow: "0 1px 2px rgba(255,240,180,0.8)" }}>
-              PLAY SESSION
-            </h1>
-            <p className="font-flavour text-sm pb-5 px-8 leading-relaxed" style={{ color: "#7a6030" }}>
-              Summon your investigators. The investigation begins.
-            </p>
-          </div>
-
-          {/* Bottom ornament */}
-          <div className="flex items-center gap-2 px-8 pb-4">
-            <div style={{ flex: 1, height: 1, background: "#b89848" }} />
-            <div style={{ width: 3, height: 3, background: "#b89848", borderRadius: "50%" }} />
-            <div style={{ width: 7, height: 7, background: "#8a6820", transform: "rotate(45deg)", flexShrink: 0 }} />
-            <div style={{ width: 3, height: 3, background: "#b89848", borderRadius: "50%" }} />
-            <div style={{ flex: 1, height: 1, background: "#b89848" }} />
-          </div>
+          <div className="d-phase-pill">ARKHAM HORROR</div>
         </div>
 
         {/* ── REJOIN LAST SESSION ── */}
         {lastSession && (
-          <div className="mx-0 mt-4 flex items-center justify-between gap-3 rounded-xl px-4 py-3"
-            style={{
-              background: "#e8f0e0",
-              border: "1.5px solid #6a9a5a",
-              borderLeft: "4px solid #3a7a28",
-              boxShadow: "0 2px 8px rgba(58,122,40,0.1)",
-            }}>
-            <div>
-              <p className="font-heading text-[8px] font-bold tracking-[2px] mb-1" style={{ color: "#3a7a28" }}>
-                ↩ LAST SESSION
-              </p>
-              <p className="font-mono font-bold text-base tracking-[2px]" style={{ color: "#1a2e14" }}>
-                {lastSession}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => router.push(`/play/${lastSession}`)}
-                className="font-heading text-[10px] font-bold tracking-[1px] rounded-md px-3 py-2 transition-all"
-                style={{ background: "#c8e0b0", border: "1.5px solid #5a8a48", color: "#2a5a18" }}>
-                Rejoin →
-              </button>
-              <button
-                onClick={() => { localStorage.removeItem("ark_last_session"); setLastSession(null); }}
-                className="flex items-center justify-center rounded-md text-xs transition-all"
-                style={{ width: 28, height: 28, background: "#f0e8cc", border: "1px solid #c8a860", color: "#8a7040" }}
-                title="Clear saved session">✕</button>
+          <div style={{ margin: "16px 16px 0", background: "#fff", border: "2px solid #1a1208", borderLeft: "5px solid #2e8a50", padding: "14px 16px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <div>
+                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "2px", color: "#3a2808", marginBottom: 6 }}>↩ LAST SESSION</div>
+                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 700, letterSpacing: "4px", color: "#1a1208" }}>{lastSession}</div>
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={() => router.push(`/play/${lastSession}`)}
+                  style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "10px 16px", background: "#1a1208", border: "2px solid #1a1208", color: "#f2e8cc", cursor: "pointer" }}>
+                  Rejoin →
+                </button>
+                <button
+                  onClick={() => { localStorage.removeItem("ark_last_session"); setLastSession(null); }}
+                  style={{ width: 36, height: 36, background: "#f5f0e8", border: "2px solid #1a1208", color: "#1a1208", fontFamily: "'Cinzel', serif", fontSize: 12, cursor: "pointer" }}
+                  title="Clear saved session">✕</button>
+              </div>
             </div>
           </div>
         )}
 
-        {/* ── SECTION DIVIDER ── */}
-        <div className="flex items-center gap-2 my-5">
-          <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, #b89848)" }} />
-          <div style={{ width: 3, height: 3, background: "#b89848", borderRadius: "50%" }} />
-          <div style={{ width: 7, height: 7, background: "#8a6820", transform: "rotate(45deg)", flexShrink: 0 }} />
-          <span className="font-heading text-[8px] font-bold tracking-[3px] px-2" style={{ color: "#8a6820" }}>
-            BEGIN YOUR INVESTIGATION
-          </span>
-          <div style={{ width: 7, height: 7, background: "#8a6820", transform: "rotate(45deg)", flexShrink: 0 }} />
-          <div style={{ width: 3, height: 3, background: "#b89848", borderRadius: "50%" }} />
-          <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, #b89848, transparent)" }} />
+        {/* ── SECTION LABEL ── */}
+        <div className="d-section-head" style={{ marginTop: 20 }}>
+          <span>BEGIN YOUR INVESTIGATION</span>
         </div>
 
-        {/* ── NEW SESSION CARD ── */}
-        <div className="rounded-xl overflow-hidden mb-4"
-          style={{
-            background: "#ecdcb0",
-            border: "1.5px solid #c8a860",
-            boxShadow: "0 3px 12px rgba(90,58,8,0.12), inset 0 1px 0 rgba(255,248,200,0.6)",
-          }}>
-          {/* Gold top rule */}
-          <div style={{ height: 4, background: "linear-gradient(90deg, #8a6820, #d4a840, #8a6820)" }} />
-          <div className="p-5">
-            {/* Card header */}
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex items-center justify-center rounded-xl flex-shrink-0"
-                style={{
-                  width: 46, height: 46,
-                  background: "radial-gradient(circle at 35% 30%, #dcc870, #c0a048)",
-                  border: "1.5px solid #8a6820",
-                  boxShadow: "inset 0 2px 4px rgba(255,240,160,0.5), 0 2px 6px rgba(90,58,8,0.2)",
-                  fontSize: 22, color: "#3a2808",
-                }}>
-                ✦
+        {/* ── NEW SESSION ── */}
+        <div style={{ margin: "0 0 2px", background: "#fff", border: "none", borderBottom: "2px solid #e8e0cc" }}>
+          {/* Colour bar — gold for create */}
+          <div style={{ height: 4, background: "#c9a84c" }} />
+          <div style={{ padding: "18px 16px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+              <div style={{ width: 48, height: 48, background: "#1a1208", border: "2px solid #c9a84c", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 4v16M4 12h16" stroke="#c9a84c" strokeWidth="2.5" strokeLinecap="round"/>
+                </svg>
               </div>
               <div>
-                <p className="font-heading font-bold text-sm mb-0.5" style={{ color: "#1e1206" }}>New Session</p>
-                <p className="font-body text-xs font-normal italic" style={{ color: "#8a7040" }}>Host a fresh investigation</p>
+                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 16, fontWeight: 700, color: "#1a1208", marginBottom: 2 }}>New Session</div>
+                <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>Host a fresh investigation</div>
               </div>
             </div>
-            {/* Inner rule */}
-            <div style={{ height: 1, background: "linear-gradient(90deg, transparent, #c8a860, #c8a860, transparent)", marginBottom: 12 }} />
-            <p className="font-body text-sm leading-relaxed mb-4" style={{ color: "#3a2808" }}>
+            <p style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#3a2808", lineHeight: 1.6, marginBottom: 16 }}>
               Begin a new game. You&apos;ll receive a session code to share — every investigator joins the same live board from their own device.
             </p>
             <button
               onClick={handleCreate}
               disabled={creating}
-              className="btn-gold w-full py-3 text-xs tracking-widest disabled:opacity-40">
+              className="d-btn-ink">
               {creating ? "Creating…" : "✦  CREATE NEW SESSION  ✦"}
             </button>
           </div>
         </div>
 
-        {/* ── JOIN SESSION CARD ── */}
-        <div className="rounded-xl overflow-hidden mb-4"
-          style={{
-            background: "#ecdcb0",
-            border: "1.5px solid #a8c0d8",
-            boxShadow: "0 3px 12px rgba(90,58,8,0.1), inset 0 1px 0 rgba(255,248,200,0.6)",
-          }}>
-          {/* Blue top rule */}
-          <div style={{ height: 4, background: "linear-gradient(90deg, #3a5a8a, #4a8fd4, #3a5a8a)" }} />
-          <div className="p-5">
-            {/* Card header */}
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex items-center justify-center rounded-xl flex-shrink-0"
-                style={{
-                  width: 46, height: 46,
-                  background: "radial-gradient(circle at 35% 30%, #a8c8e8, #6090c0)",
-                  border: "1.5px solid #4a7aaa",
-                  boxShadow: "inset 0 2px 4px rgba(180,220,255,0.4), 0 2px 6px rgba(58,90,138,0.2)",
-                  fontSize: 22, color: "#1a3858",
-                }}>
-                ⊞
+        {/* ── JOIN SESSION ── */}
+        <div style={{ margin: "0 0 2px", background: "#fff", borderBottom: "2px solid #e8e0cc" }}>
+          {/* Colour bar — blue for join */}
+          <div style={{ height: 4, background: "#4a8fd4" }} />
+          <div style={{ padding: "18px 16px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+              <div style={{ width: 48, height: 48, background: "#1a1208", border: "2px solid #4a8fd4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="#4a8fd4" strokeWidth="2"/>
+                  <path d="M8 12h8M12 8v8" stroke="#4a8fd4" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
               </div>
               <div>
-                <p className="font-heading font-bold text-sm mb-0.5" style={{ color: "#1e1206" }}>Join Session</p>
-                <p className="font-body text-xs font-normal italic" style={{ color: "#8a7040" }}>Enter an existing investigation</p>
+                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 16, fontWeight: 700, color: "#1a1208", marginBottom: 2 }}>Join Session</div>
+                <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>Enter an existing investigation</div>
               </div>
             </div>
-            {/* Inner rule */}
-            <div style={{ height: 1, background: "linear-gradient(90deg, transparent, #c8a860, #c8a860, transparent)", marginBottom: 12 }} />
-            <p className="font-body text-sm leading-relaxed mb-4" style={{ color: "#3a2808" }}>
+            <p style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#3a2808", lineHeight: 1.6, marginBottom: 16 }}>
               Have a session code? Enter it below to join your party and track the live game state on your device.
             </p>
             <input
@@ -228,13 +143,13 @@ export default function PlayPage() {
               onChange={e => setJoinCode(e.target.value)}
               onKeyDown={e => e.key === "Enter" && handleJoin()}
               placeholder="AHCG-XXXXX"
-              className="ark-input w-full px-4 py-3 text-center font-mono text-sm mb-3"
-              style={{ letterSpacing: "0.25em", borderRadius: 6 }}
+              className="d-input"
+              style={{ textAlign: "center", letterSpacing: "0.25em", marginBottom: 12, fontFamily: "'Cinzel', serif" }}
             />
             <button
               onClick={handleJoin}
               disabled={joining || !joinCode.trim()}
-              className="btn-ghost w-full py-3 text-xs tracking-widest disabled:opacity-40">
+              className="d-btn-outline">
               {joining ? "Joining…" : "JOIN SESSION"}
             </button>
           </div>
@@ -242,65 +157,38 @@ export default function PlayPage() {
 
         {/* ── ERROR ── */}
         {error && (
-          <div className="rounded-xl p-4 text-center mb-4"
-            style={{ background: "#fce8e8", border: "1.5px solid #d07070" }}>
-            <p className="font-body text-sm" style={{ color: "#8a2020" }}>{error}</p>
+          <div style={{ margin: "0 0 2px", background: "#fce8e8", border: "none", borderLeft: "4px solid #b82020", padding: "14px 16px" }}>
+            <p style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#8a2020" }}>{error}</p>
           </div>
         )}
 
-        {/* ── FEATURE GRID ── */}
-        <div className="mt-2">
-          {/* Feature header */}
-          <div className="flex items-center justify-center gap-3 py-2 mb-3"
-            style={{
-              background: "#e0cca0",
-              border: "1px solid #b89848",
-              borderRadius: 8,
-            }}>
-            <div style={{ width: 5, height: 5, background: "#8a6820", transform: "rotate(45deg)", flexShrink: 0 }} />
-            <span className="font-heading text-[8px] font-bold tracking-[3px]" style={{ color: "#5a3a08" }}>
-              WHAT AWAITS YOUR PARTY
-            </span>
-            <div style={{ width: 5, height: 5, background: "#8a6820", transform: "rotate(45deg)", flexShrink: 0 }} />
-          </div>
+        {/* ── WHAT AWAITS ── */}
+        <div className="d-section-head" style={{ marginTop: 20 }}>
+          <span>WHAT AWAITS YOUR PARTY</span>
+        </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { icon: "☽", label: "All Investigators", desc: "Every player on one shared board", color: "#7050b8" },
-              { icon: "⚔", label: "Turn-by-Turn Log",  desc: "Action history per investigator",   color: "#b82020" },
-              { icon: "♥", label: "Damage & Horror",   desc: "Live health and sanity tracking",   color: "#C9973A" },
-              { icon: "◈", label: "Real-Time Sync",    desc: "Instant updates, all devices",      color: "#4a8fd4" },
-              { icon: "✦", label: "Rules Reference",   desc: "Phases, skills, token types",       color: "#c8871a" },
-              { icon: "☗", label: "Enemy Tracker",     desc: "HP, keywords, engagement",          color: "#2e8a50" },
-            ].map(f => (
-              <div key={f.label} className="rounded-xl overflow-hidden"
-                style={{ background: "#f0e8cc", border: "1px solid #c8a860", boxShadow: "0 2px 6px rgba(90,58,8,0.08)" }}>
-                {/* Class-colour top accent */}
-                <div style={{ height: 3, background: f.color }} />
-                <div className="flex gap-2 p-3 items-start">
-                  <div className="flex items-center justify-center rounded-lg flex-shrink-0"
-                    style={{ width: 28, height: 28, background: "rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.06)", fontSize: 14, color: f.color }}>
-                    {f.icon}
-                  </div>
-                  <div>
-                    <p className="font-heading text-[9px] font-bold mb-0.5" style={{ color: "#1e1206" }}>{f.label}</p>
-                    <p className="font-body text-[11px]" style={{ color: "#6a5030", lineHeight: 1.4 }}>{f.desc}</p>
-                  </div>
-                </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, background: "#1a1208" }}>
+          {[
+            { color: "#4a8fd4", label: "All Investigators", desc: "Every player on one shared board", svg: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="7" cy="6" r="3" stroke="#4a8fd4" strokeWidth="1.5"/><circle cx="13" cy="6" r="3" stroke="#4a8fd4" strokeWidth="1.5"/><path d="M2 17c0-3 2.5-5 5-5h6c2.5 0 5 2 5 5" stroke="#4a8fd4" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+            { color: "#b82020", label: "Turn-by-Turn Log",  desc: "Action history per investigator",   svg: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="1" stroke="#b82020" strokeWidth="1.5"/><path d="M6 7h8M6 10h8M6 13h5" stroke="#b82020" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+            { color: "#c8871a", label: "Damage & Horror",   desc: "Live health and sanity tracking",   svg: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 16s-7-5-7-9a4 4 0 018 0 4 4 0 018 0c0 4-7 9-9 9z" stroke="#c8871a" strokeWidth="1.5" fill="none"/></svg> },
+            { color: "#4a8fd4", label: "Real-Time Sync",    desc: "Instant updates, all devices",      svg: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#4a8fd4" strokeWidth="1.5"/><path d="M10 6v4l3 2" stroke="#4a8fd4" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+            { color: "#c8871a", label: "Rules Reference",   desc: "Phases, skills, token types",       svg: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 3h10v14H5z" stroke="#c8871a" strokeWidth="1.5"/><path d="M8 7h4M8 10h4M8 13h2" stroke="#c8871a" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+            { color: "#2e8a50", label: "Enemy Tracker",     desc: "HP, keywords, engagement",          svg: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L17 7v6l-7 4-7-4V7z" stroke="#2e8a50" strokeWidth="1.5"/><path d="M10 3v14M3 7l7 4 7-4" stroke="#2e8a50" strokeWidth="1" strokeOpacity="0.5"/></svg> },
+          ].map(f => (
+            <div key={f.label} style={{ background: "#fff", padding: "14px 14px" }}>
+              <div style={{ borderTop: `3px solid ${f.color}`, paddingTop: 10 }}>
+                <div style={{ marginBottom: 6 }}>{f.svg}</div>
+                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, fontWeight: 700, color: "#1a1208", marginBottom: 4 }}>{f.label}</div>
+                <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", lineHeight: 1.4 }}>{f.desc}</div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
 
         {/* ── FOOTER QUOTE ── */}
-        <div className="mt-6 text-center pt-4"
-          style={{ borderTop: "1.5px solid #c8a860" }}>
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div style={{ width: 3, height: 3, background: "#b89848", borderRadius: "50%" }} />
-            <div style={{ width: 5, height: 5, background: "#8a6820", transform: "rotate(45deg)" }} />
-            <div style={{ width: 3, height: 3, background: "#b89848", borderRadius: "50%" }} />
-          </div>
-          <p className="font-flavour text-xs" style={{ color: "#8a7040" }}>
+        <div style={{ padding: "24px 16px", borderTop: "2px solid #1a1208", marginTop: 2, textAlign: "center" }}>
+          <p style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>
             &ldquo;In the darkness of Arkham, only the prepared survive.&rdquo;
           </p>
         </div>

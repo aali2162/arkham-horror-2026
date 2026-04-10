@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Approved Direction — Option D Dossier (All Screens)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #1a1208;
+  min-height: 100vh;
+  padding: 48px 24px 80px;
+  font-family: 'Cinzel', serif;
+}
+
+/* ── PAGE HEADER ── */
+.page-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 18px; color: #c9a84c; letter-spacing: 3px;
+  text-align: center; margin-bottom: 6px;
+}
+.page-sub {
+  font-family: 'Crimson Text', serif;
+  font-size: 14px; color: #7a6030; font-style: italic;
+  text-align: center; margin-bottom: 16px;
+}
+.approved-badge {
+  display: block; text-align: center; margin-bottom: 48px;
+}
+.approved-badge span {
+  display: inline-block;
+  background: rgba(201,168,76,0.12); border: 1px solid #c9a84c;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px;
+  color: #c9a84c; padding: 6px 20px; border-radius: 20px;
+}
+
+/* ── SCREEN ROW ── */
+.screens-row {
+  display: flex; gap: 48px; flex-wrap: wrap;
+  justify-content: center; align-items: flex-start;
+}
+.screen-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  width: 390px;
+}
+.screen-title {
+  font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 3px; color: #8a6820; text-align: center;
+}
+
+/* ── PHONE SHELL ── */
+.phone {
+  width: 390px;
+  border-radius: 44px; overflow: hidden;
+  border: 2px solid #c9a84c;
+  box-shadow:
+    0 0 0 5px #1a1208,
+    0 0 0 7px #4a3010,
+    0 24px 80px rgba(0,0,0,0.8);
+}
+.phone-inner { overflow: hidden; background: #f5f0e8; }
+
+/* ─────────────────────────────────────────────────────────────────
+   DESIGN SYSTEM — OPTION D "INVESTIGATOR'S DOSSIER"
+   ─────────────────────────────────────────────────────────────────
+   Background:  #f5f0e8  (aged paper)
+   Header:      #1a1208  (near-black ink) with 4px #c9a84c border-bottom
+   Cards:       #ffffff  with 2px #1a1208 border
+   Action left stripe colours by type:
+     Investigate  #4a8fd4  (Guardian blue — Intellect)
+     Fight        #b82020  (Combat red)
+     Move         #2e8a50  (Agility green)
+     Evade        #2e8a50  (Agility green)
+     Engage       #c8871a  (Willpower amber)
+     Parley       #7050b8  (Mystic purple)
+     Draw         #1a1208  (neutral ink)
+     Resource     #c8871a  (amber gold)
+     Play Card    #4a8fd4  (blue)
+     Activate     #7050b8  (purple)
+   Stat colours:
+     Health   #b82020
+     Sanity   #2e8a50
+     Willpower #7050b8
+     Intellect #c8871a
+     Combat   #b82020
+     Agility  #2e8a50
+     Damage   #b82020
+     Horror   #7050b8
+     Resources #c8871a
+     Clues    #2e8a50
+   Typography:
+     Headings: Cinzel Decorative
+     Labels:   Cinzel
+     Body:     Crimson Text
+     Flavour:  IM Fell English (italic)
+   Action trigger: ► (Unicode U+25BA, Cinzel bold)
+   ───────────────────────────────────────────────────────────────── */
+
+/* ── SHARED COMPONENTS ── */
+.d-topbar {
+  background: #1a1208;
+  padding: 44px 16px 14px;
+  border-bottom: 4px solid #c9a84c;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.d-topbar-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 13px; letter-spacing: 2px; color: #f2e8cc;
+}
+.d-topbar-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 9px; letter-spacing: 1px; color: #8a6820;
+}
+.d-phase-pill {
+  background: rgba(201,168,76,0.15);
+  border: 1px solid rgba(201,168,76,0.4);
+  border-radius: 20px; padding: 4px 12px;
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; color: #c9a84c;
+}
+.d-round {
+  font-family: 'Cinzel', serif; font-size: 10px; color: #8a6820; letter-spacing: 1px;
+}
+
+/* Section header inside page */
+.d-section-head {
+  font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700;
+  letter-spacing: 3px; color: #8a6820; padding: 12px 16px 8px;
+  border-bottom: 1px solid #e0d4b0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* Code box */
+.d-code-box {
+  margin: 14px 16px;
+  background: #fff; border: 2px solid #1a1208;
+  padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative;
+}
+.d-code-box::before {
+  content: '◆ SESSION CODE ◆';
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  background: #f5f0e8; padding: 0 10px;
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; color: #8a6820;
+}
+.d-code-val {
+  font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700;
+  color: #1a1208; letter-spacing: 4px;
+}
+.d-copy-btn {
+  background: #1a1208; border: none;
+  font-family: 'Cinzel', serif; font-size: 8px; font-weight: 700;
+  letter-spacing: 1px; color: #c9a84c; padding: 7px 14px; cursor: pointer;
+}
+
+/* ── INVESTIGATOR CARD (Lobby) ── */
+.d-inv-card {
+  margin: 0 16px 10px;
+  background: #fff; border: 2px solid #1a1208;
+  position: relative;
+}
+.d-inv-class-tab {
+  position: absolute; top: 0; right: 0;
+  padding: 4px 12px;
+  font-family: 'Cinzel', serif; font-size: 8px; font-weight: 700; letter-spacing: 1px;
+  color: #fff;
+}
+.d-inv-body { padding: 10px 14px 14px; }
+.d-inv-badges { display: flex; gap: 6px; margin-bottom: 8px; margin-top: 4px; }
+.d-badge-you {
+  background: #1a1208; color: #c9a84c;
+  font-family: 'Cinzel', serif; font-size: 8px; font-weight: 700;
+  letter-spacing: 1px; padding: 3px 10px;
+}
+.d-badge-lead {
+  background: #c9a84c; color: #1a1208;
+  font-family: 'Cinzel', serif; font-size: 8px; font-weight: 700;
+  letter-spacing: 1px; padding: 3px 10px;
+}
+.d-inv-name {
+  font-family: 'Cinzel', serif; font-size: 17px; font-weight: 700;
+  color: #1a1208; margin-bottom: 2px;
+}
+.d-inv-role {
+  font-family: 'IM Fell English', serif; font-size: 13px;
+  color: #6a5020; font-style: italic; margin-bottom: 14px;
+}
+/* Stat grid — 6 across, large numbers */
+.d-stat-grid {
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  border-top: 1px solid #e0d4b0; border-left: 1px solid #e0d4b0;
+}
+.d-stat-cell {
+  border-right: 1px solid #e0d4b0; border-bottom: 1px solid #e0d4b0;
+  padding: 10px 4px; text-align: center;
+}
+.d-stat-val {
+  font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700;
+  display: block; line-height: 1;
+}
+.d-stat-lbl {
+  font-family: 'Crimson Text', serif; font-size: 9px;
+  color: #8a7040; display: block; margin-top: 3px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.d-stat-cell.hp .d-stat-val  { color: #b82020; }
+.d-stat-cell.san .d-stat-val { color: #2e8a50; }
+.d-stat-cell.wil .d-stat-val { color: #7050b8; }
+.d-stat-cell.int .d-stat-val { color: #c8871a; }
+.d-stat-cell.com .d-stat-val { color: #b82020; }
+.d-stat-cell.agi .d-stat-val { color: #2e8a50; }
+
+/* ── LOBBY FORM ── */
+.d-form { padding: 0 16px; }
+.d-select {
+  width: 100%; padding: 13px 14px;
+  border: 2px solid #1a1208; border-radius: 0;
+  background: #fff; font-family: 'Cinzel', serif;
+  font-size: 12px; color: #1a1208; margin-bottom: 8px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a1208' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+}
+.d-input {
+  width: 100%; padding: 13px 14px;
+  border: 2px solid #1a1208; border-radius: 0;
+  background: #fff; font-family: 'Cinzel', serif;
+  font-size: 12px; color: #1a1208; margin-bottom: 8px;
+}
+.d-input::placeholder { color: #c0b080; }
+.d-btn-primary {
+  width: 100%; padding: 16px;
+  background: #1a1208; border: 2px solid #1a1208; border-radius: 0;
+  font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 3px; color: #c9a84c; cursor: pointer; margin-bottom: 8px;
+  display: block;
+}
+.d-btn-ghost {
+  width: 100%; padding: 14px;
+  background: #f5f0e8; border: 2px solid #1a1208; border-radius: 0;
+  font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; color: #1a1208; cursor: pointer; margin-bottom: 16px;
+  display: block;
+}
+
+/* ── YOUR TURN HERO ── */
+.d-hero {
+  background: #fff; border-bottom: 2px solid #1a1208;
+  padding: 20px 16px 16px; text-align: center;
+}
+.d-its-your-turn {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
+  color: #4a8fd4; margin-bottom: 8px;
+}
+.d-player-name {
+  font-family: 'Cinzel Decorative', serif; font-size: 28px; color: #1a1208;
+  margin-bottom: 4px; line-height: 1.1;
+}
+.d-investigator-role {
+  font-family: 'IM Fell English', serif; font-size: 14px;
+  color: #6a5020; font-style: italic;
+}
+
+/* ── ACTION PIPS ── */
+.d-pips-area {
+  background: #fff; border-bottom: 1px solid #e0d4b0;
+  padding: 14px 16px 12px; text-align: center;
+}
+.d-pips-row {
+  display: flex; justify-content: center; gap: 14px; margin-bottom: 8px;
+}
+.d-pip {
+  width: 46px; height: 46px;
+  border: 2px solid #1a1208; background: #1a1208;
+  display: flex; align-items: center; justify-content: center;
+}
+.d-pip.used {
+  background: #f5f0e8; border: 2px solid #c0b080;
+}
+.d-pip svg { display: block; }
+.d-actions-count {
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 2px;
+  color: #1a1208;
+}
+
+/* ── STAT STRIP (Your Turn screen) ── */
+.d-stat-strip {
+  background: #fff; border-bottom: 2px solid #1a1208;
+  display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+  border-left: 1px solid #1a1208;
+}
+.d-strip-cell {
+  border-right: 1px solid #1a1208; padding: 10px 8px;
+  text-align: center; position: relative;
+}
+.d-strip-cell::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.d-strip-cell.dmg::before { background: #b82020; }
+.d-strip-cell.hor::before { background: #7050b8; }
+.d-strip-cell.res::before { background: #c8871a; }
+.d-strip-cell.clu::before { background: #2e8a50; }
+.d-strip-val {
+  font-family: 'Cinzel', serif; font-size: 26px; font-weight: 700;
+  display: block; line-height: 1; margin-top: 2px;
+}
+.d-strip-cell.dmg .d-strip-val { color: #b82020; }
+.d-strip-cell.hor .d-strip-val { color: #7050b8; }
+.d-strip-cell.res .d-strip-val { color: #c8871a; }
+.d-strip-cell.clu .d-strip-val { color: #2e8a50; }
+.d-strip-lbl {
+  font-family: 'Crimson Text', serif; font-size: 9px; color: #8a7040;
+  display: block; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+/* +/- adjust buttons inside stat strip */
+.d-strip-adjust {
+  display: flex; gap: 4px; justify-content: center; margin-top: 6px;
+}
+.d-adj-btn {
+  width: 22px; height: 22px; border: 1px solid #1a1208;
+  background: #f5f0e8; font-family: 'Cinzel', serif; font-size: 14px;
+  color: #1a1208; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+
+/* ── ACTION LIST ── */
+.d-choose-label {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
+  color: #8a6820; padding: 10px 16px 6px; border-bottom: 1px solid #e0d4b0;
+  background: #f5f0e8;
+}
+.d-action-list { background: #f5f0e8; }
+.d-action-item {
+  background: #fff; border-bottom: 1px solid #e0d4b0;
+  border-left: 5px solid #1a1208;
+  display: flex; align-items: center; padding: 0;
+  cursor: pointer;
+}
+.d-action-item:active { background: #f5f0e8; }
+/* colour stripes per action type */
+.d-action-item.investigate { border-left-color: #4a8fd4; }
+.d-action-item.fight       { border-left-color: #b82020; }
+.d-action-item.move        { border-left-color: #2e8a50; }
+.d-action-item.evade       { border-left-color: #2e8a50; }
+.d-action-item.engage      { border-left-color: #c8871a; }
+.d-action-item.parley      { border-left-color: #7050b8; }
+.d-action-item.draw        { border-left-color: #1a1208; }
+.d-action-item.resource    { border-left-color: #c8871a; }
+.d-action-item.playcard    { border-left-color: #4a8fd4; }
+.d-action-item.activate    { border-left-color: #7050b8; }
+.d-action-item.resign      { border-left-color: #b82020; }
+
+/* The action skill-icon column */
+.d-action-skill {
+  width: 48px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 14px 0;
+  border-right: 1px solid #e0d4b0;
+}
+/* The action name + trigger */
+.d-action-body {
+  flex: 1; padding: 12px 14px;
+}
+.d-action-trigger {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px;
+  color: #8a7040; display: block; margin-bottom: 3px;
+}
+.d-action-name {
+  font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700;
+  color: #1a1208; letter-spacing: 1px; display: block;
+}
+.d-action-item.investigate .d-action-name { color: #4a8fd4; }
+.d-action-item.fight .d-action-name       { color: #b82020; }
+.d-action-item.move .d-action-name        { color: #2e8a50; }
+.d-action-item.evade .d-action-name       { color: #2e8a50; }
+.d-action-item.engage .d-action-name      { color: #c8871a; }
+.d-action-item.parley .d-action-name      { color: #7050b8; }
+.d-action-item.resign .d-action-name      { color: #b82020; }
+.d-action-desc {
+  font-family: 'IM Fell English', serif; font-size: 11px;
+  color: #8a7040; font-style: italic; display: block; margin-top: 2px;
+}
+/* Skill test pill */
+.d-skill-test {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px;
+  padding: 2px 8px; margin-top: 4px; display: inline-block;
+}
+.d-skill-test.int { background: rgba(200,135,26,0.12); color: #c8871a; border: 1px solid rgba(200,135,26,0.3); }
+.d-skill-test.com { background: rgba(184,32,32,0.12); color: #b82020; border: 1px solid rgba(184,32,32,0.3); }
+.d-skill-test.agi { background: rgba(46,138,80,0.12); color: #2e8a50; border: 1px solid rgba(46,138,80,0.3); }
+.d-skill-test.wil { background: rgba(112,80,184,0.12); color: #7050b8; border: 1px solid rgba(112,80,184,0.3); }
+
+/* ── BOTTOM BAR ── */
+.d-bottom-bar {
+  display: flex; border-top: 2px solid #1a1208;
+  background: #f5f0e8;
+}
+.d-bottom-bar .d-board-btn {
+  flex: 1; padding: 16px;
+  background: #f5f0e8; border: none; border-right: 2px solid #1a1208;
+  font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; color: #1a1208; cursor: pointer;
+}
+.d-bottom-bar .d-end-btn {
+  flex: 2; padding: 16px;
+  background: #1a1208; border: none;
+  font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 3px; color: #c9a84c; cursor: pointer;
+}
+
+/* ── AUTHENTIC SKILL ICONS (inline SVG in action column) ── */
+/* These match the Arkham Horror LCG iconographic language */
+</style>
+</head>
+<body>
+
+<h1 class="page-title">OPTION D — INVESTIGATOR'S DOSSIER</h1>
+<p class="page-sub">Approved direction · All Play screens · Mobile-first 390px</p>
+<div class="approved-badge"><span>✦ APPROVED DIRECTION ✦</span></div>
+
+<div class="screens-row">
+
+  <!-- ═══════════════════════════════════
+       SCREEN 1 — LOBBY / GAME SETUP
+       ═══════════════════════════════════ -->
+  <div class="screen-wrap">
+    <div class="screen-title">SCREEN 1 — LOBBY & GAME SETUP</div>
+    <div class="phone"><div class="phone-inner">
+
+      <!-- Top bar -->
+      <div class="d-topbar">
+        <div>
+          <div class="d-topbar-title">ARKHAM HORROR</div>
+          <div class="d-topbar-sub">Game Setup</div>
+        </div>
+        <div class="d-round">LOBBY</div>
+      </div>
+
+      <!-- Session code -->
+      <div class="d-code-box">
+        <span class="d-code-val">AHCG-3C2PJ</span>
+        <button class="d-copy-btn">COPY LINK</button>
+      </div>
+
+      <!-- Section head -->
+      <div class="d-section-head">
+        <span>INVESTIGATORS</span>
+        <span style="font-weight:400;font-size:9px;">1 / 4</span>
+      </div>
+
+      <!-- Investigator card -->
+      <div class="d-inv-card" style="margin-top:10px;">
+        <div class="d-inv-class-tab" style="background:#4a8fd4;">GUARDIAN</div>
+        <div class="d-inv-body">
+          <div class="d-inv-badges">
+            <span class="d-badge-you">YOU</span>
+            <span class="d-badge-lead">LEAD</span>
+          </div>
+          <div class="d-inv-name">Ahsan</div>
+          <div class="d-inv-role">Daniela Reyes, Guardian Investigator</div>
+          <div class="d-stat-grid">
+            <div class="d-stat-cell hp">
+              <span class="d-stat-val">9</span>
+              <span class="d-stat-lbl">Health</span>
+            </div>
+            <div class="d-stat-cell san">
+              <span class="d-stat-val">5</span>
+              <span class="d-stat-lbl">Sanity</span>
+            </div>
+            <div class="d-stat-cell wil">
+              <!-- Willpower icon SVG -->
+              <span class="d-stat-val">3</span>
+              <span class="d-stat-lbl">Will</span>
+            </div>
+            <div class="d-stat-cell int">
+              <span class="d-stat-val">2</span>
+              <span class="d-stat-lbl">Intel</span>
+            </div>
+            <div class="d-stat-cell com">
+              <span class="d-stat-val">5</span>
+              <span class="d-stat-lbl">Combat</span>
+            </div>
+            <div class="d-stat-cell agi">
+              <span class="d-stat-val">2</span>
+              <span class="d-stat-lbl">Agility</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Investigator form -->
+      <div class="d-section-head" style="margin-top:10px;">ADD INVESTIGATOR</div>
+      <div class="d-form" style="padding-top:12px;">
+        <input class="d-input" type="text" placeholder="Player name…">
+        <select class="d-select">
+          <option>Daniela Reyes (Guardian)</option>
+          <option>Roland Banks (Guardian)</option>
+          <option>Zoey Samaras (Guardian)</option>
+          <option>Agnes Baker (Mystic)</option>
+          <option>Wendy Adams (Survivor)</option>
+        </select>
+        <!-- Stat preview for selected investigator -->
+        <div style="background:#fff;border:2px solid #1a1208;padding:10px 14px;margin-bottom:8px;">
+          <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#8a6820;margin-bottom:8px;">INVESTIGATOR STATS</div>
+          <div class="d-stat-grid">
+            <div class="d-stat-cell hp"><span class="d-stat-val">9</span><span class="d-stat-lbl">Health</span></div>
+            <div class="d-stat-cell san"><span class="d-stat-val">5</span><span class="d-stat-lbl">Sanity</span></div>
+            <div class="d-stat-cell wil"><span class="d-stat-val">3</span><span class="d-stat-lbl">Will</span></div>
+            <div class="d-stat-cell int"><span class="d-stat-val">2</span><span class="d-stat-lbl">Intel</span></div>
+            <div class="d-stat-cell com"><span class="d-stat-val">5</span><span class="d-stat-lbl">Combat</span></div>
+            <div class="d-stat-cell agi"><span class="d-stat-val">2</span><span class="d-stat-lbl">Agility</span></div>
+          </div>
+        </div>
+        <button class="d-btn-primary">+ ADD TO LOBBY</button>
+        <button class="d-btn-ghost">▶ START GAME — 1 INVESTIGATOR</button>
+      </div>
+
+    </div></div>
+    <p style="font-family:'Crimson Text',serif;font-size:12px;color:#6a5020;font-style:italic;text-align:center;max-width:340px;">Stat grid · class colour tab · YOU + LEAD ink stamps · full labels · no ambiguity</p>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SCREEN 2 — YOUR TURN / ACTIONS
+       ═══════════════════════════════════ -->
+  <div class="screen-wrap">
+    <div class="screen-title">SCREEN 2 — YOUR TURN (ACTION LOGGER)</div>
+    <div class="phone"><div class="phone-inner">
+
+      <!-- Top bar -->
+      <div class="d-topbar">
+        <span class="d-phase-pill">INVESTIGATION PHASE</span>
+        <span class="d-round">ROUND 1</span>
+      </div>
+
+      <!-- Hero card -->
+      <div class="d-hero">
+        <div class="d-its-your-turn">✦ IT'S YOUR TURN ✦</div>
+        <div class="d-player-name">Ahsan</div>
+        <div class="d-investigator-role">Daniela Reyes · Guardian</div>
+      </div>
+
+      <!-- Stat strip — always visible -->
+      <div class="d-stat-strip">
+        <div class="d-strip-cell dmg">
+          <span class="d-strip-val">0</span>
+          <span class="d-strip-lbl">Damage</span>
+          <div class="d-strip-adjust">
+            <button class="d-adj-btn">−</button>
+            <button class="d-adj-btn">+</button>
+          </div>
+        </div>
+        <div class="d-strip-cell hor">
+          <span class="d-strip-val">0</span>
+          <span class="d-strip-lbl">Horror</span>
+          <div class="d-strip-adjust">
+            <button class="d-adj-btn">−</button>
+            <button class="d-adj-btn">+</button>
+          </div>
+        </div>
+        <div class="d-strip-cell res">
+          <span class="d-strip-val">5</span>
+          <span class="d-strip-lbl">Resources</span>
+          <div class="d-strip-adjust">
+            <button class="d-adj-btn">−</button>
+            <button class="d-adj-btn">+</button>
+          </div>
+        </div>
+        <div class="d-strip-cell clu">
+          <span class="d-strip-val">0</span>
+          <span class="d-strip-lbl">Clues</span>
+          <div class="d-strip-adjust">
+            <button class="d-adj-btn">−</button>
+            <button class="d-adj-btn">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action pips -->
+      <div class="d-pips-area">
+        <div class="d-pips-row">
+          <!-- Action pip — filled = available -->
+          <div class="d-pip">
+            <svg width="20" height="20" viewBox="0 0 20 20"><polygon points="10,2 12,8 19,8 13.5,12 15.5,18 10,14 4.5,18 6.5,12 1,8 8,8" fill="#c9a84c"/></svg>
+          </div>
+          <div class="d-pip">
+            <svg width="20" height="20" viewBox="0 0 20 20"><polygon points="10,2 12,8 19,8 13.5,12 15.5,18 10,14 4.5,18 6.5,12 1,8 8,8" fill="#c9a84c"/></svg>
+          </div>
+          <div class="d-pip">
+            <svg width="20" height="20" viewBox="0 0 20 20"><polygon points="10,2 12,8 19,8 13.5,12 15.5,18 10,14 4.5,18 6.5,12 1,8 8,8" fill="#c9a84c"/></svg>
+          </div>
+        </div>
+        <div class="d-actions-count">3 actions remaining</div>
+      </div>
+
+      <!-- Action list — authentic Arkham Horror style -->
+      <div class="d-choose-label">CHOOSE AN ACTION TO LOG</div>
+      <div class="d-action-list">
+
+        <div class="d-action-item investigate">
+          <div class="d-action-skill">
+            <!-- Intellect icon (magnifying glass / book) -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="12" cy="12" r="7" stroke="#c8871a" stroke-width="2.5"/>
+              <line x1="17.5" y1="17.5" x2="24" y2="24" stroke="#c8871a" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="9" y1="12" x2="15" y2="12" stroke="#c8871a" stroke-width="1.5"/>
+              <line x1="12" y1="9" x2="12" y2="15" stroke="#c8871a" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="d-action-body">
+            <span class="d-action-trigger">► ACTION</span>
+            <span class="d-action-name">Investigate</span>
+            <span class="d-action-desc">Test Intellect to discover clues</span>
+            <span class="d-skill-test int">INT</span>
+          </div>
+        </div>
+
+        <div class="d-action-item move">
+          <div class="d-action-skill">
+            <!-- Boot / movement icon -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M8 22 L8 10 Q8 6 12 6 L16 6 Q20 6 20 10 L20 14 L24 14 L24 22 Z" stroke="#2e8a50" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+              <line x1="8" y1="22" x2="24" y2="22" stroke="#2e8a50" stroke-width="2.5"/>
+            </svg>
+          </div>
+          <div class="d-action-body">
+            <span class="d-action-trigger">► ACTION</span>
+            <span class="d-action-name">Move</span>
+            <span class="d-action-desc">Move to a connecting location</span>
+          </div>
+        </div>
+
+        <div class="d-action-item fight">
+          <div class="d-action-skill">
+            <!-- Crossed swords / fist -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <line x1="6" y1="6" x2="22" y2="22" stroke="#b82020" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="22" y1="6" x2="6" y2="22" stroke="#b82020" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="4" y1="10" x2="10" y2="4" stroke="#b82020" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="18" y1="24" x2="24" y2="18" stroke="#b82020" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="d-action-body">
+            <span class="d-action-trigger">► ACTION</span>
+            <span class="d-action-name">Fight</span>
+            <span class="d-action-desc">Attack an enemy at your location</span>
+            <span class="d-skill-test com">COM</span>
+          </div>
+        </div>
+
+        <div class="d-action-item evade">
+          <div class="d-action-skill">
+            <!-- Running figure / arrow -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="18" cy="6" r="3" stroke="#2e8a50" stroke-width="2"/>
+              <path d="M14 10 Q10 14 8 20" stroke="#2e8a50" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path d="M14 10 L20 16 L16 22" stroke="#2e8a50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <path d="M8 20 L12 24" stroke="#2e8a50" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="d-action-body">
+            <span class="d-action-trigger">► ACTION</span>
+            <span class="d-action-name">Evade</span>
+            <span class="d-action-desc">Test Agility to disengage an enemy</span>
+            <span class="d-skill-test agi">AGI</span>
+          </div>
+        </div>
+
+        <div class="d-action-item engage">
+          <div class="d-action-skill">
+            <!-- Two figures / confrontation -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="8" cy="7" r="3" stroke="#c8871a" stroke-width="2"/>
+              <circle cx="20" cy="7" r="3" stroke="#c8871a" stroke-width="2"/>
+              <path d="M5 24 L5 17 Q5 13 8 13 L20 13 Q23 13 23 17 L23 24" stroke="#c8871a" stroke-width="2" fill="none"/>
+              <line x1="14" y1="10" x2="14" y2="24" stroke="#c8871a" stroke-width="1.5" stroke-dasharray="2,2"/>
+            </svg>
+          </div>
+          <div class="d-action-body">
+            <span class="d-action-trigger">► ACTION</span>
+            <span class="d-action-name">Engage</span>
+            <span class="d-action-desc">Engage an enemy at your location</span>
+          </div>
+        </div>
+
+        <div class="d-action-item parley">
+          <div class="d-action-skill">
+            <!-- Speech / negotiation -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect x="5" y="5" width="18" height="13" rx="3" stroke="#7050b8" stroke-width="2"/>
+              <path d="M10 18 L8 23 L14 18" stroke="#7050b8" stroke-width="2" stroke-linejoin="round" fill="none"/>
+              <line x1="9" y1="10" x2="19" y2="10" stroke="#7050b8" stroke-width="1.5"/>
+              <line x1="9" y1="13.5" x2="16" y2="13.5" stroke="#7050b8" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="d-action-body">
+            <span class="d-action-trigger">► ACTION</span>
+            <span class="d-action-name">Parley</span>
+            <span class="d-action-desc">Negotiate with a non-enemy</span>
+            <span class="d-skill-test wil">WIL</span>
+          </div>
+        </div>
+
+        <div class="d-action-item draw">
+          <div class="d-action-skill">
+            <!-- Cards fan -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect x="4" y="8" width="10" height="14" rx="1.5" stroke="#1a1208" stroke-width="2" transform="rotate(-10 9 15)"/>
+              <rect x="10" y="6" width="10" height="14" rx="1.5" stroke="#1a1208" stroke-width="2"/>
+              <rect x="16" y="8" width="10" height="14" rx="1.5" stroke="#1a1208" stroke-width="2" transform="rotate(10 21 15)"/>
+            </svg>
+          </div>
+          <div class="d-action-body">
+            <span class="d-action-trigger">► ACTION</span>
+            <span class="d-action-name">Draw</span>
+            <span class="d-action-desc">Draw 1 card from your deck</span>
+          </div>
+        </div>
+
+        <div class="d-action-item resource">
+          <div class="d-action-skill">
+            <!-- Coin / resource token -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="9" stroke="#c8871a" stroke-width="2.5"/>
+              <circle cx="14" cy="14" r="6" stroke="#c8871a" stroke-width="1" stroke-dasharray="2,2"/>
+              <text x="14" y="19" text-anchor="middle" font-family="serif" font-size="11" font-weight="bold" fill="#c8871a">$</text>
+            </svg>
+          </div>
+          <div class="d-action-body">
+            <span class="d-action-trigger">► ACTION</span>
+            <span class="d-action-name">Resource</span>
+            <span class="d-action-desc">Gain 1 resource</span>
+          </div>
+        </div>
+
+        <div class="d-action-item playcard">
+          <div class="d-action-skill">
+            <!-- Card with play arrow -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect x="5" y="4" width="14" height="19" rx="1.5" stroke="#4a8fd4" stroke-width="2"/>
+              <polygon points="16,11 22,14 16,17" fill="#4a8fd4"/>
+            </svg>
+          </div>
+          <div class="d-action-body">
+            <span class="d-action-trigger">► ACTION</span>
+            <span class="d-action-name">Play Card</span>
+            <span class="d-action-desc">Play an asset or event card</span>
+          </div>
+        </div>
+
+        <div class="d-action-item resign" style="border-top:1px solid #e0d4b0;">
+          <div class="d-action-skill">
+            <!-- Exit / resign -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M16 6 L6 6 L6 22 L16 22" stroke="#b82020" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="12" y1="14" x2="24" y2="14" stroke="#b82020" stroke-width="2.5" stroke-linecap="round"/>
+              <polyline points="20,10 24,14 20,18" stroke="#b82020" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="d-action-body">
+            <span class="d-action-trigger">► ACTION</span>
+            <span class="d-action-name" style="color:#b82020;font-size:13px;">Resign</span>
+            <span class="d-action-desc">Withdraw from the scenario</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="d-bottom-bar">
+        <button class="d-board-btn">⟨ BOARD</button>
+        <button class="d-end-btn">END TURN ►</button>
+      </div>
+
+    </div></div>
+    <p style="font-family:'Crimson Text',serif;font-size:12px;color:#6a5020;font-style:italic;text-align:center;max-width:340px;">Custom SVG icons authentic to Arkham Horror · Bold action names · Skill-test pill · Stat strip always visible · ► trigger notation</p>
+  </div>
+
+</div>
+
+<!-- Notes -->
+<div style="max-width:860px;margin:60px auto 0;padding:28px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);">
+  <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:#c9a84c;margin-bottom:16px;">DESIGN NOTES — OPTION D DOSSIER</div>
+  <div style="font-family:'Crimson Text',serif;font-size:14px;color:#7a6030;line-height:1.8;">
+    <strong style="color:#c9a84c;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;">Icons:</strong> Each action has a hand-drawn SVG icon that references the game's visual language — magnifying glass for Investigate, crossed swords for Fight, boot for Move, running figure for Evade, speech bubble for Parley, coin for Resource. These replace the generic emojis entirely.<br><br>
+    <strong style="color:#c9a84c;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;">Authentic notation:</strong> The <code style="background:rgba(201,168,76,0.1);padding:1px 6px;color:#c9a84c;">► ACTION</code> trigger above each name matches the rulebook's action designator format exactly.<br><br>
+    <strong style="color:#c9a84c;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;">Stat strip:</strong> Damage · Horror · Resources · Clues visible at all times with +/− adjusters — no need to navigate away.<br><br>
+    <strong style="color:#c9a84c;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;">Next screens to design:</strong> Screen 3 (Board / Player Cards), Screen 4 (Enemy / Mythos phase), Screen 5 (Campaign picker).
+  </div>
+</div>
+
+</body>
+</html>

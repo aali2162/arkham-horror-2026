@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option D — Screens 3–5 (Board · Enemy/Mythos · Campaign)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #1a1208;
+  min-height: 100vh;
+  padding: 48px 24px 80px;
+  font-family: 'Cinzel', serif;
+}
+.page-title { font-family:'Cinzel Decorative',serif; font-size:18px; color:#c9a84c; letter-spacing:3px; text-align:center; margin-bottom:6px; }
+.page-sub { font-family:'Crimson Text',serif; font-size:14px; color:#7a6030; font-style:italic; text-align:center; margin-bottom:48px; }
+.screens-row { display:flex; gap:48px; flex-wrap:wrap; justify-content:center; align-items:flex-start; }
+.screen-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; width:390px; }
+.screen-title { font-family:'Cinzel',serif; font-size:10px; font-weight:700; letter-spacing:3px; color:#8a6820; text-align:center; }
+.screen-note { font-family:'Crimson Text',serif; font-size:12px; color:#6a5020; font-style:italic; text-align:center; max-width:340px; }
+
+/* Phone shell */
+.phone { width:390px; border-radius:44px; overflow:hidden; border:2px solid #c9a84c; box-shadow:0 0 0 5px #1a1208,0 0 0 7px #4a3010,0 24px 80px rgba(0,0,0,0.8); }
+.phone-inner { background:#f5f0e8; overflow:hidden; }
+
+/* ── SHARED DESIGN TOKENS (Option D Dossier) ── */
+.d-topbar { background:#1a1208; padding:44px 16px 14px; border-bottom:4px solid #c9a84c; display:flex; justify-content:space-between; align-items:center; }
+.d-topbar-title { font-family:'Cinzel Decorative',serif; font-size:13px; letter-spacing:2px; color:#f2e8cc; }
+.d-topbar-sub { font-family:'Cinzel',serif; font-size:9px; letter-spacing:1px; color:#8a6820; }
+.d-phase-pill { background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.4); border-radius:20px; padding:4px 12px; font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:#c9a84c; }
+.d-round { font-family:'Cinzel',serif; font-size:10px; color:#8a6820; letter-spacing:1px; }
+.d-section-head { font-family:'Cinzel',serif; font-size:9px; font-weight:700; letter-spacing:3px; color:#8a6820; padding:10px 16px 8px; border-bottom:1px solid #e0d4b0; display:flex; align-items:center; justify-content:space-between; background:#f5f0e8; }
+.d-btn-primary { width:100%; padding:16px; background:#1a1208; border:2px solid #1a1208; font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:3px; color:#c9a84c; cursor:pointer; display:block; margin-bottom:8px; }
+.d-btn-ghost { width:100%; padding:14px; background:#f5f0e8; border:2px solid #1a1208; font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:2px; color:#1a1208; cursor:pointer; display:block; margin-bottom:8px; }
+
+/* stat colours */
+.col-hp  { color:#b82020; } .col-san { color:#2e8a50; }
+.col-wil { color:#7050b8; } .col-int { color:#c8871a; }
+.col-com { color:#b82020; } .col-agi { color:#2e8a50; }
+.col-dmg { color:#b82020; } .col-hor { color:#7050b8; }
+.col-res { color:#c8871a; } .col-clu { color:#2e8a50; }
+
+/* ═══════════════════════════════════════════════════════
+   SCREEN 3 — BOARD VIEW (Player Cards)
+   ═══════════════════════════════════════════════════════ */
+
+/* Tab bar */
+.s3-tabs { display:flex; background:#1a1208; border-bottom:2px solid #c9a84c; }
+.s3-tab { flex:1; padding:12px 8px; font-family:'Cinzel',serif; font-size:9px; font-weight:700; letter-spacing:2px; text-align:center; cursor:pointer; border:none; }
+.s3-tab.active { background:#f5f0e8; color:#1a1208; }
+.s3-tab.inactive { background:#1a1208; color:#8a6820; }
+
+/* Round / phase banner */
+.s3-banner { background:#fff; border-bottom:2px solid #1a1208; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
+.s3-banner-phase { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:#4a8fd4; }
+.s3-banner-round { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:#8a6820; }
+
+/* Doom / agenda strip */
+.s3-doom-strip { background:#1a1208; border-bottom:2px solid #c9a84c; display:flex; align-items:stretch; }
+.s3-doom-cell { flex:1; padding:10px 12px; text-align:center; border-right:1px solid #3a2808; }
+.s3-doom-cell:last-child { border-right:none; }
+.s3-doom-val { font-family:'Cinzel',serif; font-size:22px; font-weight:700; color:#c9a84c; display:block; line-height:1; }
+.s3-doom-lbl { font-family:'Crimson Text',serif; font-size:9px; color:#8a6820; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:3px; }
+.s3-doom-cell.danger .s3-doom-val { color:#b82020; }
+
+/* Player card — full-width dossier style */
+.s3-player-card { background:#fff; border-bottom:2px solid #1a1208; border-left:6px solid #4a8fd4; position:relative; }
+.s3-player-card.active-turn { background:#fffef5; border-left-color:#c9a84c; }
+.s3-player-card.mystic { border-left-color:#7050b8; }
+.s3-player-card.survivor { border-left-color:#b82020; }
+
+.s3-card-header { padding:10px 14px 0; display:flex; align-items:center; justify-content:space-between; }
+.s3-player-name { font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:#1a1208; }
+.s3-inv-name { font-family:'IM Fell English',serif; font-size:12px; color:#6a5020; font-style:italic; }
+.s3-badges { display:flex; gap:5px; }
+.s3-badge { font-family:'Cinzel',serif; font-size:8px; font-weight:700; letter-spacing:1px; padding:3px 8px; }
+.s3-badge.you { background:#1a1208; color:#c9a84c; }
+.s3-badge.lead { background:#c9a84c; color:#1a1208; }
+.s3-badge.turn { background:#4a8fd4; color:#fff; font-size:7px; }
+
+/* Stat row — 4 core tracking stats prominent */
+.s3-stat-row { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; border-top:1px solid #e0d4b0; border-left:1px solid #e0d4b0; margin:10px 14px 0; }
+.s3-stat-cell { border-right:1px solid #e0d4b0; border-bottom:1px solid #e0d4b0; padding:10px 4px; text-align:center; position:relative; }
+.s3-stat-cell::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.s3-stat-cell.dmg::before { background:#b82020; }
+.s3-stat-cell.hor::before { background:#7050b8; }
+.s3-stat-cell.res::before { background:#c8871a; }
+.s3-stat-cell.clu::before { background:#2e8a50; }
+.s3-stat-val { font-family:'Cinzel',serif; font-size:26px; font-weight:700; display:block; line-height:1; }
+.s3-stat-cell.dmg .s3-stat-val { color:#b82020; }
+.s3-stat-cell.hor .s3-stat-val { color:#7050b8; }
+.s3-stat-cell.res .s3-stat-val { color:#c8871a; }
+.s3-stat-cell.clu .s3-stat-val { color:#2e8a50; }
+.s3-stat-lbl { font-family:'Crimson Text',serif; font-size:9px; color:#8a7040; display:block; margin-top:3px; text-transform:uppercase; letter-spacing:0.5px; }
+
+/* HP/SAN health bars */
+.s3-health-row { padding:10px 14px 14px; display:flex; gap:12px; }
+.s3-health-item { flex:1; }
+.s3-health-label { font-family:'Cinzel',serif; font-size:8px; letter-spacing:1px; color:#8a6820; display:flex; justify-content:space-between; margin-bottom:4px; }
+.s3-health-bar-track { height:8px; background:#e0d4b0; border:1px solid #1a1208; }
+.s3-health-bar-fill { height:100%; }
+.s3-health-item.hp .s3-health-bar-fill { background:#b82020; }
+.s3-health-item.san .s3-health-bar-fill { background:#2e8a50; }
+
+/* +/− adjust buttons inline */
+.s3-adj-row { display:flex; gap:6px; align-items:center; margin-top:4px; }
+.s3-adj-btn { width:26px; height:26px; border:1px solid #1a1208; background:#f5f0e8; font-family:'Cinzel',serif; font-size:16px; color:#1a1208; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.s3-adj-val { font-family:'Cinzel',serif; font-size:14px; font-weight:700; color:#1a1208; flex:1; text-align:center; }
+
+/* Skill stats inline — small */
+.s3-skills-row { padding:0 14px 12px; display:flex; gap:8px; border-top:1px solid #e0d4b0; padding-top:8px; margin:0 14px; }
+.s3-skill { text-align:center; flex:1; }
+.s3-skill-val { font-family:'Cinzel',serif; font-size:16px; font-weight:700; display:block; line-height:1; }
+.s3-skill-lbl { font-family:'Crimson Text',serif; font-size:9px; color:#8a7040; display:block; margin-top:2px; text-transform:uppercase; }
+.s3-skill.wil .s3-skill-val { color:#7050b8; }
+.s3-skill.int .s3-skill-val { color:#c8871a; }
+.s3-skill.com .s3-skill-val { color:#b82020; }
+.s3-skill.agi .s3-skill-val { color:#2e8a50; }
+
+/* ═══════════════════════════════════════════════════════
+   SCREEN 4 — ENEMY / MYTHOS PHASE (Lead view)
+   ═══════════════════════════════════════════════════════ */
+
+.s4-phase-banner { background:#b82020; border-bottom:2px solid #1a1208; padding:12px 16px; text-align:center; }
+.s4-phase-name { font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:4px; color:#fff; }
+
+/* Enemy card */
+.s4-enemy-card { background:#fff; border:2px solid #1a1208; border-left:6px solid #b82020; margin:14px 16px 0; }
+.s4-enemy-header { background:#1a1208; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; }
+.s4-enemy-name { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#f2e8cc; }
+.s4-enemy-type { font-family:'IM Fell English',serif; font-size:12px; color:#8a6820; font-style:italic; }
+.s4-enemy-body { padding:14px; }
+.s4-enemy-stats { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; border:1px solid #e0d4b0; margin-bottom:12px; }
+.s4-enemy-stat { padding:10px 4px; text-align:center; border-right:1px solid #e0d4b0; }
+.s4-enemy-stat:last-child { border-right:none; }
+.s4-enemy-stat-val { font-family:'Cinzel',serif; font-size:22px; font-weight:700; display:block; line-height:1; color:#1a1208; }
+.s4-enemy-stat-lbl { font-family:'Crimson Text',serif; font-size:9px; color:#8a7040; display:block; margin-top:3px; text-transform:uppercase; }
+.s4-enemy-stat.fight .s4-enemy-stat-val { color:#b82020; }
+.s4-enemy-stat.evade .s4-enemy-stat-val { color:#2e8a50; }
+.s4-enemy-stat.hp .s4-enemy-stat-val { color:#b82020; }
+.s4-enemy-stat.dmg .s4-enemy-stat-val { color:#7050b8; }
+
+/* Keywords */
+.s4-keywords { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+.s4-keyword { background:#f5f0e8; border:1px solid #1a1208; font-family:'Cinzel',serif; font-size:9px; letter-spacing:1px; color:#1a1208; padding:4px 10px; }
+.s4-keyword.alert { background:#1a1208; color:#c9a84c; }
+
+/* Engagement list */
+.s4-engaged-label { font-family:'Cinzel',serif; font-size:8px; letter-spacing:2px; color:#8a6820; margin-bottom:6px; }
+.s4-engaged-item { background:#fff8f8; border:1px solid rgba(184,32,32,0.3); border-left:4px solid #b82020; padding:8px 12px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
+.s4-engaged-name { font-family:'Cinzel',serif; font-size:12px; color:#1a1208; }
+.s4-engaged-note { font-family:'Crimson Text',serif; font-size:11px; color:#b82020; font-style:italic; }
+
+/* Enemy damage tracker */
+.s4-enemy-dmg { border-top:1px solid #e0d4b0; padding-top:10px; display:flex; align-items:center; gap:12px; }
+.s4-enemy-dmg-label { font-family:'Cinzel',serif; font-size:9px; letter-spacing:1px; color:#8a6820; }
+.s4-enemy-dmg-adj { display:flex; gap:6px; align-items:center; }
+.s4-adj-btn-sm { width:28px; height:28px; border:1px solid #1a1208; background:#f5f0e8; font-family:'Cinzel',serif; font-size:16px; color:#1a1208; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.s4-adj-val-sm { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#b82020; min-width:28px; text-align:center; }
+
+/* Mythos phase actions */
+.s4-action-row { margin:14px 16px 0; }
+.s4-action-btn { width:100%; padding:15px 16px; background:#fff; border:2px solid #1a1208; border-left:6px solid #b82020; display:flex; align-items:center; gap:12px; margin-bottom:8px; cursor:pointer; }
+.s4-action-btn.secondary { border-left-color:#c9a84c; }
+.s4-action-btn.doom { border-left-color:#7050b8; background:#fdf8ff; }
+.s4-action-icon-cell { width:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.s4-action-text { flex:1; }
+.s4-action-name { font-family:'Cinzel',serif; font-size:14px; font-weight:700; color:#1a1208; display:block; }
+.s4-action-btn.doom .s4-action-name { color:#7050b8; }
+.s4-action-desc { font-family:'IM Fell English',serif; font-size:11px; color:#8a7040; font-style:italic; display:block; margin-top:2px; }
+
+/* ═══════════════════════════════════════════════════════
+   SCREEN 5 — CAMPAIGN & SCENARIO PICKER
+   ═══════════════════════════════════════════════════════ */
+
+.s5-campaign-list { background:#f5f0e8; }
+.s5-campaign-item { background:#fff; border-bottom:2px solid #1a1208; border-left:6px solid #1a1208; padding:0; cursor:pointer; }
+.s5-campaign-item.selected { border-left-color:#c9a84c; background:#fffef5; }
+.s5-campaign-header { padding:14px 16px; display:flex; align-items:center; justify-content:space-between; }
+.s5-campaign-name { font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:#1a1208; }
+.s5-campaign-sub { font-family:'IM Fell English',serif; font-size:12px; color:#6a5020; font-style:italic; margin-top:2px; }
+.s5-campaign-check { width:22px; height:22px; border:2px solid #1a1208; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.s5-campaign-check.checked { background:#1a1208; }
+
+/* Scenario list (expanded) */
+.s5-scenarios { border-top:1px solid #e0d4b0; }
+.s5-scenario-item { padding:12px 16px 12px 22px; border-bottom:1px solid #e0d4b0; cursor:pointer; display:flex; align-items:flex-start; gap:12px; }
+.s5-scenario-item:last-child { border-bottom:none; }
+.s5-scenario-num { font-family:'Cinzel',serif; font-size:9px; font-weight:700; letter-spacing:1px; color:#8a6820; width:22px; flex-shrink:0; padding-top:2px; }
+.s5-scenario-body { flex:1; }
+.s5-scenario-name { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#1a1208; margin-bottom:3px; }
+.s5-scenario-stats { display:flex; gap:12px; }
+.s5-scenario-stat { font-family:'Crimson Text',serif; font-size:11px; color:#8a7040; }
+.s5-scenario-stat span { font-family:'Cinzel',serif; font-size:11px; font-weight:700; }
+.s5-scenario-stat.doom span { color:#7050b8; }
+.s5-scenario-stat.clue span { color:#2e8a50; }
+
+/* Custom campaign form */
+.s5-custom-form { padding:16px; background:#f5f0e8; }
+.s5-custom-label { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:#8a6820; display:block; margin-bottom:6px; margin-top:12px; }
+.s5-custom-label:first-child { margin-top:0; }
+.s5-input { width:100%; padding:12px 14px; border:2px solid #1a1208; background:#fff; font-family:'Cinzel',serif; font-size:12px; color:#1a1208; margin-bottom:2px; }
+.s5-input::placeholder { color:#c0b080; }
+.s5-input-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+/* Confirm banner */
+.s5-confirm-bar { background:#1a1208; border-top:2px solid #c9a84c; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; }
+.s5-selected-label { font-family:'Cinzel',serif; font-size:9px; letter-spacing:1px; color:#8a6820; }
+.s5-selected-name { font-family:'Cinzel',serif; font-size:11px; font-weight:700; color:#c9a84c; }
+.s5-confirm-btn { background:#c9a84c; border:none; font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:2px; color:#1a1208; padding:10px 18px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">OPTION D — SCREENS 3, 4 & 5</h1>
+<p class="page-sub">Board · Enemy/Mythos · Campaign Picker · Mobile-first 390px</p>
+
+<div class="screens-row">
+
+  <!-- ═══════════════════════════════════
+       SCREEN 3 — BOARD VIEW
+       ═══════════════════════════════════ -->
+  <div class="screen-wrap">
+    <div class="screen-title">SCREEN 3 — BOARD VIEW (PLAYER CARDS)</div>
+    <div class="phone"><div class="phone-inner">
+
+      <div class="d-topbar">
+        <div><div class="d-topbar-title">ARKHAM HORROR</div><div class="d-topbar-sub">AHCG-3C2PJ</div></div>
+        <div class="d-round">ROUND 1</div>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="s3-tabs">
+        <button class="s3-tab inactive">YOUR TURN</button>
+        <button class="s3-tab active">BOARD</button>
+        <button class="s3-tab inactive">LOG</button>
+      </div>
+
+      <!-- Phase / doom banner -->
+      <div class="s3-banner">
+        <span class="s3-banner-phase">INVESTIGATION PHASE</span>
+        <span class="s3-banner-round">Ahsan's turn</span>
+      </div>
+
+      <!-- Doom / Agenda strip -->
+      <div class="s3-doom-strip">
+        <div class="s3-doom-cell">
+          <span class="s3-doom-val">3</span>
+          <span class="s3-doom-lbl">Doom</span>
+        </div>
+        <div class="s3-doom-cell danger">
+          <span class="s3-doom-val">8</span>
+          <span class="s3-doom-lbl">Doom Threshold</span>
+        </div>
+        <div class="s3-doom-cell">
+          <span class="s3-doom-val">4</span>
+          <span class="s3-doom-lbl">Clues on Agenda</span>
+        </div>
+      </div>
+
+      <!-- Player card 1 — active turn, Guardian (YOU) -->
+      <div class="s3-player-card active-turn" style="margin-top:0;">
+        <div class="s3-card-header">
+          <div>
+            <div class="s3-player-name">Ahsan</div>
+            <div class="s3-inv-name">Daniela Reyes · Guardian</div>
+          </div>
+          <div class="s3-badges">
+            <span class="s3-badge you">YOU</span>
+            <span class="s3-badge lead">LEAD</span>
+            <span class="s3-badge turn" style="background:#c9a84c;color:#1a1208;">ACTIVE</span>
+          </div>
+        </div>
+
+        <!-- 4 core tracking stats -->
+        <div style="padding:10px 14px 0;">
+          <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#8a6820;margin-bottom:6px;">CURRENT STATUS</div>
+          <div class="s3-stat-row" style="margin:0 0 10px;">
+            <div class="s3-stat-cell dmg">
+              <span class="s3-stat-val">0</span>
+              <span class="s3-stat-lbl">Damage</span>
+              <div style="display:flex;gap:3px;justify-content:center;margin-top:5px;">
+                <button class="s3-adj-btn" style="width:22px;height:22px;font-size:13px;border:1px solid #1a1208;background:#f5f0e8;cursor:pointer;">−</button>
+                <button class="s3-adj-btn" style="width:22px;height:22px;font-size:13px;border:1px solid #1a1208;background:#f5f0e8;cursor:pointer;">+</button>
+              </div>
+            </div>
+            <div class="s3-stat-cell hor">
+              <span class="s3-stat-val">0</span>
+              <span class="s3-stat-lbl">Horror</span>
+              <div style="display:flex;gap:3px;justify-content:center;margin-top:5px;">
+                <button class="s3-adj-btn" style="width:22px;height:22px;font-size:13px;border:1px solid #1a1208;background:#f5f0e8;cursor:pointer;">−</button>
+                <button class="s3-adj-btn" style="width:22px;height:22px;font-size:13px;border:1px solid #1a1208;background:#f5f0e8;cursor:pointer;">+</button>
+              </div>
+            </div>
+            <div class="s3-stat-cell res">
+              <span class="s3-stat-val">5</span>
+              <span class="s3-stat-lbl">Resources</span>
+              <div style="display:flex;gap:3px;justify-content:center;margin-top:5px;">
+                <button class="s3-adj-btn" style="width:22px;height:22px;font-size:13px;border:1px solid #1a1208;background:#f5f0e8;cursor:pointer;">−</button>
+                <button class="s3-adj-btn" style="width:22px;height:22px;font-size:13px;border:1px solid #1a1208;background:#f5f0e8;cursor:pointer;">+</button>
+              </div>
+            </div>
+            <div class="s3-stat-cell clu">
+              <span class="s3-stat-val">0</span>
+              <span class="s3-stat-lbl">Clues</span>
+              <div style="display:flex;gap:3px;justify-content:center;margin-top:5px;">
+                <button class="s3-adj-btn" style="width:22px;height:22px;font-size:13px;border:1px solid #1a1208;background:#f5f0e8;cursor:pointer;">−</button>
+                <button class="s3-adj-btn" style="width:22px;height:22px;font-size:13px;border:1px solid #1a1208;background:#f5f0e8;cursor:pointer;">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HP / SAN bars -->
+        <div class="s3-health-row">
+          <div class="s3-health-item hp">
+            <div class="s3-health-label"><span>HEALTH</span><span style="font-weight:700;color:#b82020;">9 / 9</span></div>
+            <div class="s3-health-bar-track"><div class="s3-health-bar-fill" style="width:100%;"></div></div>
+          </div>
+          <div class="s3-health-item san">
+            <div class="s3-health-label"><span>SANITY</span><span style="font-weight:700;color:#2e8a50;">5 / 5</span></div>
+            <div class="s3-health-bar-track"><div class="s3-health-bar-fill" style="width:100%;"></div></div>
+          </div>
+        </div>
+
+        <!-- Skill stats — compact row -->
+        <div style="border-top:1px solid #e0d4b0;margin:0 14px;padding:8px 0 12px;display:flex;gap:0;">
+          <div class="s3-skill wil" style="flex:1;text-align:center;"><span class="s3-skill-val">3</span><span class="s3-skill-lbl">Will</span></div>
+          <div class="s3-skill int" style="flex:1;text-align:center;"><span class="s3-skill-val">2</span><span class="s3-skill-lbl">Intel</span></div>
+          <div class="s3-skill com" style="flex:1;text-align:center;"><span class="s3-skill-val">5</span><span class="s3-skill-lbl">Combat</span></div>
+          <div class="s3-skill agi" style="flex:1;text-align:center;"><span class="s3-skill-val">2</span><span class="s3-skill-lbl">Agility</span></div>
+        </div>
+      </div>
+
+      <!-- Player card 2 — Mystic, waiting -->
+      <div class="s3-player-card mystic">
+        <div class="s3-card-header">
+          <div>
+            <div class="s3-player-name">Sara</div>
+            <div class="s3-inv-name">Agnes Baker · Mystic</div>
+          </div>
+          <div class="s3-badges">
+            <span class="s3-badge" style="background:#7050b8;color:#fff;font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:1px;padding:3px 8px;">WAITING</span>
+          </div>
+        </div>
+        <div style="padding:10px 14px;">
+          <div class="s3-stat-row" style="margin:0 0 10px;">
+            <div class="s3-stat-cell dmg"><span class="s3-stat-val">1</span><span class="s3-stat-lbl">Damage</span></div>
+            <div class="s3-stat-cell hor"><span class="s3-stat-val">2</span><span class="s3-stat-lbl">Horror</span></div>
+            <div class="s3-stat-cell res"><span class="s3-stat-val">3</span><span class="s3-stat-lbl">Resources</span></div>
+            <div class="s3-stat-cell clu"><span class="s3-stat-val">2</span><span class="s3-stat-lbl">Clues</span></div>
+          </div>
+          <div class="s3-health-row" style="padding:0 0 10px;">
+            <div class="s3-health-item hp">
+              <div class="s3-health-label"><span>HEALTH</span><span style="font-weight:700;color:#b82020;">6 / 8</span></div>
+              <div class="s3-health-bar-track"><div class="s3-health-bar-fill" style="width:75%;"></div></div>
+            </div>
+            <div class="s3-health-item san">
+              <div class="s3-health-label"><span>SANITY</span><span style="font-weight:700;color:#2e8a50;">5 / 7</span></div>
+              <div class="s3-health-bar-track"><div class="s3-health-bar-fill" style="width:71%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom nav -->
+      <div style="background:#1a1208;border-top:2px solid #c9a84c;padding:14px 16px;">
+        <button class="d-btn-primary" style="margin-bottom:0;letter-spacing:2px;">← BACK TO YOUR TURN</button>
+      </div>
+
+    </div></div>
+    <p class="screen-note">Doom strip always visible · 26px tracking stats with +/− · HP/SAN health bars · skill stats compact below · class colour left stripe · ACTIVE badge on current player</p>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SCREEN 4 — ENEMY / MYTHOS PHASE
+       ═══════════════════════════════════ -->
+  <div class="screen-wrap">
+    <div class="screen-title">SCREEN 4 — ENEMY / MYTHOS PHASE (LEAD VIEW)</div>
+    <div class="phone"><div class="phone-inner">
+
+      <div class="d-topbar">
+        <div><div class="d-topbar-title">ARKHAM HORROR</div><div class="d-topbar-sub">AHCG-3C2PJ</div></div>
+        <div class="d-round">ROUND 1</div>
+      </div>
+
+      <!-- Phase banner — red for enemy/mythos -->
+      <div class="s4-phase-banner">
+        <div class="s4-phase-name">ENEMY PHASE</div>
+      </div>
+
+      <!-- Doom counter prominent -->
+      <div style="background:#fff;border-bottom:2px solid #1a1208;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#8a6820;">DOOM TRACK</div>
+          <div style="font-family:'Cinzel',serif;font-size:28px;font-weight:700;color:#7050b8;line-height:1;">3 <span style="font-size:14px;color:#8a6820;">/ 8</span></div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button style="width:36px;height:36px;border:2px solid #7050b8;background:#f5f0e8;font-family:'Cinzel',serif;font-size:18px;color:#7050b8;cursor:pointer;">−</button>
+          <button style="width:36px;height:36px;border:2px solid #7050b8;background:#7050b8;font-family:'Cinzel',serif;font-size:18px;color:#fff;cursor:pointer;">+</button>
+        </div>
+      </div>
+
+      <!-- Active enemy card -->
+      <div style="padding:0 16px;margin-top:14px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:#8a6820;margin-bottom:8px;">ACTIVE ENEMY</div>
+      </div>
+      <div class="s4-enemy-card">
+        <div class="s4-enemy-header">
+          <div>
+            <div class="s4-enemy-name">Ghoul Minion</div>
+            <div class="s4-enemy-type">Monster · Ghoul</div>
+          </div>
+          <!-- Spawn indicator -->
+          <div style="background:#b82020;padding:4px 10px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;color:#fff;">HUNTER</div>
+        </div>
+        <div class="s4-enemy-body">
+          <!-- Enemy stats -->
+          <div class="s4-enemy-stats">
+            <div class="s4-enemy-stat fight">
+              <span class="s4-enemy-stat-val">3</span>
+              <span class="s4-enemy-stat-lbl">Fight</span>
+            </div>
+            <div class="s4-enemy-stat evade">
+              <span class="s4-enemy-stat-val">3</span>
+              <span class="s4-enemy-stat-lbl">Evade</span>
+            </div>
+            <div class="s4-enemy-stat hp">
+              <span class="s4-enemy-stat-val">2</span>
+              <span class="s4-enemy-stat-lbl">Health</span>
+            </div>
+            <div class="s4-enemy-stat dmg">
+              <span class="s4-enemy-stat-val">1·1</span>
+              <span class="s4-enemy-stat-lbl">Dmg·Hor</span>
+            </div>
+          </div>
+
+          <!-- Keywords -->
+          <div class="s4-keywords">
+            <span class="s4-keyword alert">HUNTER</span>
+            <span class="s4-keyword">RETALIATE</span>
+          </div>
+
+          <!-- Engaged investigators -->
+          <div class="s4-engaged-label">ENGAGED WITH</div>
+          <div class="s4-engaged-item">
+            <span class="s4-engaged-name">Ahsan (Daniela Reyes)</span>
+            <span class="s4-engaged-note">must fight or evade</span>
+          </div>
+
+          <!-- Enemy damage tracker -->
+          <div class="s4-enemy-dmg">
+            <span class="s4-enemy-dmg-label">DAMAGE DEALT TO ENEMY</span>
+            <div class="s4-enemy-dmg-adj">
+              <button class="s4-adj-btn-sm">−</button>
+              <span class="s4-adj-val-sm">0</span>
+              <button class="s4-adj-btn-sm">+</button>
+            </div>
+            <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a7040;">/ 2 HP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase actions -->
+      <div class="s4-action-row">
+        <div class="s4-action-btn">
+          <div class="s4-action-icon-cell">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="9" stroke="#b82020" stroke-width="2"/>
+              <text x="14" y="19" text-anchor="middle" font-family="serif" font-size="13" font-weight="bold" fill="#b82020">!</text>
+            </svg>
+          </div>
+          <div class="s4-action-text">
+            <span class="s4-action-name">Spawn New Enemy</span>
+            <span class="s4-action-desc">Draw and place a new enemy from the encounter deck</span>
+          </div>
+        </div>
+        <div class="s4-action-btn doom">
+          <div class="s4-action-icon-cell">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M14 4 L14 24 M4 14 L24 14 M6.3 6.3 L21.7 21.7 M21.7 6.3 L6.3 21.7" stroke="#7050b8" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="s4-action-text">
+            <span class="s4-action-name">Advance Doom</span>
+            <span class="s4-action-desc">Place a doom token on the current agenda</span>
+          </div>
+        </div>
+        <div class="s4-action-btn secondary">
+          <div class="s4-action-icon-cell">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect x="5" y="5" width="18" height="18" rx="2" stroke="#c9a84c" stroke-width="2"/>
+              <line x1="5" y1="12" x2="23" y2="12" stroke="#c9a84c" stroke-width="1.5"/>
+              <line x1="14" y1="5" x2="14" y2="23" stroke="#c9a84c" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="s4-action-text">
+            <span class="s4-action-name" style="color:#c8871a;">Draw Encounter Card</span>
+            <span class="s4-action-desc">Resolve a card from the encounter deck</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:14px 16px;">
+        <button class="d-btn-primary" style="letter-spacing:2px;">END ENEMY PHASE →</button>
+      </div>
+
+    </div></div>
+    <p class="screen-note">Red phase banner · enemy stat card · engaged investigator list · doom track with +/− · phase action buttons with SVG icons</p>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SCREEN 5 — CAMPAIGN / SCENARIO PICKER
+       ═══════════════════════════════════ -->
+  <div class="screen-wrap">
+    <div class="screen-title">SCREEN 5 — CAMPAIGN & SCENARIO PICKER</div>
+    <div class="phone"><div class="phone-inner">
+
+      <div class="d-topbar">
+        <div><div class="d-topbar-title">ARKHAM HORROR</div><div class="d-topbar-sub">Choose Your Investigation</div></div>
+      </div>
+
+      <div class="d-section-head">
+        SELECT A CAMPAIGN
+      </div>
+
+      <div class="s5-campaign-list">
+
+        <!-- Campaign 1 — selected + expanded -->
+        <div class="s5-campaign-item selected">
+          <div class="s5-campaign-header">
+            <div>
+              <div class="s5-campaign-name">Night of the Zealot</div>
+              <div class="s5-campaign-sub">Core Set · 3 Scenarios</div>
+            </div>
+            <div class="s5-campaign-check checked">
+              <svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" stroke="#c9a84c" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <!-- Expanded: scenario list -->
+          <div class="s5-scenarios">
+            <div class="s5-scenario-item" style="background:#fffef5;border-left:4px solid #c9a84c;">
+              <div class="s5-scenario-num">I</div>
+              <div class="s5-scenario-body">
+                <div class="s5-scenario-name">The Gathering</div>
+                <div class="s5-scenario-stats">
+                  <div class="s5-scenario-stat doom">Doom <span>8</span></div>
+                  <div class="s5-scenario-stat clue">Clues <span>3×</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="s5-scenario-item">
+              <div class="s5-scenario-num">II</div>
+              <div class="s5-scenario-body">
+                <div class="s5-scenario-name">The Midnight Masks</div>
+                <div class="s5-scenario-stats">
+                  <div class="s5-scenario-stat doom">Doom <span>9</span></div>
+                  <div class="s5-scenario-stat clue">Clues <span>2×</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="s5-scenario-item">
+              <div class="s5-scenario-num">III</div>
+              <div class="s5-scenario-body">
+                <div class="s5-scenario-name">The Devourer Below</div>
+                <div class="s5-scenario-stats">
+                  <div class="s5-scenario-stat doom">Doom <span>11</span></div>
+                  <div class="s5-scenario-stat clue">Clues <span>—</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campaign 2 — collapsed -->
+        <div class="s5-campaign-item">
+          <div class="s5-campaign-header">
+            <div>
+              <div class="s5-campaign-name">The Dunwich Legacy</div>
+              <div class="s5-campaign-sub">Deluxe Expansion · 8 Scenarios</div>
+            </div>
+            <div class="s5-campaign-check"></div>
+          </div>
+        </div>
+
+        <!-- Campaign 3 — collapsed -->
+        <div class="s5-campaign-item">
+          <div class="s5-campaign-header">
+            <div>
+              <div class="s5-campaign-name">The Path to Carcosa</div>
+              <div class="s5-campaign-sub">Deluxe Expansion · 8 Scenarios</div>
+            </div>
+            <div class="s5-campaign-check"></div>
+          </div>
+        </div>
+
+        <!-- Campaign 4 — Custom -->
+        <div class="s5-campaign-item">
+          <div class="s5-campaign-header">
+            <div>
+              <div class="s5-campaign-name">Custom / Freeform</div>
+              <div class="s5-campaign-sub">Name your own campaign</div>
+            </div>
+            <div class="s5-campaign-check"></div>
+          </div>
+          <!-- Custom form — shown when expanded -->
+          <div class="s5-custom-form" style="display:none;">
+            <span class="s5-custom-label">CAMPAIGN NAME</span>
+            <input class="s5-input" type="text" placeholder="e.g. Return to Dunwich…">
+            <span class="s5-custom-label">SCENARIO NAME</span>
+            <input class="s5-input" type="text" placeholder="e.g. The Experiment">
+            <div class="s5-input-row">
+              <div>
+                <span class="s5-custom-label">DOOM THRESHOLD</span>
+                <input class="s5-input" type="number" placeholder="8">
+              </div>
+              <div>
+                <span class="s5-custom-label">CLUES REQUIRED</span>
+                <input class="s5-input" type="number" placeholder="3">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Confirmation bar -->
+      <div class="s5-confirm-bar">
+        <div>
+          <div class="s5-selected-label">SELECTED</div>
+          <div class="s5-selected-name">The Gathering — Night of the Zealot</div>
+        </div>
+        <button class="s5-confirm-btn">CONFIRM →</button>
+      </div>
+
+    </div></div>
+    <p class="screen-note">Accordion campaign list · selected campaign expands · scenario list with Roman numeral + doom/clue stats · sticky confirm bar · Custom form at bottom</p>
+  </div>
+
+</div>
+
+<!-- Design system summary -->
+<div style="max-width:1100px;margin:60px auto 0;padding:28px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);">
+  <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:#c9a84c;margin-bottom:20px;">OPTION D — COMPLETE DESIGN SYSTEM SUMMARY</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;">
+    <div>
+      <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:#c9a84c;margin-bottom:10px;">COLOUR SYSTEM</div>
+      <div style="font-family:'Crimson Text',serif;font-size:13px;color:#7a6030;line-height:1.8;">
+        Background: #f5f0e8 (aged paper)<br>
+        Header / ink: #1a1208 (near-black)<br>
+        Accent: #c9a84c (antique gold)<br>
+        Health: #b82020 (deep red)<br>
+        Sanity / Agility: #2e8a50 (forest)<br>
+        Willpower / Horror: #7050b8 (mystic purple)<br>
+        Intellect / Resources: #c8871a (amber)
+      </div>
+    </div>
+    <div>
+      <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:#c9a84c;margin-bottom:10px;">TYPOGRAPHY</div>
+      <div style="font-family:'Crimson Text',serif;font-size:13px;color:#7a6030;line-height:1.8;">
+        Headings: Cinzel Decorative<br>
+        UI labels: Cinzel (all caps, tracked)<br>
+        Body / flavour: Crimson Text<br>
+        Italic flavour: IM Fell English<br>
+        Stat numbers: Cinzel Bold 22–28px<br>
+        Action trigger: ► (Cinzel, italic)
+      </div>
+    </div>
+    <div>
+      <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:#c9a84c;margin-bottom:10px;">COMPONENT RULES</div>
+      <div style="font-family:'Crimson Text',serif;font-size:13px;color:#7a6030;line-height:1.8;">
+        Cards: 2px #1a1208 border, no radius<br>
+        Left stripe: 5–6px, class/type colour<br>
+        Class tab: top-right, colour-filled<br>
+        Buttons: no border-radius, ink fill<br>
+        Stat cells: grid, coloured top bar<br>
+        Badges: YOU (ink), LEAD (gold)<br>
+        Phase pill: gold outline, tracked
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:24px;padding-top:20px;border-top:1px solid rgba(201,168,76,0.2);font-family:'Crimson Text',serif;font-size:14px;color:#7a6030;line-height:1.7;">
+    <strong style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:#c9a84c;">NEXT STEP:</strong>
+    Review all 5 screens. Mark any changes per screen (sizing, labels, layout order, colours). Once approved I implement all 5 screens in code in one session.
+  </div>
+</div>
+
+</body>
+</html>

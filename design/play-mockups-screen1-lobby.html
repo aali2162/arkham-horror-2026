@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Play Mockups — Screen 1: Lobby & Game Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #1a1208;
+  min-height: 100vh;
+  padding: 48px 24px 80px;
+  font-family: 'Cinzel', serif;
+}
+h1.page-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 18px; color: #c9a84c; letter-spacing: 3px;
+  text-align: center; margin-bottom: 6px;
+}
+p.page-sub {
+  font-family: 'Crimson Text', serif;
+  font-size: 14px; color: #7a6030; font-style: italic;
+  text-align: center; margin-bottom: 48px;
+}
+.options-row {
+  display: flex; gap: 40px; flex-wrap: wrap;
+  justify-content: center; align-items: flex-start;
+}
+.option-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  width: 390px;
+}
+.option-label {
+  font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; color: #c9a84c;
+  border: 1px solid #4a3010; padding: 4px 16px; border-radius: 20px;
+  background: rgba(201,168,76,0.08);
+}
+.option-desc {
+  font-family: 'Crimson Text', serif; font-size: 13px; color: #7a6030;
+  font-style: italic; text-align: center; max-width: 340px;
+  line-height: 1.5;
+}
+/* Phone shell */
+.phone {
+  width: 390px; flex-shrink: 0;
+  border-radius: 44px; overflow: hidden;
+  border: 2px solid #8a6820;
+  box-shadow: 0 0 0 5px #1a1208, 0 0 0 7px #4a3010, 0 24px 80px rgba(0,0,0,0.8);
+}
+.phone-inner { overflow: hidden; position: relative; }
+
+/* ===== SHARED DESIGN TOKENS ===== */
+/* Parchment bg */
+.bg-parch { background: #f2e8cc; }
+.bg-parch-dark { background: #e8d8aa; }
+/* Dark leather */
+.bg-leather { background: #1e1208; }
+/* Deep crimson */
+.bg-crimson { background: #1a0808; }
+/* Midnight ink */
+.bg-ink { background: #0d0d18; }
+/* Stone grey */
+.bg-stone { background: #1c1c1c; }
+
+/* ===================== OPTION A — "Parchment Scroll" (refinement of current) ===================== */
+.a-phone { background: #f2e8cc; }
+.a-header {
+  background: linear-gradient(180deg, #3a2808 0%, #2a1a06 100%);
+  padding: 48px 20px 20px;
+  text-align: center; border-bottom: 2px solid #8a6820;
+}
+.a-header-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 11px; letter-spacing: 4px; color: #c9a84c; margin-bottom: 4px;
+}
+.a-header-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 8px; letter-spacing: 3px; color: #8a6820; text-transform: uppercase;
+}
+.a-section {
+  padding: 24px 20px;
+}
+.a-session-badge {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(58,40,8,0.08); border: 1px solid #c9a84c;
+  border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+}
+.a-session-code {
+  font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700;
+  color: #3a2808; letter-spacing: 2px; flex: 1; text-align: center;
+}
+.a-session-label {
+  font-family: 'Crimson Text', serif; font-size: 11px; color: #8a6820;
+  font-style: italic; text-align: center; margin-bottom: 4px;
+}
+.a-divider {
+  text-align: center; margin: 16px 0;
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
+  color: #b89848; display: flex; align-items: center; gap: 8px;
+}
+.a-divider::before, .a-divider::after {
+  content: ''; flex: 1; height: 1px; background: #c9a84c; opacity: 0.4;
+}
+/* Investigator card in lobby */
+.a-inv-card {
+  background: #fff8e8; border: 1px solid #d4b060;
+  border-radius: 12px; padding: 16px; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 12px;
+}
+.a-inv-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: #4a8fd4; display: flex; align-items: center;
+  justify-content: center; font-family: 'Cinzel', serif;
+  font-size: 20px; font-weight: 700; color: #fff;
+  border: 2px solid #3a6fa4; flex-shrink: 0;
+}
+.a-inv-info { flex: 1; }
+.a-inv-name {
+  font-family: 'Cinzel', serif; font-size: 14px; font-weight: 600;
+  color: #3a2808; margin-bottom: 2px;
+}
+.a-inv-role {
+  font-family: 'Crimson Text', serif; font-size: 12px; color: #4a8fd4;
+  font-style: italic; margin-bottom: 8px;
+}
+.a-stats-row {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.a-stat {
+  display: flex; flex-direction: column; align-items: center;
+  background: rgba(58,40,8,0.06); border-radius: 8px;
+  padding: 6px 10px; min-width: 44px;
+}
+.a-stat-val {
+  font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700;
+  color: #3a2808; line-height: 1;
+}
+.a-stat-lbl {
+  font-family: 'Crimson Text', serif; font-size: 9px;
+  color: #8a7040; margin-top: 2px; text-transform: uppercase; letter-spacing: 1px;
+}
+.a-stat.hp .a-stat-val { color: #c0392b; }
+.a-stat.san .a-stat-val { color: #2e8a50; }
+.a-stat.wil .a-stat-val { color: #7050b8; }
+.a-stat.int .a-stat-val { color: #c8871a; }
+.a-stat.com .a-stat-val { color: #b82020; }
+.a-stat.agi .a-stat-val { color: #2e8a50; }
+.a-btn-primary {
+  width: 100%; padding: 16px;
+  background: linear-gradient(180deg, #3a2808 0%, #2a1a06 100%);
+  border: 1px solid #8a6820; border-radius: 12px;
+  font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; color: #c9a84c; cursor: pointer;
+  margin-top: 8px;
+}
+.a-btn-ghost {
+  width: 100%; padding: 14px;
+  background: transparent; border: 1px solid #c9a84c;
+  border-radius: 12px; font-family: 'Cinzel', serif;
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  color: #8a6820; cursor: pointer; margin-top: 8px;
+}
+.a-lead-badge {
+  background: #c9a84c; color: #1a1208;
+  font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; padding: 3px 8px; border-radius: 20px;
+}
+.a-you-badge {
+  background: #4a8fd4; color: #fff;
+  font-family: 'Cinzel', serif; font-size: 8px; font-weight: 700;
+  letter-spacing: 1px; padding: 2px 7px; border-radius: 20px;
+}
+
+/* ===================== OPTION B — "Dark Leather Tome" ===================== */
+.b-phone { background: #1e1208; }
+.b-header {
+  background: #120c04; padding: 48px 20px 16px;
+  border-bottom: 1px solid #4a3010; text-align: center;
+}
+.b-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 13px; letter-spacing: 4px; color: #c9a84c;
+}
+.b-sub {
+  font-family: 'Crimson Text', serif;
+  font-size: 11px; color: #6a5020; font-style: italic; margin-top: 4px;
+}
+.b-section { padding: 20px 16px; }
+.b-session-box {
+  background: #120c04; border: 1px solid #4a3010;
+  border-radius: 8px; padding: 16px; margin-bottom: 20px;
+  text-align: center;
+}
+.b-code {
+  font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700;
+  color: #c9a84c; letter-spacing: 4px;
+}
+.b-code-label {
+  font-family: 'Crimson Text', serif; font-size: 10px;
+  color: #6a5020; font-style: italic; margin-bottom: 6px;
+}
+.b-inv-card {
+  background: #120c04; border: 1px solid #3a2808;
+  border-left: 4px solid #4a8fd4;
+  border-radius: 8px; padding: 14px 16px; margin-bottom: 10px;
+}
+.b-inv-name {
+  font-family: 'Cinzel', serif; font-size: 14px; color: #e8d8a0;
+  margin-bottom: 3px;
+}
+.b-inv-role {
+  font-family: 'Crimson Text', serif; font-size: 12px;
+  color: #4a8fd4; font-style: italic; margin-bottom: 12px;
+}
+.b-stats {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+}
+.b-stat {
+  background: rgba(255,255,255,0.04); border-radius: 6px;
+  padding: 8px 4px; text-align: center;
+}
+.b-stat-val {
+  font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700;
+  line-height: 1; display: block;
+}
+.b-stat-lbl {
+  font-size: 8px; color: #6a5020; display: block; margin-top: 2px;
+  font-family: 'Crimson Text', serif; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.b-stat.hp .b-stat-val { color: #e05040; }
+.b-stat.san .b-stat-val { color: #40b870; }
+.b-stat.wil .b-stat-val { color: #a070e8; }
+.b-stat.int .b-stat-val { color: #e8a030; }
+.b-stat.com .b-stat-val { color: #e05040; }
+.b-stat.agi .b-stat-val { color: #40b870; }
+.b-badges { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.b-badge-lead {
+  background: #8a6820; color: #f2e8cc;
+  font-family: 'Cinzel', serif; font-size: 8px; font-weight: 700;
+  letter-spacing: 1px; padding: 3px 10px; border-radius: 4px;
+}
+.b-badge-you {
+  background: #4a8fd4; color: #fff;
+  font-family: 'Cinzel', serif; font-size: 8px; font-weight: 700;
+  letter-spacing: 1px; padding: 3px 10px; border-radius: 4px;
+}
+.b-btn {
+  width: 100%; padding: 16px;
+  background: #c9a84c; border: none; border-radius: 8px;
+  font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; color: #1a1208; cursor: pointer; margin-top: 8px;
+}
+.b-btn-ghost {
+  width: 100%; padding: 14px;
+  background: transparent; border: 1px solid #4a3010; border-radius: 8px;
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 2px;
+  color: #6a5020; cursor: pointer; margin-top: 8px;
+}
+
+/* ===================== OPTION C — "Elder Sign Cards" ===================== */
+.c-phone { background: #0f0f14; }
+.c-header {
+  background: linear-gradient(180deg, #1a0a30 0%, #0f0f14 100%);
+  padding: 48px 20px 16px; text-align: center;
+  border-bottom: 1px solid rgba(120,80,200,0.3);
+}
+.c-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 13px; letter-spacing: 4px; color: #b090e8;
+}
+.c-sub {
+  font-family: 'Crimson Text', serif;
+  font-size: 11px; color: #604890; font-style: italic; margin-top: 4px;
+}
+.c-section { padding: 20px 16px; }
+.c-session-box {
+  background: rgba(120,80,200,0.1); border: 1px solid rgba(120,80,200,0.3);
+  border-radius: 10px; padding: 16px; margin-bottom: 20px; text-align: center;
+}
+.c-code {
+  font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700;
+  color: #b090e8; letter-spacing: 4px;
+}
+.c-code-label {
+  font-family: 'Crimson Text', serif; font-size: 10px;
+  color: #604890; font-style: italic; margin-bottom: 6px;
+}
+.c-inv-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(120,80,200,0.2);
+  border-radius: 12px; padding: 16px; margin-bottom: 10px;
+  position: relative; overflow: hidden;
+}
+.c-inv-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: #4a8fd4;
+}
+.c-inv-name {
+  font-family: 'Cinzel', serif; font-size: 14px; color: #e0d0f8;
+  margin-bottom: 2px;
+}
+.c-inv-role {
+  font-family: 'Crimson Text', serif; font-size: 12px;
+  color: #4a8fd4; font-style: italic; margin-bottom: 14px;
+}
+.c-stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; gap: 6px;
+}
+.c-stat {
+  border-radius: 8px; padding: 10px 4px; text-align: center;
+}
+.c-stat.hp { background: rgba(192,57,43,0.15); border: 1px solid rgba(192,57,43,0.3); }
+.c-stat.san { background: rgba(46,138,80,0.15); border: 1px solid rgba(46,138,80,0.3); }
+.c-stat.wil { background: rgba(112,80,184,0.15); border: 1px solid rgba(112,80,184,0.3); }
+.c-stat.int { background: rgba(200,135,26,0.15); border: 1px solid rgba(200,135,26,0.3); }
+.c-stat.com { background: rgba(184,32,32,0.15); border: 1px solid rgba(184,32,32,0.3); }
+.c-stat.agi { background: rgba(46,138,80,0.15); border: 1px solid rgba(46,138,80,0.3); }
+.c-stat-val {
+  font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700;
+  line-height: 1; display: block;
+}
+.c-stat.hp .c-stat-val { color: #e05840; }
+.c-stat.san .c-stat-val { color: #40c870; }
+.c-stat.wil .c-stat-val { color: #b090e8; }
+.c-stat.int .c-stat-val { color: #e8a830; }
+.c-stat.com .c-stat-val { color: #e05840; }
+.c-stat.agi .c-stat-val { color: #40c870; }
+.c-stat-lbl {
+  font-size: 8px; display: block; margin-top: 3px;
+  font-family: 'Crimson Text', serif; text-transform: uppercase; letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.35);
+}
+.c-btn {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, #7050b8 0%, #4a3090 100%);
+  border: none; border-radius: 10px;
+  font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; color: #f0e8ff; cursor: pointer; margin-top: 8px;
+}
+.c-btn-ghost {
+  width: 100%; padding: 14px;
+  background: transparent; border: 1px solid rgba(120,80,200,0.3); border-radius: 10px;
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 2px;
+  color: #604890; cursor: pointer; margin-top: 8px;
+}
+
+/* ===================== OPTION D — "Newspaper / Investigation Board" ===================== */
+.d-phone { background: #f5f0e8; }
+.d-header {
+  background: #1a1208; padding: 48px 20px 16px;
+  border-bottom: 4px solid #c9a84c; text-align: center;
+}
+.d-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 14px; letter-spacing: 3px; color: #f2e8cc;
+}
+.d-sub {
+  font-family: 'Crimson Text', serif;
+  font-size: 11px; color: #8a6820; font-style: italic; margin-top: 4px;
+}
+.d-section { padding: 20px 16px; }
+.d-session-box {
+  background: #fff; border: 2px solid #1a1208;
+  border-radius: 0; padding: 16px; margin-bottom: 20px;
+  text-align: center; position: relative;
+}
+.d-session-box::before {
+  content: '◆ SESSION CODE ◆'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  background: #f5f0e8; padding: 0 8px;
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; color: #8a6820;
+}
+.d-code {
+  font-family: 'Cinzel', serif; font-size: 24px; font-weight: 700;
+  color: #1a1208; letter-spacing: 4px;
+}
+.d-inv-card {
+  background: #fff; border: 2px solid #1a1208;
+  padding: 14px 16px; margin-bottom: 10px;
+  position: relative;
+}
+.d-inv-card::before {
+  content: attr(data-class);
+  position: absolute; top: -1px; right: 12px;
+  background: #4a8fd4; color: #fff;
+  font-family: 'Cinzel', serif; font-size: 8px; font-weight: 700;
+  letter-spacing: 1px; padding: 3px 10px;
+}
+.d-inv-name {
+  font-family: 'Cinzel', serif; font-size: 15px; color: #1a1208;
+  margin-bottom: 2px; margin-top: 8px;
+}
+.d-inv-role {
+  font-family: 'Crimson Text', serif; font-size: 12px; color: #6a5020;
+  font-style: italic; margin-bottom: 12px;
+}
+.d-stats {
+  display: flex; gap: 8px; border-top: 1px solid #e0d0a0; padding-top: 10px;
+}
+.d-stat {
+  flex: 1; text-align: center;
+}
+.d-stat-val {
+  font-family: 'Cinzel', serif; font-size: 24px; font-weight: 700;
+  line-height: 1; display: block;
+}
+.d-stat-lbl {
+  font-family: 'Crimson Text', serif; font-size: 9px; color: #8a7040;
+  text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-top: 2px;
+}
+.d-stat.hp .d-stat-val { color: #c0392b; }
+.d-stat.san .d-stat-val { color: #2e8a50; }
+.d-stat.wil .d-stat-val { color: #7050b8; }
+.d-stat.int .d-stat-val { color: #c8871a; }
+.d-stat.com .d-stat-val { color: #b82020; }
+.d-stat.agi .d-stat-val { color: #2e8a50; }
+.d-btn {
+  width: 100%; padding: 16px;
+  background: #1a1208; border: 2px solid #1a1208; border-radius: 0;
+  font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; color: #c9a84c; cursor: pointer; margin-top: 8px;
+}
+.d-btn-ghost {
+  width: 100%; padding: 14px;
+  background: transparent; border: 2px solid #1a1208; border-radius: 0;
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 2px;
+  color: #1a1208; cursor: pointer; margin-top: 8px;
+}
+
+/* ===================== OPTION E — "Illuminated Manuscript" ===================== */
+.e-phone { background: #1a1208; }
+.e-header {
+  background: linear-gradient(180deg, #3d2a00 0%, #2a1a00 100%);
+  padding: 48px 20px 20px; text-align: center;
+  border-bottom: 2px solid #8a6820;
+}
+.e-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 13px; letter-spacing: 4px; color: #f5d060;
+}
+.e-sub {
+  font-family: 'IM Fell English', serif;
+  font-size: 13px; color: #8a6820; font-style: italic; margin-top: 6px;
+}
+.e-section { padding: 20px 16px; }
+.e-session-box {
+  background: rgba(245,208,96,0.06); border: 1px solid rgba(245,208,96,0.3);
+  border-radius: 12px; padding: 16px; margin-bottom: 20px;
+  text-align: center; position: relative;
+}
+.e-code {
+  font-family: 'Cinzel', serif; font-size: 24px; font-weight: 700;
+  color: #f5d060; letter-spacing: 6px;
+}
+.e-code-label {
+  font-family: 'IM Fell English', serif; font-size: 11px;
+  color: #8a6820; font-style: italic; margin-bottom: 6px;
+}
+.e-inv-card {
+  background: rgba(245,208,96,0.04);
+  border: 1px solid rgba(245,208,96,0.15);
+  border-radius: 12px; padding: 16px; margin-bottom: 12px;
+}
+.e-inv-name {
+  font-family: 'Cinzel', serif; font-size: 15px; color: #f5d060;
+  margin-bottom: 2px;
+}
+.e-inv-role {
+  font-family: 'IM Fell English', serif; font-size: 13px;
+  color: #4a8fd4; font-style: italic; margin-bottom: 14px;
+}
+/* Large readable stats grid */
+.e-stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+}
+.e-stat {
+  border-radius: 8px; padding: 12px 8px; text-align: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.e-stat-val {
+  font-family: 'Cinzel', serif; font-size: 28px; font-weight: 700;
+  line-height: 1; display: block;
+}
+.e-stat-lbl {
+  font-family: 'IM Fell English', serif; font-size: 10px; font-style: italic;
+  display: block; margin-top: 4px; color: rgba(245,208,96,0.5);
+}
+.e-stat.hp { border-color: rgba(192,57,43,0.4); }
+.e-stat.hp .e-stat-val { color: #e86050; }
+.e-stat.san { border-color: rgba(46,138,80,0.4); }
+.e-stat.san .e-stat-val { color: #50d880; }
+.e-stat.wil { border-color: rgba(112,80,184,0.4); }
+.e-stat.wil .e-stat-val { color: #b090e8; }
+.e-stat.int { border-color: rgba(200,135,26,0.4); }
+.e-stat.int .e-stat-val { color: #e8b840; }
+.e-stat.com { border-color: rgba(184,32,32,0.4); }
+.e-stat.com .e-stat-val { color: #e86050; }
+.e-stat.agi { border-color: rgba(46,138,80,0.4); }
+.e-stat.agi .e-stat-val { color: #50d880; }
+.e-btn {
+  width: 100%; padding: 18px;
+  background: linear-gradient(135deg, #c9a84c, #a07820);
+  border: none; border-radius: 10px;
+  font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
+  letter-spacing: 3px; color: #1a1208; cursor: pointer; margin-top: 10px;
+}
+.e-btn-ghost {
+  width: 100%; padding: 14px;
+  background: transparent; border: 1px solid rgba(245,208,96,0.25); border-radius: 10px;
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 2px;
+  color: #8a6820; cursor: pointer; margin-top: 8px;
+}
+.e-section-title {
+  font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700;
+  letter-spacing: 3px; color: rgba(245,208,96,0.5);
+  text-transform: uppercase; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.e-section-title::after {
+  content: ''; flex: 1; height: 1px; background: rgba(245,208,96,0.15);
+}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">SCREEN 1 — LOBBY & GAME SETUP</h1>
+<p class="page-sub">Five design directions · Mobile-first (390px) · Tap to annotate</p>
+
+<div class="options-row">
+
+  <!-- ===== OPTION A ===== -->
+  <div class="option-wrap">
+    <div class="option-label">OPTION A — PARCHMENT SCROLL</div>
+    <div class="option-desc">Refinement of current look. Warm parchment, dark header, stat numbers larger and spaced in dedicated cells.</div>
+    <div class="phone">
+      <div class="phone-inner a-phone">
+        <div class="a-header">
+          <div class="a-header-title">ARKHAM HORROR</div>
+          <div class="a-header-sub">◆ Game Setup ◆</div>
+        </div>
+        <div class="a-section">
+          <div class="a-session-label">Share this code with your party</div>
+          <div class="a-session-badge">
+            <div class="a-session-code">AHCG-3C2PJ</div>
+            <button style="background:#f2e8cc;border:1px solid #c9a84c;border-radius:6px;padding:6px 10px;font-family:'Cinzel',serif;font-size:9px;color:#8a6820;cursor:pointer;">COPY</button>
+          </div>
+          <div class="a-divider">INVESTIGATORS (1 / 4)</div>
+
+          <!-- Player card -->
+          <div class="a-inv-card">
+            <div class="a-inv-avatar">A</div>
+            <div class="a-inv-info">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+                <div class="a-inv-name">Ahsan</div>
+                <span class="a-you-badge">YOU</span>
+                <span class="a-lead-badge">LEAD</span>
+              </div>
+              <div class="a-inv-role">Daniela Reyes · Guardian</div>
+              <div class="a-stats-row">
+                <div class="a-stat hp"><span class="a-stat-val">9</span><span class="a-stat-lbl">HP</span></div>
+                <div class="a-stat san"><span class="a-stat-val">5</span><span class="a-stat-lbl">SAN</span></div>
+                <div class="a-stat wil"><span class="a-stat-val">3</span><span class="a-stat-lbl">WIL</span></div>
+                <div class="a-stat int"><span class="a-stat-val">2</span><span class="a-stat-lbl">INT</span></div>
+                <div class="a-stat com"><span class="a-stat-val">5</span><span class="a-stat-lbl">COM</span></div>
+                <div class="a-stat agi"><span class="a-stat-val">2</span><span class="a-stat-lbl">AGI</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="a-divider">ADD INVESTIGATOR</div>
+          <select style="width:100%;padding:12px;border:1px solid #c9a84c;border-radius:8px;background:#fff8e8;font-family:'Cinzel',serif;font-size:12px;color:#3a2808;margin-bottom:8px;">
+            <option>Daniela Reyes (Guardian)</option>
+          </select>
+          <button class="a-btn-primary">+ ADD TO LOBBY</button>
+          <button class="a-btn-ghost">▶ START GAME — 1 INVESTIGATOR</button>
+        </div>
+      </div>
+    </div>
+    <div class="option-desc" style="color:#c9a84c;">✓ Familiar · warm · readable stats · clear YOU/LEAD badges</div>
+  </div>
+
+  <!-- ===== OPTION B ===== -->
+  <div class="option-wrap">
+    <div class="option-label">OPTION B — DARK LEATHER TOME</div>
+    <div class="option-desc">Near-black leather background. Gold accents. Class-colour left border on cards. Large stat numbers. Feels like a game board.</div>
+    <div class="phone">
+      <div class="phone-inner b-phone">
+        <div class="b-header">
+          <div class="b-title">ARKHAM HORROR</div>
+          <div class="b-sub">Game Setup · AHCG-3C2PJ</div>
+        </div>
+        <div class="b-section">
+          <div class="b-session-box">
+            <div class="b-code-label">Session Code — share with your party</div>
+            <div class="b-code">AHCG-3C2PJ</div>
+          </div>
+
+          <div class="b-inv-card">
+            <div class="b-badges">
+              <span class="b-badge-you">YOU</span>
+              <span class="b-badge-lead">LEAD</span>
+            </div>
+            <div class="b-inv-name">Ahsan</div>
+            <div class="b-inv-role">Daniela Reyes · Guardian</div>
+            <div class="b-stats">
+              <div class="b-stat hp"><span class="b-stat-val">9</span><span class="b-stat-lbl">HP</span></div>
+              <div class="b-stat san"><span class="b-stat-val">5</span><span class="b-stat-lbl">SAN</span></div>
+              <div class="b-stat wil"><span class="b-stat-val">3</span><span class="b-stat-lbl">WIL</span></div>
+              <div class="b-stat int"><span class="b-stat-val">2</span><span class="b-stat-lbl">INT</span></div>
+              <div class="b-stat com"><span class="b-stat-val">5</span><span class="b-stat-lbl">COM</span></div>
+              <div class="b-stat agi"><span class="b-stat-val">2</span><span class="b-stat-lbl">AGI</span></div>
+            </div>
+          </div>
+
+          <select style="width:100%;padding:12px;border:1px solid #3a2808;border-radius:6px;background:#120c04;font-family:'Cinzel',serif;font-size:12px;color:#e8d8a0;margin-bottom:8px;">
+            <option>Daniela Reyes (Guardian)</option>
+          </select>
+          <button class="b-btn">+ ADD INVESTIGATOR</button>
+          <button class="b-btn-ghost">▶ START GAME</button>
+        </div>
+      </div>
+    </div>
+    <div class="option-desc" style="color:#c9a84c;">Dark · dramatic · high contrast · easy to read at table distance</div>
+  </div>
+
+  <!-- ===== OPTION C ===== -->
+  <div class="option-wrap">
+    <div class="option-label">OPTION C — ELDER SIGN ARCANE</div>
+    <div class="option-desc">Deep purple/midnight. Per-stat coloured capsules. Mystical feel. Strong class-colour identity per card.</div>
+    <div class="phone">
+      <div class="phone-inner c-phone">
+        <div class="c-header">
+          <div class="c-title">ARKHAM HORROR</div>
+          <div class="c-sub">Game Setup · AHCG-3C2PJ</div>
+        </div>
+        <div class="c-section">
+          <div class="c-session-box">
+            <div class="c-code-label">Share this session code</div>
+            <div class="c-code">AHCG-3C2PJ</div>
+          </div>
+
+          <div class="c-inv-card" style="border-left: 3px solid #4a8fd4;">
+            <div style="display:flex;gap:6px;margin-bottom:8px;">
+              <span style="background:#4a8fd4;color:#fff;font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:4px;">YOU</span>
+              <span style="background:#8a6820;color:#f2e8cc;font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:4px;">LEAD</span>
+            </div>
+            <div class="c-inv-name">Ahsan</div>
+            <div class="c-inv-role">Daniela Reyes · Guardian</div>
+            <div class="c-stats">
+              <div class="c-stat hp"><span class="c-stat-val">9</span><span class="c-stat-lbl">HP</span></div>
+              <div class="c-stat san"><span class="c-stat-val">5</span><span class="c-stat-lbl">SAN</span></div>
+              <div class="c-stat wil"><span class="c-stat-val">3</span><span class="c-stat-lbl">WIL</span></div>
+              <div class="c-stat int"><span class="c-stat-val">2</span><span class="c-stat-lbl">INT</span></div>
+              <div class="c-stat com"><span class="c-stat-val">5</span><span class="c-stat-lbl">COM</span></div>
+              <div class="c-stat agi"><span class="c-stat-val">2</span><span class="c-stat-lbl">AGI</span></div>
+            </div>
+          </div>
+
+          <select style="width:100%;padding:12px;border:1px solid rgba(120,80,200,0.3);border-radius:8px;background:rgba(120,80,200,0.08);font-family:'Cinzel',serif;font-size:12px;color:#b090e8;margin-bottom:8px;">
+            <option>Daniela Reyes (Guardian)</option>
+          </select>
+          <button class="c-btn">+ ADD INVESTIGATOR</button>
+          <button class="c-btn-ghost">▶ START GAME</button>
+        </div>
+      </div>
+    </div>
+    <div class="option-desc" style="color:#c9a84c;">Arcane · mystical · vivid colours · strongly themed</div>
+  </div>
+
+  <!-- ===== OPTION D ===== -->
+  <div class="option-wrap">
+    <div class="option-label">OPTION D — NEWSPAPER / DOSSIER</div>
+    <div class="option-desc">Off-white with black ink borders. Hard edges, no rounded corners. Investigator files style. Maximally readable, all stat labels fully spelled out.</div>
+    <div class="phone">
+      <div class="phone-inner d-phone">
+        <div class="d-header">
+          <div class="d-title">ARKHAM HORROR</div>
+          <div class="d-sub">Game Setup</div>
+        </div>
+        <div class="d-section">
+          <div class="d-session-box">
+            <div class="d-code">AHCG-3C2PJ</div>
+          </div>
+
+          <div class="d-inv-card" data-class="GUARDIAN">
+            <div style="display:flex;gap:6px;margin-top:12px;margin-bottom:6px;">
+              <span style="background:#1a1208;color:#c9a84c;font-family:'Cinzel',serif;font-size:8px;font-weight:700;padding:3px 8px;">YOU</span>
+              <span style="background:#c9a84c;color:#1a1208;font-family:'Cinzel',serif;font-size:8px;font-weight:700;padding:3px 8px;">LEAD</span>
+            </div>
+            <div class="d-inv-name">Ahsan — Daniela Reyes</div>
+            <div class="d-inv-role">Guardian Investigator</div>
+            <div class="d-stats">
+              <div class="d-stat hp"><span class="d-stat-val">9</span><span class="d-stat-lbl">Health</span></div>
+              <div class="d-stat san"><span class="d-stat-val">5</span><span class="d-stat-lbl">Sanity</span></div>
+              <div class="d-stat wil"><span class="d-stat-val">3</span><span class="d-stat-lbl">Will</span></div>
+              <div class="d-stat int"><span class="d-stat-val">2</span><span class="d-stat-lbl">Intel</span></div>
+              <div class="d-stat com"><span class="d-stat-val">5</span><span class="d-stat-lbl">Combat</span></div>
+              <div class="d-stat agi"><span class="d-stat-val">2</span><span class="d-stat-lbl">Agility</span></div>
+            </div>
+          </div>
+
+          <select style="width:100%;padding:12px;border:2px solid #1a1208;border-radius:0;background:#fff;font-family:'Cinzel',serif;font-size:12px;color:#1a1208;margin-bottom:8px;">
+            <option>Daniela Reyes (Guardian)</option>
+          </select>
+          <button class="d-btn">+ ADD INVESTIGATOR</button>
+          <button class="d-btn-ghost">▶ START GAME</button>
+        </div>
+      </div>
+    </div>
+    <div class="option-desc" style="color:#c9a84c;">Maximum legibility · print-style · full stat labels · no ambiguity</div>
+  </div>
+
+  <!-- ===== OPTION E ===== -->
+  <div class="option-wrap">
+    <div class="option-label">OPTION E — ILLUMINATED MANUSCRIPT</div>
+    <div class="option-desc">Dark leather base, gold accents. Stats in a 3-column grid — each number very large (28px). Designed for glancing at from across the table.</div>
+    <div class="phone">
+      <div class="phone-inner e-phone">
+        <div class="e-header">
+          <div class="e-title">ARKHAM HORROR</div>
+          <div class="e-sub">Summon your investigators</div>
+        </div>
+        <div class="e-section">
+          <div class="e-session-title">Session Code</div>
+          <div class="e-session-box">
+            <div class="e-code-label">Share with your party</div>
+            <div class="e-code">AHCG-3C2PJ</div>
+          </div>
+
+          <div class="e-section-title">Investigators (1 / 4)</div>
+
+          <div class="e-inv-card">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <div class="e-inv-name">Ahsan</div>
+              <span style="background:#4a8fd4;color:#fff;font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:4px;">YOU</span>
+              <span style="background:rgba(245,208,96,0.2);color:#f5d060;font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:4px;border:1px solid rgba(245,208,96,0.4);">LEAD</span>
+            </div>
+            <div class="e-inv-role">Daniela Reyes · Guardian</div>
+            <div class="e-stats-grid">
+              <div class="e-stat hp"><span class="e-stat-val">9</span><span class="e-stat-lbl">Health</span></div>
+              <div class="e-stat san"><span class="e-stat-val">5</span><span class="e-stat-lbl">Sanity</span></div>
+              <div class="e-stat wil"><span class="e-stat-val">3</span><span class="e-stat-val" style="font-size:28px;color:#b090e8;display:block;line-height:1;"></span><span class="e-stat-lbl">Willpower</span></div>
+              <div class="e-stat int"><span class="e-stat-val">2</span><span class="e-stat-lbl">Intellect</span></div>
+              <div class="e-stat com"><span class="e-stat-val">5</span><span class="e-stat-lbl">Combat</span></div>
+              <div class="e-stat agi"><span class="e-stat-val">2</span><span class="e-stat-lbl">Agility</span></div>
+            </div>
+          </div>
+
+          <div class="e-section-title">Add Investigator</div>
+          <select style="width:100%;padding:14px;border:1px solid rgba(245,208,96,0.2);border-radius:8px;background:rgba(245,208,96,0.04);font-family:'Cinzel',serif;font-size:12px;color:#e8d8a0;margin-bottom:8px;">
+            <option>Daniela Reyes (Guardian)</option>
+          </select>
+          <button class="e-btn">+ ADD TO LOBBY</button>
+          <button class="e-btn-ghost">▶ START GAME — 1 INVESTIGATOR</button>
+        </div>
+      </div>
+    </div>
+    <div class="option-desc" style="color:#c9a84c;">Table-distance readable · 3-col stat grid · full labels · dramatic gold on black</div>
+  </div>
+
+</div>
+
+<!-- Annotation key -->
+<div style="max-width:900px;margin:60px auto 0;padding:24px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:12px;">
+  <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:#c9a84c;margin-bottom:12px;">HOW TO USE THIS MOCKUP</div>
+  <div style="font-family:'Crimson Text',serif;font-size:14px;color:#7a6030;line-height:1.7;">
+    Review each option on your phone (open this file on mobile). Tell me which direction — or mix of directions — resonates.
+    You can say things like "Option B background with Option E stat grid" and I'll build the hybrid.
+    Once a direction is approved, I'll apply it to all Play screens (Your Turn, Board, Stats, Enemy phase) before touching any code.
+  </div>
+</div>
+
+</body>
+</html>

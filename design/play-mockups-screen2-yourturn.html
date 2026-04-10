@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Play Mockups — Screen 2: Your Turn (Action Logger)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #1a1208;
+  min-height: 100vh;
+  padding: 48px 24px 80px;
+  font-family: 'Cinzel', serif;
+}
+h1.page-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 18px; color: #c9a84c; letter-spacing: 3px;
+  text-align: center; margin-bottom: 6px;
+}
+p.page-sub {
+  font-family: 'Crimson Text', serif;
+  font-size: 14px; color: #7a6030; font-style: italic;
+  text-align: center; margin-bottom: 48px;
+}
+.options-row {
+  display: flex; gap: 40px; flex-wrap: wrap;
+  justify-content: center; align-items: flex-start;
+}
+.option-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  width: 390px;
+}
+.option-label {
+  font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; color: #c9a84c;
+  border: 1px solid #4a3010; padding: 4px 16px; border-radius: 20px;
+  background: rgba(201,168,76,0.08);
+}
+.option-desc {
+  font-family: 'Crimson Text', serif; font-size: 13px; color: #7a6030;
+  font-style: italic; text-align: center; max-width: 340px; line-height: 1.5;
+}
+.phone {
+  width: 390px; flex-shrink: 0;
+  border-radius: 44px; overflow: hidden;
+  border: 2px solid #8a6820;
+  box-shadow: 0 0 0 5px #1a1208, 0 0 0 7px #4a3010, 0 24px 80px rgba(0,0,0,0.8);
+}
+.phone-inner { overflow: hidden; }
+
+/* ===== OPTION A — Parchment, refined action grid ===== */
+.a { background: #f2e8cc; }
+.a-bar {
+  background: linear-gradient(180deg,#3a2808,#2a1a06);
+  padding: 12px 16px; display: flex; align-items: center;
+  justify-content: space-between; border-bottom: 1px solid #8a6820;
+}
+.a-phase {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px;
+  color: #c9a84c; background: rgba(201,168,76,0.15);
+  border: 1px solid rgba(201,168,76,0.3); padding: 3px 10px; border-radius: 20px;
+}
+.a-round {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; color: #8a6820;
+}
+.a-hero-box {
+  background: linear-gradient(135deg, rgba(74,143,212,0.08), rgba(74,143,212,0.03));
+  border: 1px solid rgba(74,143,212,0.2);
+  margin: 16px 16px 0; border-radius: 14px; padding: 20px;
+  text-align: center;
+}
+.a-its-your-turn {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
+  color: #4a8fd4; margin-bottom: 8px;
+}
+.a-player-name {
+  font-family: 'Cinzel Decorative', serif; font-size: 26px; color: #3a2808;
+  margin-bottom: 4px; line-height: 1.1;
+}
+.a-investigator {
+  font-family: 'Crimson Text', serif; font-size: 14px; color: #8a6820;
+  font-style: italic;
+}
+/* Action pip row */
+.a-pips {
+  display: flex; justify-content: center; gap: 12px;
+  padding: 16px;
+}
+.a-pip {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: #4a8fd4; display: flex; align-items: center;
+  justify-content: center;
+}
+.a-pip.used { background: rgba(74,143,212,0.25); border: 2px solid rgba(74,143,212,0.3); }
+.a-pip-label {
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 1px;
+  color: #8a6820; text-align: center; margin-top: 4px;
+}
+.a-pips-wrap { text-align: center; padding-bottom: 4px; }
+.a-actions-label {
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
+  color: #8a6820; text-align: center; margin: 8px 0 12px;
+}
+/* Action grid */
+.a-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px; padding: 0 16px 16px;
+}
+.a-action {
+  background: #fff8e8; border: 1px solid #d4b060;
+  border-radius: 12px; padding: 14px 8px;
+  text-align: center; cursor: pointer;
+}
+.a-action.primary { background: linear-gradient(135deg,rgba(74,143,212,0.1),rgba(74,143,212,0.05)); border-color: rgba(74,143,212,0.4); }
+.a-action.danger { background: linear-gradient(135deg,rgba(184,32,32,0.08),rgba(184,32,32,0.03)); border-color: rgba(184,32,32,0.3); }
+.a-action.green { background: linear-gradient(135deg,rgba(46,138,80,0.08),rgba(46,138,80,0.03)); border-color: rgba(46,138,80,0.3); }
+.a-action-icon { font-size: 20px; display: block; margin-bottom: 6px; }
+.a-action-name {
+  font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; color: #3a2808;
+}
+.a-action.primary .a-action-name { color: #4a8fd4; }
+.a-action.danger .a-action-name { color: #b82020; }
+.a-action.green .a-action-name { color: #2e8a50; }
+/* Bottom bar */
+.a-bottom {
+  display: flex; gap: 8px; padding: 12px 16px 16px;
+  border-top: 1px solid rgba(201,168,76,0.3);
+}
+.a-board-btn {
+  flex: 1; padding: 14px;
+  background: transparent; border: 1px solid #c9a84c; border-radius: 10px;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px; color: #8a6820;
+}
+.a-end-btn {
+  flex: 2; padding: 14px;
+  background: linear-gradient(135deg,#3a2808,#2a1a06);
+  border: 1px solid #8a6820; border-radius: 10px;
+  font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; color: #c9a84c;
+}
+/* Stats strip */
+.a-stats-strip {
+  background: rgba(58,40,8,0.04);
+  padding: 12px 16px; display: flex; gap: 6px; flex-wrap: wrap;
+  border-top: 1px solid rgba(201,168,76,0.2);
+}
+.a-mini-stat {
+  flex: 1; min-width: 52px; background: #fff8e8;
+  border: 1px solid #d4b060; border-radius: 8px;
+  padding: 8px 4px; text-align: center;
+}
+.a-mini-val { font-family:'Cinzel',serif; font-size:20px; font-weight:700; display:block; line-height:1; }
+.a-mini-lbl { font-family:'Crimson Text',serif; font-size:9px; color:#8a6820; display:block; margin-top:3px; }
+.a-mini-stat.dmg .a-mini-val { color:#b82020; }
+.a-mini-stat.hor .a-mini-val { color:#7050b8; }
+.a-mini-stat.res .a-mini-val { color:#c8871a; }
+.a-mini-stat.clu .a-mini-val { color:#2e8a50; }
+
+/* ===== OPTION B — Dark Leather, large action tiles ===== */
+.b { background: #1e1208; }
+.b-bar {
+  background: #120c04; padding: 12px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid #3a2808;
+}
+.b-phase { background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3); border-radius: 20px; padding: 3px 10px; font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:#c9a84c; }
+.b-round { font-family:'Cinzel',serif; font-size:9px; color:#6a5020; }
+.b-hero {
+  background: rgba(74,143,212,0.08); border-bottom: 1px solid rgba(74,143,212,0.15);
+  padding: 20px 16px; text-align: center;
+}
+.b-its { font-family:'Cinzel',serif; font-size:9px; letter-spacing:4px; color:#4a8fd4; margin-bottom:8px; }
+.b-name { font-family:'Cinzel Decorative',serif; font-size:28px; color:#e8d8a0; margin-bottom:4px; }
+.b-inv { font-family:'Crimson Text',serif; font-size:14px; color:#6a5020; font-style:italic; }
+/* Action pip */
+.b-pips { display:flex; justify-content:center; gap:16px; padding:16px 16px 8px; }
+.b-pip { width:48px; height:48px; border-radius:50%; background:#4a8fd4; display:flex; align-items:center; justify-content:center; }
+.b-pip.used { background:rgba(74,143,212,0.1); border:2px dashed rgba(74,143,212,0.3); }
+.b-remaining { font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; color:#6a5020; text-align:center; margin-bottom:12px; }
+/* Large action tiles */
+.b-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:0 16px 16px; }
+.b-action {
+  background:#120c04; border:1px solid #3a2808; border-radius:10px;
+  padding:18px 12px; text-align:center; cursor:pointer;
+}
+.b-action.blue { border-color:rgba(74,143,212,0.4); background:rgba(74,143,212,0.06); }
+.b-action.red { border-color:rgba(184,32,32,0.4); background:rgba(184,32,32,0.06); }
+.b-action.green { border-color:rgba(46,138,80,0.4); background:rgba(46,138,80,0.06); }
+.b-action.orange { border-color:rgba(200,135,26,0.4); background:rgba(200,135,26,0.06); }
+.b-action-icon { font-size:24px; display:block; margin-bottom:8px; }
+.b-action-name { font-family:'Cinzel',serif; font-size:13px; font-weight:700; letter-spacing:1px; color:#e8d8a0; }
+.b-action.blue .b-action-name { color:#4a8fd4; }
+.b-action.red .b-action-name { color:#e05040; }
+.b-action.green .b-action-name { color:#40b870; }
+.b-action.orange .b-action-name { color:#e8a030; }
+.b-bottom { display:flex; gap:8px; padding:0 16px 16px; }
+.b-board-btn { flex:1; padding:14px; background:transparent; border:1px solid #3a2808; border-radius:8px; font-family:'Cinzel',serif; font-size:10px; letter-spacing:1px; color:#6a5020; }
+.b-end-btn { flex:2; padding:14px; background:#c9a84c; border:none; border-radius:8px; font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:2px; color:#1a1208; }
+/* Stats bar */
+.b-stats { background:#120c04; border-top:1px solid #3a2808; padding:12px 16px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; }
+.b-mstat { text-align:center; }
+.b-mval { font-family:'Cinzel',serif; font-size:22px; font-weight:700; display:block; line-height:1; }
+.b-mlbl { font-family:'Crimson Text',serif; font-size:9px; display:block; margin-top:4px; color:#6a5020; text-transform:uppercase; letter-spacing:1px; }
+.b-mstat.dmg .b-mval { color:#e05040; }
+.b-mstat.hor .b-mval { color:#a070e8; }
+.b-mstat.res .b-mval { color:#e8a030; }
+.b-mstat.clu .b-mval { color:#40b870; }
+
+/* ===== OPTION C — Full-screen action tiles, minimal chrome ===== */
+.c { background: #0f0f14; }
+.c-bar { background:#0a0a10; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(120,80,200,0.2); }
+.c-phase { background:rgba(120,80,200,0.15); border:1px solid rgba(120,80,200,0.3); border-radius:20px; padding:3px 10px; font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:#b090e8; }
+.c-round { font-family:'Cinzel',serif; font-size:9px; color:#604890; }
+.c-hero { background:linear-gradient(180deg,rgba(74,143,212,0.12),transparent); padding:24px 16px 16px; text-align:center; }
+.c-its { font-family:'Cinzel',serif; font-size:9px; letter-spacing:4px; color:#4a8fd4; margin-bottom:10px; }
+.c-name { font-family:'Cinzel Decorative',serif; font-size:32px; color:#e0d0f8; margin-bottom:4px; line-height:1; }
+.c-inv { font-family:'Crimson Text',serif; font-size:14px; color:#604890; font-style:italic; }
+/* Full width action buttons — easier to tap */
+.c-actions { padding:12px 16px; display:flex; flex-direction:column; gap:8px; }
+.c-action {
+  width:100%; padding:18px 16px;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; display:flex; align-items:center; gap:14px; cursor:pointer;
+}
+.c-action.blue { border-color:rgba(74,143,212,0.3); background:rgba(74,143,212,0.06); }
+.c-action.red { border-color:rgba(224,80,64,0.3); background:rgba(224,80,64,0.06); }
+.c-action.green { border-color:rgba(64,200,112,0.3); background:rgba(64,200,112,0.06); }
+.c-action-icon { font-size:22px; flex-shrink:0; }
+.c-action-name { font-family:'Cinzel',serif; font-size:14px; font-weight:700; letter-spacing:1px; flex:1; }
+.c-action.blue .c-action-name { color:#4a8fd4; }
+.c-action.red .c-action-name { color:#e05040; }
+.c-action.green .c-action-name { color:#40c870; }
+.c-action-desc { font-family:'Crimson Text',serif; font-size:11px; color:rgba(255,255,255,0.3); font-style:italic; }
+.c-bottom { display:flex; gap:8px; padding:8px 16px 16px; }
+.c-board-btn { flex:1; padding:14px; background:transparent; border:1px solid rgba(120,80,200,0.2); border-radius:10px; font-family:'Cinzel',serif; font-size:10px; letter-spacing:1px; color:#604890; }
+.c-end-btn { flex:2; padding:14px; background:linear-gradient(135deg,#7050b8,#4a3090); border:none; border-radius:10px; font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:2px; color:#f0e8ff; }
+
+/* ===== OPTION D — Card-based, each action is a card ===== */
+.d { background: #f5f0e8; }
+.d-bar { background:#1a1208; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:4px solid #c9a84c; }
+.d-phase { background:rgba(201,168,76,0.2); border:1px solid #c9a84c; padding:3px 10px; font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:#c9a84c; }
+.d-round { font-family:'Cinzel',serif; font-size:9px; color:#8a6820; }
+.d-hero { background:#fff; border-bottom:2px solid #1a1208; padding:20px 16px; text-align:center; }
+.d-its { font-family:'Cinzel',serif; font-size:9px; letter-spacing:4px; color:#4a8fd4; margin-bottom:8px; }
+.d-name { font-family:'Cinzel Decorative',serif; font-size:28px; color:#1a1208; margin-bottom:4px; }
+.d-inv { font-family:'Crimson Text',serif; font-size:14px; color:#6a5020; font-style:italic; }
+.d-actions { padding:16px; }
+.d-action {
+  background:#fff; border:2px solid #1a1208; border-left:6px solid #4a8fd4;
+  padding:14px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px; cursor:pointer;
+}
+.d-action.red { border-left-color:#b82020; }
+.d-action.green { border-left-color:#2e8a50; }
+.d-action.orange { border-left-color:#c8871a; }
+.d-action-icon { font-size:22px; flex-shrink:0; }
+.d-action-name { font-family:'Cinzel',serif; font-size:13px; font-weight:700; letter-spacing:1px; color:#1a1208; flex:1; }
+.d-bottom { display:flex; gap:8px; padding:0 16px 16px; }
+.d-board-btn { flex:1; padding:14px; background:transparent; border:2px solid #1a1208; font-family:'Cinzel',serif; font-size:10px; letter-spacing:1px; color:#1a1208; }
+.d-end-btn { flex:2; padding:14px; background:#1a1208; border:none; font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:2px; color:#c9a84c; }
+
+/* ===== OPTION E — Cinematic / RPG tracker ===== */
+.e { background: #1a1208; }
+.e-bar { background:linear-gradient(180deg,#3d2a00,#2a1a00); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #4a3010; }
+.e-phase { background:rgba(245,208,96,0.1); border:1px solid rgba(245,208,96,0.3); border-radius:20px; padding:3px 10px; font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:#f5d060; }
+.e-round { font-family:'Cinzel',serif; font-size:9px; color:#6a5020; }
+/* Compact identity strip + stat strip combined */
+.e-identity {
+  padding:20px 16px 16px;
+  border-bottom:1px solid rgba(245,208,96,0.1);
+}
+.e-its { font-family:'Cinzel',serif; font-size:9px; letter-spacing:4px; color:#f5d060; margin-bottom:6px; }
+.e-name { font-family:'Cinzel Decorative',serif; font-size:28px; color:#f5d060; margin-bottom:2px; line-height:1.1; }
+.e-inv { font-family:'Crimson Text',serif; font-size:14px; color:#8a6820; font-style:italic; margin-bottom:12px; }
+/* Inline stats row — large */
+.e-stat-row { display:flex; gap:0; border:1px solid rgba(245,208,96,0.15); border-radius:10px; overflow:hidden; }
+.e-st { flex:1; padding:12px 4px; text-align:center; border-right:1px solid rgba(245,208,96,0.1); }
+.e-st:last-child { border-right:none; }
+.e-st-val { font-family:'Cinzel',serif; font-size:22px; font-weight:700; display:block; line-height:1; }
+.e-st-lbl { font-family:'Crimson Text',serif; font-size:9px; display:block; margin-top:3px; }
+.e-st.dmg { background:rgba(224,80,64,0.08); }
+.e-st.dmg .e-st-val { color:#e86050; }
+.e-st.dmg .e-st-lbl { color:rgba(232,96,80,0.5); }
+.e-st.hor { background:rgba(176,144,232,0.08); }
+.e-st.hor .e-st-val { color:#b090e8; }
+.e-st.hor .e-st-lbl { color:rgba(176,144,232,0.5); }
+.e-st.res { background:rgba(232,184,64,0.08); }
+.e-st.res .e-st-val { color:#e8b840; }
+.e-st.res .e-st-lbl { color:rgba(232,184,64,0.5); }
+.e-st.clu { background:rgba(80,216,128,0.08); }
+.e-st.clu .e-st-val { color:#50d880; }
+.e-st.clu .e-st-lbl { color:rgba(80,216,128,0.5); }
+/* Pips */
+.e-pips { display:flex; justify-content:center; gap:14px; padding:14px 16px 6px; }
+.e-pip { width:46px; height:46px; border-radius:50%; background:rgba(245,208,96,0.9); display:flex; align-items:center; justify-content:center; }
+.e-pip.used { background:rgba(245,208,96,0.1); border:2px dashed rgba(245,208,96,0.2); }
+.e-rem { font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; color:#6a5020; text-align:center; margin-bottom:10px; }
+/* Action grid 3-col */
+.e-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; padding:0 16px; }
+.e-action { background:rgba(245,208,96,0.04); border:1px solid rgba(245,208,96,0.12); border-radius:10px; padding:16px 8px; text-align:center; cursor:pointer; }
+.e-action.blue { border-color:rgba(74,143,212,0.3); background:rgba(74,143,212,0.05); }
+.e-action.red { border-color:rgba(232,96,80,0.3); background:rgba(232,96,80,0.05); }
+.e-action.green { border-color:rgba(80,216,128,0.3); background:rgba(80,216,128,0.05); }
+.e-action.amber { border-color:rgba(232,184,64,0.3); background:rgba(232,184,64,0.05); }
+.e-action-icon { font-size:22px; display:block; margin-bottom:6px; }
+.e-action-name { font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:1px; }
+.e-action.blue .e-action-name { color:#4a8fd4; }
+.e-action.red .e-action-name { color:#e86050; }
+.e-action.green .e-action-name { color:#50d880; }
+.e-action.amber .e-action-name { color:#e8b840; }
+.e-bottom { display:flex; gap:8px; padding:12px 16px 20px; }
+.e-board-btn { flex:1; padding:14px; background:transparent; border:1px solid rgba(245,208,96,0.2); border-radius:10px; font-family:'Cinzel',serif; font-size:10px; letter-spacing:1px; color:#6a5020; }
+.e-end-btn { flex:2; padding:14px; background:linear-gradient(135deg,#c9a84c,#a07820); border:none; border-radius:10px; font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:2px; color:#1a1208; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">SCREEN 2 — YOUR TURN (ACTION LOGGER)</h1>
+<p class="page-sub">Five design directions · Mobile-first (390px) · The most-used screen during play</p>
+
+<div class="options-row">
+
+  <!-- OPTION A -->
+  <div class="option-wrap">
+    <div class="option-label">OPTION A — PARCHMENT SCROLL</div>
+    <div class="option-desc">Warm parchment. 3-column action grid with icons. Stats strip at bottom. Clean and familiar.</div>
+    <div class="phone"><div class="phone-inner a">
+      <div class="a-bar">
+        <span class="a-phase">INVESTIGATION PHASE</span>
+        <span class="a-round">Round 1</span>
+      </div>
+      <div class="a-hero-box" style="margin:14px 14px 0;">
+        <div class="a-its-your-turn">✦ IT'S YOUR TURN ✦</div>
+        <div class="a-player-name">Ahsan</div>
+        <div class="a-investigator">Daniela Reyes · Guardian</div>
+      </div>
+      <div class="a-pips-wrap">
+        <div class="a-pips">
+          <div><div class="a-pip"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="9,1 11,7 18,7 12,11 14,17 9,13 4,17 6,11 0,7 7,7"/></svg></div><div class="a-pip-label">ready</div></div>
+          <div><div class="a-pip"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="9,1 11,7 18,7 12,11 14,17 9,13 4,17 6,11 0,7 7,7"/></svg></div><div class="a-pip-label">ready</div></div>
+          <div><div class="a-pip"><svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="9,1 11,7 18,7 12,11 14,17 9,13 4,17 6,11 0,7 7,7"/></svg></div><div class="a-pip-label">ready</div></div>
+        </div>
+        <div style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:#3a2808;text-align:center;margin-top:-4px;margin-bottom:8px;">3 actions remaining</div>
+      </div>
+      <div class="a-actions-label">CHOOSE AN ACTION TO LOG</div>
+      <div class="a-grid">
+        <div class="a-action primary"><span class="a-action-icon">🔍</span><span class="a-action-name">Investigate</span></div>
+        <div class="a-action"><span class="a-action-icon">🚶</span><span class="a-action-name">Move</span></div>
+        <div class="a-action danger"><span class="a-action-icon">⚔️</span><span class="a-action-name">Fight</span></div>
+        <div class="a-action green"><span class="a-action-icon">💨</span><span class="a-action-name">Evade</span></div>
+        <div class="a-action"><span class="a-action-icon">🤝</span><span class="a-action-name">Engage</span></div>
+        <div class="a-action"><span class="a-action-icon">📜</span><span class="a-action-name">Parley</span></div>
+        <div class="a-action"><span class="a-action-icon">🃏</span><span class="a-action-name">Draw</span></div>
+        <div class="a-action"><span class="a-action-icon">💰</span><span class="a-action-name">Resource</span></div>
+        <div class="a-action"><span class="a-action-icon">🎴</span><span class="a-action-name">Play Card</span></div>
+      </div>
+      <div class="a-bottom">
+        <button class="a-board-btn">🗂 Board</button>
+        <button class="a-end-btn">End Turn →</button>
+      </div>
+      <div class="a-stats-strip">
+        <div class="a-mini-stat dmg"><span class="a-mini-val">0</span><span class="a-mini-lbl">Damage</span></div>
+        <div class="a-mini-stat hor"><span class="a-mini-val">0</span><span class="a-mini-lbl">Horror</span></div>
+        <div class="a-mini-stat res"><span class="a-mini-val">5</span><span class="a-mini-lbl">Resources</span></div>
+        <div class="a-mini-stat clu"><span class="a-mini-val">0</span><span class="a-mini-lbl">Clues</span></div>
+      </div>
+    </div></div>
+    <div class="option-desc" style="color:#c9a84c;">3-col grid · icons + labels · stat strip pinned to bottom</div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="option-wrap">
+    <div class="option-label">OPTION B — DARK LEATHER, 2-COL TILES</div>
+    <div class="option-desc">Dark background. Large 2-column action tiles. Bigger touch targets. Stats row below player name. Gold End Turn CTA.</div>
+    <div class="phone"><div class="phone-inner b">
+      <div class="b-bar">
+        <span class="b-phase">INVESTIGATION PHASE</span>
+        <span class="b-round">Round 1</span>
+      </div>
+      <div class="b-hero">
+        <div class="b-its">✦ IT'S YOUR TURN ✦</div>
+        <div class="b-name">Ahsan</div>
+        <div class="b-inv">Daniela Reyes · Guardian</div>
+      </div>
+      <div class="b-pips">
+        <div class="b-pip"><svg width="20" height="20" viewBox="0 0 18 18" fill="white"><polygon points="9,1 11,7 18,7 12,11 14,17 9,13 4,17 6,11 0,7 7,7"/></svg></div>
+        <div class="b-pip"><svg width="20" height="20" viewBox="0 0 18 18" fill="white"><polygon points="9,1 11,7 18,7 12,11 14,17 9,13 4,17 6,11 0,7 7,7"/></svg></div>
+        <div class="b-pip"><svg width="20" height="20" viewBox="0 0 18 18" fill="white"><polygon points="9,1 11,7 18,7 12,11 14,17 9,13 4,17 6,11 0,7 7,7"/></svg></div>
+      </div>
+      <div class="b-remaining">3 actions remaining</div>
+      <div class="b-grid">
+        <div class="b-action blue"><span class="b-action-icon">🔍</span><div class="b-action-name">Investigate</div></div>
+        <div class="b-action"><span class="b-action-icon">🚶</span><div class="b-action-name">Move</div></div>
+        <div class="b-action red"><span class="b-action-icon">⚔️</span><div class="b-action-name">Fight</div></div>
+        <div class="b-action green"><span class="b-action-icon">💨</span><div class="b-action-name">Evade</div></div>
+        <div class="b-action orange"><span class="b-action-icon">🤝</span><div class="b-action-name">Engage</div></div>
+        <div class="b-action"><span class="b-action-icon">📜</span><div class="b-action-name">Parley</div></div>
+        <div class="b-action"><span class="b-action-icon">🃏</span><div class="b-action-name">Draw</div></div>
+        <div class="b-action"><span class="b-action-icon">💰</span><div class="b-action-name">Resource</div></div>
+      </div>
+      <div class="b-bottom">
+        <button class="b-board-btn">🗂 Board</button>
+        <button class="b-end-btn">End Turn →</button>
+      </div>
+      <div class="b-stats">
+        <div class="b-mstat dmg"><span class="b-mval">0</span><span class="b-mlbl">Damage</span></div>
+        <div class="b-mstat hor"><span class="b-mval">0</span><span class="b-mlbl">Horror</span></div>
+        <div class="b-mstat res"><span class="b-mval">5</span><span class="b-mlbl">Resources</span></div>
+        <div class="b-mstat clu"><span class="b-mval">0</span><span class="b-mlbl">Clues</span></div>
+      </div>
+    </div></div>
+    <div class="option-desc" style="color:#c9a84c;">2-col large tiles · dark · high contrast · easy to tap</div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="option-wrap">
+    <div class="option-label">OPTION C — FULL-WIDTH ACTION ROWS</div>
+    <div class="option-desc">Midnight dark. Each action is a full-width tappable row with icon + name + brief description. Easy to read, maximum tap area.</div>
+    <div class="phone"><div class="phone-inner c">
+      <div class="c-bar">
+        <span class="c-phase">INVESTIGATION PHASE</span>
+        <span class="c-round">Round 1</span>
+      </div>
+      <div class="c-hero">
+        <div class="c-its">✦ IT'S YOUR TURN ✦</div>
+        <div class="c-name">Ahsan</div>
+        <div class="c-inv">Daniela Reyes · Guardian</div>
+        <div style="display:flex;justify-content:center;gap:12px;margin-top:12px;">
+          <div style="background:rgba(224,80,64,0.1);border:1px solid rgba(224,80,64,0.3);border-radius:8px;padding:8px 14px;text-align:center;">
+            <span style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:#e05040;display:block;">0</span>
+            <span style="font-family:'Crimson Text',serif;font-size:9px;color:rgba(224,80,64,0.6);display:block;text-transform:uppercase;">Damage</span>
+          </div>
+          <div style="background:rgba(176,144,232,0.1);border:1px solid rgba(176,144,232,0.3);border-radius:8px;padding:8px 14px;text-align:center;">
+            <span style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:#b090e8;display:block;">0</span>
+            <span style="font-family:'Crimson Text',serif;font-size:9px;color:rgba(176,144,232,0.6);display:block;text-transform:uppercase;">Horror</span>
+          </div>
+          <div style="background:rgba(232,184,64,0.1);border:1px solid rgba(232,184,64,0.3);border-radius:8px;padding:8px 14px;text-align:center;">
+            <span style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:#e8b840;display:block;">5</span>
+            <span style="font-family:'Crimson Text',serif;font-size:9px;color:rgba(232,184,64,0.6);display:block;text-transform:uppercase;">Resources</span>
+          </div>
+          <div style="background:rgba(80,216,128,0.1);border:1px solid rgba(80,216,128,0.3);border-radius:8px;padding:8px 14px;text-align:center;">
+            <span style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:#50d880;display:block;">0</span>
+            <span style="font-family:'Crimson Text',serif;font-size:9px;color:rgba(80,216,128,0.6);display:block;text-transform:uppercase;">Clues</span>
+          </div>
+        </div>
+      </div>
+      <div class="c-actions">
+        <div class="c-action blue"><span class="c-action-icon">🔍</span><div><div class="c-action-name">Investigate</div><div class="c-action-desc">Test your Intellect to gather clues</div></div></div>
+        <div class="c-action"><span class="c-action-icon">🚶</span><div><div class="c-action-name" style="color:#e0d0f8;">Move</div><div class="c-action-desc">Move to a connecting location</div></div></div>
+        <div class="c-action red"><span class="c-action-icon">⚔️</span><div><div class="c-action-name">Fight</div><div class="c-action-desc">Attack an enemy at your location</div></div></div>
+        <div class="c-action green"><span class="c-action-icon">💨</span><div><div class="c-action-name">Evade</div><div class="c-action-desc">Test Agility to disengage</div></div></div>
+      </div>
+      <div class="c-bottom">
+        <button class="c-board-btn">🗂 Board</button>
+        <button class="c-end-btn">End Turn →</button>
+      </div>
+    </div></div>
+    <div class="option-desc" style="color:#c9a84c;">Full-width rows · action descriptions · stats above · most scannable</div>
+  </div>
+
+  <!-- OPTION D -->
+  <div class="option-wrap">
+    <div class="option-label">OPTION D — DOSSIER CARDS</div>
+    <div class="option-desc">Off-white. Each action is a bordered card with a class-colour left stripe. Maximum readability, print-like clarity.</div>
+    <div class="phone"><div class="phone-inner d">
+      <div class="d-bar">
+        <span class="d-phase">INVESTIGATION PHASE</span>
+        <span class="d-round">Round 1</span>
+      </div>
+      <div class="d-hero">
+        <div class="d-its">✦ IT'S YOUR TURN ✦</div>
+        <div class="d-name">Ahsan</div>
+        <div class="d-inv">Daniela Reyes · Guardian</div>
+        <div style="display:flex;justify-content:center;gap:16px;margin-top:12px;">
+          <div style="text-align:center;"><span style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:#b82020;display:block;line-height:1;">0</span><span style="font-family:'Crimson Text',serif;font-size:10px;color:#8a7040;">Damage</span></div>
+          <div style="text-align:center;"><span style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:#7050b8;display:block;line-height:1;">0</span><span style="font-family:'Crimson Text',serif;font-size:10px;color:#8a7040;">Horror</span></div>
+          <div style="text-align:center;"><span style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:#c8871a;display:block;line-height:1;">5</span><span style="font-family:'Crimson Text',serif;font-size:10px;color:#8a7040;">Resources</span></div>
+          <div style="text-align:center;"><span style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:#2e8a50;display:block;line-height:1;">0</span><span style="font-family:'Crimson Text',serif;font-size:10px;color:#8a7040;">Clues</span></div>
+        </div>
+      </div>
+      <div class="d-actions">
+        <div class="d-action"><span class="d-action-icon">🔍</span><div class="d-action-name">Investigate</div></div>
+        <div class="d-action"><span class="d-action-icon">🚶</span><div class="d-action-name">Move</div></div>
+        <div class="d-action red"><span class="d-action-icon">⚔️</span><div class="d-action-name">Fight</div></div>
+        <div class="d-action green"><span class="d-action-icon">💨</span><div class="d-action-name">Evade</div></div>
+        <div class="d-action orange"><span class="d-action-icon">🤝</span><div class="d-action-name">Engage</div></div>
+      </div>
+      <div class="d-bottom">
+        <button class="d-board-btn">🗂 Board</button>
+        <button class="d-end-btn">End Turn →</button>
+      </div>
+    </div></div>
+    <div class="option-desc" style="color:#c9a84c;">Bordered cards · colour stripe per type · max legibility</div>
+  </div>
+
+  <!-- OPTION E -->
+  <div class="option-wrap">
+    <div class="option-label">OPTION E — ILLUMINATED MANUSCRIPT</div>
+    <div class="option-desc">Dark gold. Stats are a unified strip directly under player name — visible at all times. 3-col action grid with large icons. Gold End Turn.</div>
+    <div class="phone"><div class="phone-inner e">
+      <div class="e-bar">
+        <span class="e-phase">INVESTIGATION PHASE</span>
+        <span class="e-round">Round 1</span>
+      </div>
+      <div class="e-identity">
+        <div class="e-its">✦ IT'S YOUR TURN ✦</div>
+        <div class="e-name">Ahsan</div>
+        <div class="e-inv">Daniela Reyes · Guardian</div>
+        <div class="e-stat-row">
+          <div class="e-st dmg"><span class="e-st-val">0</span><span class="e-st-lbl">Damage</span></div>
+          <div class="e-st hor"><span class="e-st-val">0</span><span class="e-st-lbl">Horror</span></div>
+          <div class="e-st res"><span class="e-st-val">5</span><span class="e-st-lbl">Resources</span></div>
+          <div class="e-st clu"><span class="e-st-val">0</span><span class="e-st-lbl">Clues</span></div>
+        </div>
+      </div>
+      <div class="e-pips">
+        <div class="e-pip"><svg width="20" height="20" viewBox="0 0 18 18" fill="#1a1208"><polygon points="9,1 11,7 18,7 12,11 14,17 9,13 4,17 6,11 0,7 7,7"/></svg></div>
+        <div class="e-pip"><svg width="20" height="20" viewBox="0 0 18 18" fill="#1a1208"><polygon points="9,1 11,7 18,7 12,11 14,17 9,13 4,17 6,11 0,7 7,7"/></svg></div>
+        <div class="e-pip"><svg width="20" height="20" viewBox="0 0 18 18" fill="#1a1208"><polygon points="9,1 11,7 18,7 12,11 14,17 9,13 4,17 6,11 0,7 7,7"/></svg></div>
+      </div>
+      <div class="e-rem">3 actions remaining</div>
+      <div class="e-grid">
+        <div class="e-action blue"><span class="e-action-icon">🔍</span><span class="e-action-name">Investigate</span></div>
+        <div class="e-action"><span class="e-action-icon">🚶</span><span class="e-action-name" style="color:rgba(245,208,96,0.6);">Move</span></div>
+        <div class="e-action red"><span class="e-action-icon">⚔️</span><span class="e-action-name">Fight</span></div>
+        <div class="e-action green"><span class="e-action-icon">💨</span><span class="e-action-name">Evade</span></div>
+        <div class="e-action amber"><span class="e-action-icon">🤝</span><span class="e-action-name">Engage</span></div>
+        <div class="e-action"><span class="e-action-icon">📜</span><span class="e-action-name" style="color:rgba(245,208,96,0.6);">Parley</span></div>
+        <div class="e-action"><span class="e-action-icon">🃏</span><span class="e-action-name" style="color:rgba(245,208,96,0.6);">Draw</span></div>
+        <div class="e-action amber"><span class="e-action-icon">💰</span><span class="e-action-name">Resource</span></div>
+        <div class="e-action"><span class="e-action-icon">🎴</span><span class="e-action-name" style="color:rgba(245,208,96,0.6);">Play Card</span></div>
+      </div>
+      <div class="e-bottom">
+        <button class="e-board-btn">🗂 Board</button>
+        <button class="e-end-btn">End Turn →</button>
+      </div>
+    </div></div>
+    <div class="option-desc" style="color:#c9a84c;">Stats always visible · gold on dark · 3-col grid · dramatic</div>
+  </div>
+
+</div>
+
+<div style="max-width:900px;margin:60px auto 0;padding:24px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:12px;">
+  <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:#c9a84c;margin-bottom:12px;">NEXT STEP</div>
+  <div style="font-family:'Crimson Text',serif;font-size:14px;color:#7a6030;line-height:1.7;">
+    Pick a direction (or mix). Once approved I'll apply it to Screen 3 (Board / Player Cards),
+    Screen 4 (Enemy / Mythos phase), and Screen 5 (Campaign picker) before touching any code.
+  </div>
+</div>
+
+</body>
+</html>

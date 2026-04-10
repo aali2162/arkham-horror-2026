@@ -968,103 +968,106 @@ export default function SessionPage() {
     // ── Non-creator waiting room ──────────────────────────────
     if (!isCreator) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#f2e8cc" }}>
+        <div className="d-page min-h-screen">
           <Navbar />
-          <div className="max-w-sm w-full text-center mt-16">
-            <div className="inline-flex items-center gap-2 text-xs font-mono tracking-widest mb-6 px-3 py-1.5 rounded-full"
-              style={{ background: "rgba(201,151,58,0.08)", border: "1px solid rgba(201,151,58,0.25)", color: "#c9973a" }}>
-              <span className="live-dot" /> LOBBY · {sessionCode}
+          <div className="d-topbar">
+            <div>
+              <span className="d-topbar-title">LOBBY</span>
+              <span className="d-topbar-sub">AWAITING HOST</span>
             </div>
-            <div className="text-5xl mb-4">⏳</div>
-            <h1 className="font-decorative font-bold text-xl text-ark-text mb-2">Waiting for host…</h1>
-            <p className="text-sm text-ark-text-muted mb-6">The session host is setting up the game. You'll be taken in automatically when they start.</p>
-
-            {/* Show who's already in the lobby */}
+            <div className="d-phase-pill">
+              <span className="live-dot" style={{ display: "inline-block", width: 6, height: 6, background: "#3aad98", borderRadius: "50%", marginRight: 6 }} />
+              {sessionCode}
+            </div>
+          </div>
+          <div style={{ padding: "40px 24px", textAlign: "center" }}>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: "3px", color: "#8a7040", marginBottom: 16 }}>WAITING FOR HOST TO START</div>
+            <div style={{ fontFamily: "'Cinzel Decorative', serif", fontSize: 22, color: "#1a1208", marginBottom: 8 }}>Gathering Investigators…</div>
+            <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic", marginBottom: 32 }}>The investigation begins when the host starts the game.</div>
             {players.length > 0 && (
-              <div className="rounded-xl p-4 mb-6 text-left space-y-2"
-                style={{ background: "rgba(236,220,176,0.9)", border: "1px solid #c8a860" }}>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-3">In the lobby</p>
+              <div style={{ background: "#fff", border: "2px solid #1a1208", textAlign: "left" }}>
+                <div className="d-section-head"><span>IN THE LOBBY</span></div>
                 {orderedLobbyPlayers.map((player) => {
                   const inv = investigators.find(i => i.name === player.investigator);
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
                   return (
-                    <div key={player.id} className="flex items-center gap-2 py-1">
-                      <div className="w-7 h-7 rounded flex items-center justify-center font-bold text-xs flex-shrink-0"
-                        style={{ background: cls.bg, color: cls.hex }}>{player.investigator[0]}</div>
+                    <div key={player.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", borderBottom: "1px solid #e8e0cc" }}>
+                      <div style={{ width: 36, height: 36, background: cls.hex, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <span style={{ fontFamily: "'Cinzel', serif", fontWeight: 700, fontSize: 16, color: "#fff" }}>{player.investigator[0]}</span>
+                      </div>
                       <div>
-                        <p className="font-decorative text-sm text-ark-text">{player.player_name}</p>
-                        <p className="text-[10px]" style={{ color: cls.hex }}>{player.investigator}</p>
+                        <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#1a1208" }}>{player.player_name}</div>
+                        <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>{player.investigator}</div>
                       </div>
                     </div>
                   );
                 })}
               </div>
             )}
-            <p className="text-xs font-mono" style={{ color: "#5a4838" }}>Session code: <span style={{ color: "#c9973a" }}>{sessionCode}</span></p>
+            <div style={{ marginTop: 24, fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: "2px", color: "#3a2808" }}>
+              SESSION CODE: <span style={{ color: "#c9a84c", fontWeight: 700 }}>{sessionCode}</span>
+            </div>
           </div>
         </div>
       );
     }
 
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: "#f2e8cc" }}>
+      <div className="d-page min-h-screen pb-12">
         <Navbar />
-        <main className="max-w-lg mx-auto px-4 py-10 w-full">
 
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 text-xs font-mono tracking-widest mb-4 px-3 py-1.5 rounded-full"
-              style={{ background: "rgba(201,151,58,0.08)", border: "1px solid rgba(201,151,58,0.25)", color: "#c9973a" }}>
-              <span className="live-dot" /> LOBBY · {sessionCode}
-            </div>
-            <h1 className="font-decorative font-bold text-2xl text-ark-text mb-2">Game Setup</h1>
-            <p className="text-ark-text-muted text-sm">Add all investigators, set your turn order, then start the game.</p>
-            <p className="text-xs mt-2 font-mono" style={{ color: "#5a4838" }}>Share this session code with other players: <span style={{ color: "#c9973a" }}>{sessionCode}</span></p>
+        {/* Top bar */}
+        <div className="d-topbar">
+          <div>
+            <span className="d-topbar-title">GAME SETUP</span>
+            <span className="d-topbar-sub">INVESTIGATOR&apos;S DOSSIER</span>
           </div>
+          <div className="d-phase-pill">
+            <span className="live-dot" style={{ display: "inline-block", width: 6, height: 6, background: "#3aad98", borderRadius: "50%", marginRight: 6 }} />
+            LOBBY
+          </div>
+        </div>
 
-          {/* Share */}
-          <button onClick={handleCopyLink}
-            className="w-full py-2.5 rounded-xl text-xs font-semibold font-mono mb-6 transition-all"
-            style={{ background: "rgba(201,151,58,0.08)", border: "1px solid rgba(201,151,58,0.25)", color: copied ? "#3aad98" : "#c9973a" }}>
-            {copied ? "✓ Link copied!" : "📋 Copy invite link"}
-          </button>
+        {/* Session code */}
+        <div className="d-code-box">
+          <span className="d-code-lbl">SESSION CODE — SHARE WITH YOUR PARTY</span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
+            <span className="d-code-val">{sessionCode}</span>
+            <button onClick={handleCopyLink}
+              style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "8px 14px", background: "#1a1208", border: "2px solid #c9a84c", color: copied ? "#c9a84c" : "#f2e8cc", cursor: "pointer" }}>
+              {copied ? "✓ Copied" : "Copy"}
+            </button>
+          </div>
+        </div>
+
+        <main style={{ maxWidth: 520, margin: "0 auto", padding: "0 0 40px" }}>
 
           {/* ── STEP 1: Investigators ── */}
-          <div className="mb-5">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
-                style={{ background: "rgba(201,151,58,0.2)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }}>1</div>
-              <h2 className="text-sm font-decorative font-bold text-ark-text">Add Investigators</h2>
-              <span className="text-xs text-ark-text-muted font-mono">({players.length} / 4)</span>
+          <div style={{ marginBottom: 2 }}>
+            <div className="d-section-head" style={{ marginTop: 0 }}>
+              <span>STEP 1 — ADD INVESTIGATORS</span>
+              <span style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", fontWeight: 400 }}>{players.length} / 4</span>
             </div>
 
             {players.length === 0 ? (
-              <div className="rounded-xl p-6 text-center" style={{ background: "rgba(236,220,176,0.7)", border: "1px dashed #c8a860" }}>
-                <p className="text-ark-text-muted text-sm">No investigators yet. Add the first one below.</p>
+              <div style={{ background: "#fff", padding: "24px 16px", textAlign: "center", borderBottom: "1px solid #e8e0cc" }}>
+                <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>No investigators yet. Add the first one below.</div>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div>
                 {orderedLobbyPlayers.map((player, idx) => {
                   const inv = investigators.find(i => i.name === player.investigator);
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
                   return (
-                    <div key={player.id} className="flex items-center gap-3 rounded-xl p-3 transition-all"
-                      style={{ background: "#ecdcb0", border: `1px solid ${cls.border}` }}>
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
-                        style={{ background: "rgba(201,151,58,0.12)", border: "1px solid rgba(201,151,58,0.3)", color: "#c9973a" }}>
-                        {idx + 1}
-                      </div>
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
-                        style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }}>
-                        {player.investigator[0]}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-decorative font-bold text-sm text-ark-text truncate">{player.player_name}</p>
-                        <p className="text-xs" style={{ color: cls.hex }}>{player.investigator} · {inv?.class}</p>
+                    <div key={player.id} className="d-player-card" style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px 12px 20px", borderBottom: "1px solid #e8e0cc" }}>
+                      <div className="d-player-stripe" style={{ background: cls.hex }} />
+                      <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#c9a84c", width: 20, flexShrink: 0 }}>{idx + 1}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div className="d-player-name-lbl">{player.player_name}</div>
+                        <div className="d-player-inv-lbl">{player.investigator} · {inv?.class}</div>
                       </div>
                       <button onClick={() => handleRemove(player)}
-                        className="w-7 h-7 rounded-full text-xs flex items-center justify-center transition-all"
-                        style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#c03028" }}>
+                        style={{ width: 28, height: 28, background: "rgba(184,32,32,0.12)", border: "1px solid rgba(184,32,32,0.3)", color: "#b82020", fontFamily: "'Cinzel', serif", fontSize: 12, cursor: "pointer", flexShrink: 0 }}>
                         ✕
                       </button>
                     </div>
@@ -1076,43 +1079,34 @@ export default function SessionPage() {
 
           {/* ── STEP 2: Turn Order ── */}
           {players.length >= 2 && (
-            <div className="mb-5 rounded-xl p-4" style={{ background: lobbyOrderConfirmed ? "rgba(58,173,152,0.06)" : "rgba(236,220,176,0.92)", border: `1px solid ${lobbyOrderConfirmed ? "rgba(58,173,152,0.4)" : "rgba(138,104,32,0.3)"}` }}>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
-                  style={{ background: lobbyOrderConfirmed ? "rgba(58,173,152,0.3)" : "rgba(201,151,58,0.2)", border: `1px solid ${lobbyOrderConfirmed ? "rgba(58,173,152,0.6)" : "rgba(201,151,58,0.5)"}`, color: lobbyOrderConfirmed ? "#3aad98" : "#c9973a" }}>
-                  {lobbyOrderConfirmed ? "✓" : "2"}
-                </div>
-                <h2 className="text-sm font-decorative font-bold text-ark-text">Set Turn Order</h2>
-                {lobbyOrderConfirmed && <span className="text-xs font-mono" style={{ color: "#3aad98" }}>Confirmed</span>}
+            <div style={{ marginBottom: 2 }}>
+              <div className="d-section-head" style={{ background: lobbyOrderConfirmed ? "rgba(46,138,80,0.08)" : "#f5f0e8" }}>
+                <span>STEP 2 — SET TURN ORDER</span>
+                {lobbyOrderConfirmed && <span style={{ fontFamily: "'Cinzel', serif", fontSize: 10, color: "#2e8a50", fontWeight: 700, letterSpacing: "1px" }}>✓ CONFIRMED</span>}
               </div>
-              <div className="space-y-2 mb-3">
+              <div>
                 {orderedLobbyPlayers.map((player, idx) => {
                   const inv = investigators.find(i => i.name === player.investigator);
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
                   return (
-                    <div key={player.id} className="flex items-center gap-3 rounded-lg p-2.5"
-                      style={{ background: "rgba(236,220,176,0.65)", border: `1px solid ${cls.border}50` }}>
-                      <span className="font-mono font-bold text-sm w-5 text-center flex-shrink-0" style={{ color: "#c9973a" }}>{idx + 1}</span>
-                      <div className="w-7 h-7 rounded flex items-center justify-center font-bold text-xs flex-shrink-0"
-                        style={{ background: cls.bg, color: cls.hex }}>{player.investigator[0]}</div>
-                      <span className="flex-1 text-sm font-decorative text-ark-text truncate">{player.player_name}</span>
-                      <div className="flex flex-col gap-0.5">
+                    <div key={player.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 16px 10px 20px", background: "#fff", borderBottom: "1px solid #e8e0cc" }}>
+                      <span style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#c9a84c", width: 20, flexShrink: 0 }}>{idx + 1}</span>
+                      <div style={{ width: 6, height: 32, background: cls.hex, flexShrink: 0 }} />
+                      <span style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#1a1208", flex: 1 }}>{player.player_name}</span>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                         <button onClick={() => handleReorderPlayer(player.id, "up")}
                           disabled={orderedLobbyPlayers[0]?.id === player.id}
-                          className="w-5 h-5 rounded text-[10px] flex items-center justify-center disabled:opacity-20"
-                          style={{ background: "rgba(58,173,152,0.2)", color: "#3aad98" }}>↑</button>
+                          style={{ width: 24, height: 22, background: "#f5f0e8", border: "1px solid #1a1208", color: "#1a1208", fontFamily: "'Cinzel', serif", fontSize: 10, cursor: "pointer", opacity: orderedLobbyPlayers[0]?.id === player.id ? 0.25 : 1 }}>↑</button>
                         <button onClick={() => handleReorderPlayer(player.id, "down")}
                           disabled={orderedLobbyPlayers[orderedLobbyPlayers.length - 1]?.id === player.id}
-                          className="w-5 h-5 rounded text-[10px] flex items-center justify-center disabled:opacity-20"
-                          style={{ background: "rgba(58,173,152,0.2)", color: "#3aad98" }}>↓</button>
+                          style={{ width: 24, height: 22, background: "#f5f0e8", border: "1px solid #1a1208", color: "#1a1208", fontFamily: "'Cinzel', serif", fontSize: 10, cursor: "pointer", opacity: orderedLobbyPlayers[orderedLobbyPlayers.length - 1]?.id === player.id ? 0.25 : 1 }}>↓</button>
                       </div>
                     </div>
                   );
                 })}
               </div>
-              <button onClick={() => setLobbyOrderConfirmed(true)}
-                className="w-full py-2 rounded-lg text-sm font-bold font-decorative transition-all"
-                style={{ background: lobbyOrderConfirmed ? "rgba(58,173,152,0.15)" : "rgba(58,173,152,0.2)", border: `1px solid rgba(58,173,152,0.5)`, color: "#3aad98" }}>
+              <button onClick={() => setLobbyOrderConfirmed(true)} className="d-btn-outline"
+                style={{ background: lobbyOrderConfirmed ? "rgba(46,138,80,0.08)" : "#f5f0e8", color: lobbyOrderConfirmed ? "#2e8a50" : "#1a1208", borderColor: lobbyOrderConfirmed ? "#2e8a50" : "#1a1208" }}>
                 {lobbyOrderConfirmed ? "✓ Turn Order Confirmed" : "Confirm Turn Order →"}
               </button>
             </div>
@@ -1120,41 +1114,35 @@ export default function SessionPage() {
 
           {/* ── STEP 3: Lead Investigator ── */}
           {players.length >= 1 && (
-            <div className="mb-5 rounded-xl p-4" style={{ background: lobbyLeadConfirmed ? "rgba(201,151,58,0.06)" : "rgba(236,220,176,0.92)", border: `1px solid ${lobbyLeadConfirmed ? "rgba(201,151,58,0.4)" : "rgba(138,104,32,0.3)"}` }}>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs flex-shrink-0"
-                  style={{ background: lobbyLeadConfirmed ? "rgba(201,151,58,0.3)" : "rgba(201,151,58,0.15)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }}>
-                  {lobbyLeadConfirmed ? "✓" : players.length >= 2 ? "3" : "2"}
-                </div>
-                <h2 className="text-sm font-decorative font-bold text-ark-text">Choose Lead Investigator</h2>
-                {lobbyLeadConfirmed && <span className="text-xs font-mono" style={{ color: "#c9973a" }}>Confirmed</span>}
+            <div style={{ marginBottom: 2 }}>
+              <div className="d-section-head" style={{ background: lobbyLeadConfirmed ? "rgba(201,168,76,0.10)" : "#f5f0e8" }}>
+                <span>STEP {players.length >= 2 ? "3" : "2"} — CHOOSE LEAD INVESTIGATOR</span>
+                {lobbyLeadConfirmed && <span style={{ fontFamily: "'Cinzel', serif", fontSize: 10, color: "#c9a84c", fontWeight: 700, letterSpacing: "1px" }}>✓ CONFIRMED</span>}
               </div>
-              <p className="text-[10px] text-ark-text-muted mb-3 leading-relaxed">The Lead Investigator manages Mythos, Enemy, and Upkeep phases for the group.</p>
-              <div className="space-y-1.5 mb-3">
+              <div style={{ background: "#f9f5ee", padding: "10px 16px", borderBottom: "1px solid #e8e0cc" }}>
+                <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>The Lead Investigator manages Mythos, Enemy, and Upkeep phases for the group.</div>
+              </div>
+              <div>
                 {orderedLobbyPlayers.map((player, idx) => {
                   const inv = investigators.find(i => i.name === player.investigator);
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
                   const isSelected = lobbyLeadIdx === idx;
                   return (
                     <button key={player.id} onClick={() => { setLobbyLeadIdx(idx); setLobbyLeadConfirmed(false); }}
-                      className="w-full flex items-center gap-3 p-2.5 rounded-lg transition-all text-left"
-                      style={{ background: isSelected ? cls.bg : "rgba(236,220,176,0.65)", border: `1px solid ${isSelected ? cls.border : "rgba(138,104,32,0.3)"}` }}>
-                      <div className="w-7 h-7 rounded flex items-center justify-center font-bold text-xs flex-shrink-0"
-                        style={{ background: cls.bg, color: cls.hex }}>{player.investigator[0]}</div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-decorative font-bold text-ark-text truncate">{player.player_name}</p>
-                        <p className="text-[10px]" style={{ color: cls.hex }}>{player.investigator}</p>
+                      style={{ width: "100%", display: "flex", alignItems: "center", gap: 14, padding: "12px 16px 12px 20px", background: isSelected ? "#fff8e8" : "#fff", border: "none", borderBottom: "1px solid #e8e0cc", cursor: "pointer", textAlign: "left", borderLeft: isSelected ? `5px solid ${cls.hex}` : "5px solid transparent" }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#1a1208" }}>{player.player_name}</div>
+                        <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>{player.investigator}</div>
                       </div>
                       {isSelected && (
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded" style={{ background: "rgba(201,151,58,0.2)", color: "#c9973a" }}>★ LEAD</span>
+                        <div className="d-badge d-badge-lead">★ LEAD</div>
                       )}
                     </button>
                   );
                 })}
               </div>
-              <button onClick={() => setLobbyLeadConfirmed(true)}
-                className="w-full py-2 rounded-lg text-sm font-bold font-decorative transition-all"
-                style={{ background: lobbyLeadConfirmed ? "rgba(201,151,58,0.15)" : "rgba(201,151,58,0.2)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }}>
+              <button onClick={() => setLobbyLeadConfirmed(true)} className="d-btn-outline"
+                style={{ background: lobbyLeadConfirmed ? "rgba(201,168,76,0.10)" : "#f5f0e8", color: lobbyLeadConfirmed ? "#c9a84c" : "#1a1208", borderColor: lobbyLeadConfirmed ? "#c9a84c" : "#1a1208" }}>
                 {lobbyLeadConfirmed ? "✓ Lead Confirmed" : "Confirm Lead Investigator →"}
               </button>
             </div>
@@ -1162,15 +1150,16 @@ export default function SessionPage() {
 
           {/* Add player form */}
           {players.length < 4 && (
-            <div className="rounded-xl p-4 mb-6 space-y-3" style={{ background: "rgba(236,220,176,0.9)", border: "1px solid rgba(201,151,58,0.2)" }}>
-              <h3 className="font-decorative font-semibold text-sm text-ark-text">
-                {players.length === 0 ? "Add First Investigator" : "Add Another Investigator"}
-              </h3>
+            <div style={{ marginBottom: 2 }}>
+              <div className="d-section-head">
+                <span>{players.length === 0 ? "ADD FIRST INVESTIGATOR" : "ADD ANOTHER INVESTIGATOR"}</span>
+              </div>
+              <div style={{ padding: "16px", background: "#fff", borderBottom: "1px solid #e8e0cc", display: "flex", flexDirection: "column", gap: 10 }}>
               <input value={addingName} onChange={e => setAddingName(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && handleAddPlayer()}
                 placeholder="Player name"
-                className="ark-input w-full px-3 py-2.5 rounded-lg text-sm" />
-              <select value={addingInvestigator} onChange={e => setAddingInvestigator(e.target.value)} className="ark-input w-full px-3 py-2.5 rounded-lg text-sm">
+                className="d-input" />
+              <select value={addingInvestigator} onChange={e => setAddingInvestigator(e.target.value)} className="d-select">
                 {investigators.map(inv => <option key={inv.name} value={inv.name}>{inv.name} ({inv.class})</option>)}
               </select>
               {/* Investigator stat preview */}
@@ -1205,19 +1194,20 @@ export default function SessionPage() {
                   </div>
                 );
               })()}
-              <button onClick={handleAddPlayer} disabled={addingPlayer || !addingName.trim()} className="btn-gold w-full py-2.5 text-sm rounded-lg disabled:opacity-40">
-                {addingPlayer ? "Adding…" : "+ Add to Lobby"}
+              <button onClick={handleAddPlayer} disabled={addingPlayer || !addingName.trim()} className="d-btn-ink">
+                {addingPlayer ? "Adding…" : "+ ADD TO LOBBY"}
               </button>
+              </div>
             </div>
           )}
 
           {players.length >= 4 && (
-            <div className="rounded-xl p-3 mb-6 text-center text-xs font-mono" style={{ background: "rgba(201,151,58,0.06)", border: "1px solid rgba(201,151,58,0.2)", color: "#c9973a" }}>
-              Maximum 4 investigators reached
+            <div style={{ padding: "14px 16px", background: "#fff8e8", borderBottom: "1px solid #e8e0cc", fontFamily: "'Cinzel', serif", fontSize: 11, color: "#c9a84c", letterSpacing: "2px", textAlign: "center" }}>
+              MAXIMUM 4 INVESTIGATORS REACHED
             </div>
           )}
 
-          {/* ── STEP FINAL: Start Game ── */}
+          {/* ── START GAME ── */}
           {(() => {
             const needsOrderConfirm = players.length >= 2 && !lobbyOrderConfirmed;
             const needsLeadConfirm = !lobbyLeadConfirmed;
@@ -1228,22 +1218,17 @@ export default function SessionPage() {
               : needsLeadConfirm ? "Confirm lead investigator above"
               : null;
             return (
-              <>
+              <div style={{ padding: "20px 16px 0" }}>
                 <button onClick={handleStartGame} disabled={!ready}
-                  className="w-full py-4 rounded-2xl font-decorative font-bold text-base tracking-wide transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{
-                    background: ready ? "linear-gradient(135deg, #c9973a, #a07828)" : "rgba(200,168,96,0.25)",
-                    color: ready ? "#2a1808" : "#8a6820",
-                    border: "1px solid rgba(201,151,58,0.4)",
-                    boxShadow: ready ? "0 0 32px rgba(201,151,58,0.25)" : "none"
-                  }}>
-                  {ready ? `▶ Start Game — ${players.length} Investigator${players.length !== 1 ? "s" : ""}` : "Start Game"}
+                  className={ready ? "d-btn-gold" : "d-btn-outline"}
+                  style={{ opacity: ready ? 1 : 0.4 }}>
+                  {ready ? `▶ START GAME — ${players.length} INVESTIGATOR${players.length !== 1 ? "S" : ""}` : "START GAME"}
                 </button>
                 {blockReason && (
-                  <p className="text-center text-xs mt-2 font-mono" style={{ color: "#c03028" }}>⚠ {blockReason}</p>
+                  <div style={{ marginTop: 10, fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#b82020", fontStyle: "italic", textAlign: "center" }}>⚠ {blockReason}</div>
                 )}
-                {ready && <p className="text-center text-xs text-ark-text-muted mt-2">Round 1 skips the Mythos Phase — first investigator goes immediately.</p>}
-              </>
+                {ready && <div style={{ marginTop: 8, fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic", textAlign: "center" }}>Round 1 skips the Mythos Phase — first investigator goes immediately.</div>}
+              </div>
             );
           })()}
 
@@ -1391,150 +1376,104 @@ export default function SessionPage() {
     const actionsLeft = 3 - turnState.actionsUsed;
 
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: "#f2e8cc" }}>
+      <div className="d-page min-h-screen pb-24">
         <Navbar />
 
-        {/* Big YOUR TURN header */}
-        <div className="flex-1 flex flex-col items-center justify-start pt-8 px-4 max-w-lg mx-auto w-full">
-
-          {/* Phase + Round badge */}
-          <div className="flex items-center gap-3 mb-6 text-xs font-mono">
-            <span className="px-3 py-1 rounded-full border" style={{ background: `${currentPhase.color}15`, borderColor: `${currentPhase.color}40`, color: currentPhase.color }}>
-              {currentPhase.label} Phase
-            </span>
-            <span className="text-ark-text-muted">Round {turnState.round}</span>
+        {/* ── Option D Hero header ── */}
+        <div className="d-topbar" style={{ paddingBottom: 16 }}>
+          <div>
+            <div className="d-hero-eyebrow">IT&apos;S YOUR TURN</div>
+            <div className="d-hero-name">{currentPlayer.player_name}</div>
+            <div className="d-hero-role">{currentPlayer.investigator}{inv ? ` · ${inv.class}` : ""}</div>
           </div>
-
-          {/* Your Turn banner */}
-          <div className="w-full rounded-2xl p-6 mb-6 text-center relative overflow-hidden"
-            style={{ background: `linear-gradient(145deg, ${cls.bg}, rgba(248,240,216,0.5))`, border: `2px solid ${cls.border}`, boxShadow: `0 0 40px ${cls.glow}` }}>
-            <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at top, ${cls.hex}08, transparent 70%)` }} />
-            <p className="text-xs font-mono uppercase tracking-widest mb-1" style={{ color: cls.hex }}>It&apos;s your turn</p>
-            <h1 className="font-display font-extrabold text-4xl text-ark-text mb-1">{currentPlayer.player_name}</h1>
-            <p className="text-sm font-mono" style={{ color: cls.hex }}>{currentPlayer.investigator}</p>
-            {inv && <p className="text-xs text-ark-text-muted mt-1">{inv.class}</p>}
+          <div>
+            <div className="d-phase-pill" style={{ marginBottom: 6 }}>{currentPhase.label} Phase</div>
+            <div className="d-round-badge" style={{ textAlign: "right" }}>RND {turnState.round}</div>
           </div>
+        </div>
 
-          {/* Actions remaining */}
-          <div className="flex items-center gap-3 mb-6">
-            {[0, 1, 2].map(i => (
-              <div key={i} className="flex flex-col items-center gap-1">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all"
-                  style={i < actionsLeft
-                    ? { background: `linear-gradient(135deg, ${cls.hex}, ${cls.hex}88)`, boxShadow: `0 0 12px ${cls.glow}`, color: "#fff" }
-                    : { background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860", color: "#3d3020" }}>
-                  <ActionSymbol size={18} />
-                </div>
-                <span className="text-[9px] font-mono" style={{ color: i < actionsLeft ? cls.hex : "#3d3020" }}>
-                  {i < actionsLeft ? "ready" : "spent"}
-                </span>
-              </div>
-            ))}
-          </div>
-          <p className="text-ark-text-muted text-sm mb-6">{actionsLeft} action{actionsLeft !== 1 ? "s" : ""} remaining</p>
-
-          {/* Action grid */}
-          <div className="w-full mb-4">
-            <p className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted text-center mb-3">Choose an action to log</p>
-            <div className="grid grid-cols-3 gap-2">
-              {ACTIONS.map(action => (
-                <button key={action.id} onClick={() => setSelectedAction(action)}
-                  className="flex flex-col items-center gap-2 p-3 rounded-xl text-center transition-all duration-200 active:scale-95"
-                  style={{ background: action.bg, border: `1px solid ${action.color}30` }}>
-                  {action.skill && (
-                    <div className="flex items-center gap-1">
-                      <SkillIcon skill={action.skill} size={14} />
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1">
-                    <ActionSymbol size={12} />
-                    <span className="text-[11px] font-mono font-semibold" style={{ color: action.color }}>{action.label}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* View Board + Undo + End Turn */}
-          <div className="w-full flex gap-2">
-            <button onClick={() => setViewBoardMode(true)}
-              className="flex-1 py-3.5 rounded-xl font-decorative font-bold text-sm tracking-wide transition-all active:scale-98"
-              style={{ background: "rgba(74,143,212,0.08)", border: "1px solid rgba(74,143,212,0.3)", color: "#4a8fd4" }}>
-              🗺 Board
-            </button>
-            <button onClick={handleUndoLastAction}
-              disabled={actionLog.length === 0 || actionLog.every(e => e.action === "Undo" || e.action === "Log Cleared")}
-              className="px-4 py-3.5 rounded-xl font-decorative font-bold text-sm tracking-wide transition-all active:scale-98 disabled:opacity-30"
-              style={{ background: "rgba(232,168,74,0.08)", border: "1px solid rgba(232,168,74,0.3)", color: "#c8871a" }}>
-              ↩ Undo
-            </button>
-            <button onClick={handleEndTurn}
-              className="flex-1 py-3.5 rounded-xl font-decorative font-bold text-sm tracking-wide transition-all active:scale-98"
-              style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", border: "1px solid rgba(201,151,58,0.5)", color: "#2a1808" }}>
-              End Turn →
-            </button>
-          </div>
-
-          {/* My stats peek */}
-          {myPlayer && (
-            <div className="w-full mt-4 space-y-2" style={{ background: "rgba(236,220,176,0.8)", borderRadius: 12, padding: 12, border: "1px solid rgba(138,104,32,0.2)" }}>
-              {/* Damage + Horror side by side */}
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { label: "Damage", icon: <DamageIcon size={14} color="#c03028" />, val: myPlayer.damage, max: inv?.health ?? 9, color: "#c03028", field: "damage" as const },
-                  { label: "Horror", icon: <HorrorIcon size={14} color="#7050b8" />, val: myPlayer.horror, max: inv?.sanity ?? 7, color: "#9070d8", field: "horror" as const },
-                ].map(s => (
-                  <div key={s.label} className="flex flex-col items-center gap-1 py-2 rounded-lg" style={{ background: "rgba(236,220,176,0.65)" }}>
-                    <div className="flex items-center gap-1">{s.icon}<span className="text-[9px] font-mono text-ark-text-muted">{s.label}</span></div>
-                    <div className="flex items-center gap-1">
-                      <button onClick={() => handleStatChange(myPlayer, s.field, -1)} className="w-5 h-5 rounded text-xs font-bold" style={{ color: s.color }}>−</button>
-                      <span className="font-mono font-bold text-base" style={{ color: s.color }}>{s.val}</span>
-                      <button onClick={() => handleStatChange(myPlayer, s.field, 1)} className="w-5 h-5 rounded text-xs font-bold" style={{ color: s.color }}>+</button>
-                    </div>
-                    <span className="text-[9px] text-ark-text-muted">/ {s.max}</span>
-                  </div>
-                ))}
-              </div>
-              {/* Resources — prominent full-width row */}
-              <div className="flex items-center justify-between px-3 py-2 rounded-xl"
-                style={{ background: "rgba(201,151,58,0.12)", border: "1px solid rgba(201,151,58,0.35)" }}>
-                <div className="flex items-center gap-2">
-                  <ResourceIcon size={16} color="#c9973a" />
-                  <div>
-                    <div className="text-[9px] font-mono uppercase tracking-widest" style={{ color: "#8a6820" }}>Resources</div>
-                    <div className="font-mono font-bold text-xl leading-none" style={{ color: "#5a3a08" }}>{myPlayer.resources}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => handleStatChange(myPlayer, "resources", -1)} disabled={myPlayer.resources === 0}
-                    className="w-7 h-7 rounded-lg font-bold text-sm disabled:opacity-30"
-                    style={{ background: "rgba(201,151,58,0.18)", border: "1px solid rgba(201,151,58,0.4)", color: "#8a6820" }}>−</button>
-                  <button onClick={() => handleStatChange(myPlayer, "resources", 1)}
-                    className="w-7 h-7 rounded-lg font-bold text-sm"
-                    style={{ background: "rgba(201,151,58,0.28)", border: "1px solid rgba(201,151,58,0.5)", color: "#5a3a08" }}>+</button>
-                </div>
-              </div>
-              {/* Clues — compact row */}
-              <div className="flex items-center justify-between px-3 py-1.5 rounded-xl"
-                style={{ background: "rgba(58,173,152,0.08)", border: "1px solid rgba(58,173,152,0.25)" }}>
-                <div className="flex items-center gap-2">
-                  <ClueIcon size={14} color="#3aad98" />
-                  <div>
-                    <div className="text-[9px] font-mono uppercase tracking-widest" style={{ color: "#2a7060" }}>Clues</div>
-                    <div className="font-mono font-bold text-base leading-none" style={{ color: "#1a4038" }}>{myPlayer.clues}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => handleStatChange(myPlayer, "clues", -1)} disabled={myPlayer.clues === 0}
-                    className="w-6 h-6 rounded font-bold text-xs disabled:opacity-30"
-                    style={{ background: "rgba(58,173,152,0.15)", border: "1px solid rgba(58,173,152,0.3)", color: "#3aad98" }}>−</button>
-                  <button onClick={() => handleStatChange(myPlayer, "clues", 1)}
-                    className="w-6 h-6 rounded font-bold text-xs"
-                    style={{ background: "rgba(58,173,152,0.25)", border: "1px solid rgba(58,173,152,0.4)", color: "#1a6050" }}>+</button>
-                </div>
+        {/* ── Dark stat strip ── */}
+        {myPlayer && inv && (
+          <div className="d-stat-strip" style={{ justifyContent: "space-around" }}>
+            <div className="d-stat-cell" style={{ borderTopColor: "#ff6050" }}>
+              <span className="d-stat-val" style={{ color: "#ff6050" }}>{myPlayer.damage}</span>
+              <span className="d-stat-lbl">DMG</span>
+              <div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 4 }}>
+                <button onClick={() => handleStatChange(myPlayer, "damage", -1)} className="d-adj-btn">−</button>
+                <button onClick={() => handleStatChange(myPlayer, "damage", 1)} className="d-adj-btn">+</button>
               </div>
             </div>
-          )}
+            <div className="d-stat-cell" style={{ borderTopColor: "#c090ff" }}>
+              <span className="d-stat-val" style={{ color: "#c090ff" }}>{myPlayer.horror}</span>
+              <span className="d-stat-lbl">HOR</span>
+              <div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 4 }}>
+                <button onClick={() => handleStatChange(myPlayer, "horror", -1)} className="d-adj-btn">−</button>
+                <button onClick={() => handleStatChange(myPlayer, "horror", 1)} className="d-adj-btn">+</button>
+              </div>
+            </div>
+            <div className="d-stat-cell" style={{ borderTopColor: "#f0c060" }}>
+              <span className="d-stat-val" style={{ color: "#f0c060" }}>{myPlayer.resources}</span>
+              <span className="d-stat-lbl">RES</span>
+              <div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 4 }}>
+                <button onClick={() => handleStatChange(myPlayer, "resources", -1)} className="d-adj-btn">−</button>
+                <button onClick={() => handleStatChange(myPlayer, "resources", 1)} className="d-adj-btn">+</button>
+              </div>
+            </div>
+            <div className="d-stat-cell" style={{ borderTopColor: "#60e090" }}>
+              <span className="d-stat-val" style={{ color: "#60e090" }}>{myPlayer.clues}</span>
+              <span className="d-stat-lbl">CLUES</span>
+              <div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 4 }}>
+                <button onClick={() => handleStatChange(myPlayer, "clues", -1)} className="d-adj-btn">−</button>
+                <button onClick={() => handleStatChange(myPlayer, "clues", 1)} className="d-adj-btn">+</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Actions remaining counter ── */}
+        <div className="d-section-head">
+          <span>CHOOSE AN ACTION</span>
+          <span style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", fontWeight: 400 }}>{actionsLeft} of 3 remaining</span>
+        </div>
+
+        {/* ── Action list ── */}
+        <div>
+          {ACTIONS.map(action => (
+            <div key={action.id} className="d-action-row" onClick={() => setSelectedAction(action)}>
+              <div className="d-action-icon-wrap">
+                {action.skill ? <SkillIcon skill={action.skill} size={22} /> : <ActionSymbol size={22} />}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <span className="d-action-trigger">► ACTION</span>
+                <span className="d-action-name">{action.label}</span>
+                <span className="d-action-desc">{action.desc}</span>
+                {action.skill && (
+                  <span className="d-skill-pill" style={{ color: ACTIONS.find(a => a.id === action.id)?.color, borderColor: ACTIONS.find(a => a.id === action.id)?.color }}>
+                    {action.skill}
+                  </span>
+                )}
+              </div>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, opacity: 0.35 }}>
+                <path d="M6 4l4 4-4 4" stroke="#1a1208" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Bottom bar ── */}
+        <div className="d-bottom-bar">
+          <button onClick={() => setViewBoardMode(true)} className="d-bottom-board">
+            ◎ BOARD
+          </button>
+          <button onClick={handleUndoLastAction}
+            disabled={actionLog.length === 0 || actionLog.every(e => e.action === "Undo" || e.action === "Log Cleared")}
+            className="d-bottom-board"
+            style={{ borderRight: "2px solid #c9a84c", opacity: actionLog.length === 0 ? 0.4 : 1 }}>
+            ↩ UNDO
+          </button>
+          <button onClick={handleEndTurn} className="d-bottom-endturn">
+            END TURN →
+          </button>
         </div>
       </div>
     );
@@ -1779,8 +1718,25 @@ export default function SessionPage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
-        <BackButton href="/play" label="All Sessions" />
+      <main className="d-page" style={{ paddingBottom: 80 }}>
+
+        {/* ── Option D top bar ── */}
+        <div className="d-topbar">
+          <div>
+            <span className="d-topbar-title">{sessionCode}</span>
+            <span className="d-topbar-sub">ROUND {turnState.round} · {currentPhase.label.toUpperCase()} PHASE</span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
+            <div className="d-phase-pill" style={{ borderColor: `${currentPhase.color}60` }}>{currentPhase.label.toUpperCase()}</div>
+            <div className="d-round-badge">
+              <span style={{ color: doomDanger ? "#ff6060" : "#c9a84c" }}>
+                ☠ {turnState.doom}/{turnState.doomThreshold}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ maxWidth: 540, margin: "0 auto" }}>
 
         {/* Phase flash overlay */}
         {phaseFlash && (
@@ -1794,112 +1750,64 @@ export default function SessionPage() {
 
         {/* ── Back to Your Turn banner ── */}
         {viewBoardMode && isMyTurn && turnState.phase === "investigation" && (
-          <div className="rounded-xl p-3 mb-4 flex items-center justify-between gap-3"
-            style={{ background: "rgba(201,151,58,0.12)", border: "2px solid rgba(201,151,58,0.5)" }}>
-            <p className="font-decorative font-bold text-sm" style={{ color: "#c9973a" }}>⚡ It&apos;s your turn — {3 - turnState.actionsUsed} action{3 - turnState.actionsUsed !== 1 ? "s" : ""} remaining</p>
+          <div style={{ background: "#1a1208", borderBottom: "2px solid #c9a84c", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <span style={{ fontFamily: "'Cinzel', serif", fontSize: 13, fontWeight: 700, color: "#c9a84c", letterSpacing: "1px" }}>
+              ⚡ YOUR TURN — {3 - turnState.actionsUsed} ACTION{3 - turnState.actionsUsed !== 1 ? "S" : ""} LEFT
+            </span>
             <button onClick={() => setViewBoardMode(false)}
-              className="px-4 py-2 rounded-lg text-xs font-bold font-decorative transition-all flex-shrink-0"
-              style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#2a1808" }}>
-              ← Your Turn
+              style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "8px 16px", background: "#c9a84c", border: "none", color: "#1a1208", cursor: "pointer" }}>
+              ← YOUR TURN
             </button>
           </div>
         )}
 
-        {/* ── Identity banner (pulsing if not identified) ── */}
-        {!myPlayer && (
-          <div onClick={() => setShowNamePicker(true)}
-            className="w-full rounded-xl p-4 mb-4 cursor-pointer transition-all"
-            style={{ background: "rgba(201,151,58,0.15)", border: "2px solid rgba(201,151,58,0.5)", animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}>
-            <p className="text-center font-decorative font-bold text-base" style={{ color: "#c9973a" }}>
-              Tap to identify yourself →
-            </p>
-          </div>
-        )}
-
-        {/* ── Identity bar ── */}
-        <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-          <div className="flex items-center gap-3 flex-wrap">
-            <div>
-              <p className="text-ark-text-muted text-[10px] uppercase tracking-widest font-mono">Session</p>
-              <h1 className="font-mono font-bold text-xl tracking-wider" style={{ color: "#c9973a" }}>{sessionCode}</h1>
-            </div>
-            <div className="h-8 w-px" style={{ background: "#3d3020" }} />
-            <div>
-              <p className="text-ark-text-muted text-[10px] uppercase tracking-widest font-mono">Round</p>
-              {showRoundEdit ? (
-                <div className="flex items-center gap-1">
-                  <input
-                    type="number" min="1"
-                    value={roundEditValue}
-                    onChange={e => setRoundEditValue(e.target.value)}
-                    onKeyDown={e => { if (e.key === "Enter") handleFixRound(parseInt(roundEditValue)); if (e.key === "Escape") setShowRoundEdit(false); }}
-                    className="ark-input w-14 px-2 py-0.5 rounded text-sm font-mono font-bold text-center"
-                    autoFocus
-                  />
-                  <button onClick={() => handleFixRound(parseInt(roundEditValue))} className="text-[10px] px-1.5 py-1 rounded font-bold" style={{ background: "rgba(58,173,152,0.2)", color: "#3aad98" }}>✓</button>
-                  <button onClick={() => setShowRoundEdit(false)} className="text-[10px] px-1.5 py-1 rounded font-bold" style={{ background: "rgba(192,57,43,0.15)", color: "#c03028" }}>✕</button>
-                </div>
-              ) : (
-                <button onClick={() => { if (isLead) { setRoundEditValue(String(turnState.round)); setShowRoundEdit(true); } }}
-                  className={`font-decorative font-bold text-xl text-ark-text ${isLead ? "cursor-pointer hover:text-ark-text-dim" : ""}`}
-                  title={isLead ? "Click to correct round number" : ""}>
-                  {turnState.round}{isLead && <span className="text-[9px] text-ark-text-muted ml-1">✏</span>}
-                </button>
-              )}
-            </div>
-            <div className="h-8 w-px" style={{ background: "#3d3020" }} />
-            {/* Phase badge */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl"
-              style={{ background: `${currentPhase.color}12`, border: `1px solid ${currentPhase.color}35` }}>
-              <div className="w-2 h-2 rounded-full" style={{ background: currentPhase.color }} />
-              <span className="font-mono font-bold text-xs" style={{ color: currentPhase.color }}>{currentPhase.label} Phase</span>
-            </div>
-            <div className="h-8 w-px" style={{ background: "#3d3020" }} />
-            {/* Act badge */}
-            {turnState.scenarioNumber && (
-              <>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl" style={{ background: "rgba(112,80,184,0.12)", border: "1px solid rgba(112,80,184,0.35)" }}>
-                  <span className="font-mono font-bold text-xs" style={{ color: "#9070d8" }}>Act {turnState.scenarioNumber}</span>
-                </div>
-                <div className="h-8 w-px" style={{ background: "#3d3020" }} />
-              </>
-            )}
-            {/* Doom */}
-            <div className="flex items-center gap-1.5">
-              <DoomIcon size={14} color={doomDanger ? "#c03028" : "#9070d8"} />
-              <span className="font-mono font-bold text-base" style={{ color: doomDanger ? "#c03028" : "#9070d8" }}>
-                {turnState.doom}<span className="text-sm font-normal text-ark-text-muted">/{turnState.doomThreshold}</span>
-              </span>
-              {doomDanger && <span className="text-[9px] font-mono px-1.5 py-0.5 rounded animate-pulse" style={{ background: "rgba(192,57,43,0.2)", border: "1px solid rgba(192,57,43,0.4)", color: "#c03028" }}>ADVANCE!</span>}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Identity: who am I */}
+        {/* ── Identity / utility bar ── */}
+        <div style={{ background: "#f5f0e8", borderBottom: "1px solid #d8d0b8", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {myPlayer ? (
               <button onClick={() => setShowNamePicker(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all"
-                style={{ background: `${CLASS_COLORS[investigators.find(i=>i.name===myPlayer.investigator)?.class??"Guardian"].bg}`, border: `1px solid ${CLASS_COLORS[investigators.find(i=>i.name===myPlayer.investigator)?.class??"Guardian"].border}`, color: CLASS_COLORS[investigators.find(i=>i.name===myPlayer.investigator)?.class??"Guardian"].hex }}>
-                👤 You: {myPlayer.player_name}
+                style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, color: "#1a1208", background: "none", border: "1px solid #1a1208", padding: "4px 10px", cursor: "pointer" }}>
+                👤 {myPlayer.player_name}
               </button>
             ) : (
               <button onClick={() => setShowNamePicker(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all border-2 animate-pulse"
-                style={{ background: "rgba(201,151,58,0.1)", border: "2px solid rgba(201,151,58,0.5)", color: "#c9973a" }}>
-                👤 Identify Me
+                style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, color: "#c9a84c", background: "none", border: "2px solid #c9a84c", padding: "4px 10px", cursor: "pointer", animation: "pulse 2s infinite" }}>
+                👤 IDENTIFY ME
               </button>
             )}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs" style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.25)" }}>
-              <span className="live-dot" />
-              <span style={{ color: "#3aad98" }}>Live</span>
-            </div>
+            {isLead && (
+              <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", padding: "3px 8px", background: "#c9a84c", color: "#1a1208" }}>★ LEAD</span>
+            )}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {isLead && showRoundEdit ? (
+              <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                <input type="number" min="1" value={roundEditValue} onChange={e => setRoundEditValue(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") handleFixRound(parseInt(roundEditValue)); if (e.key === "Escape") setShowRoundEdit(false); }}
+                  className="d-input" style={{ width: 60, padding: "4px 8px", fontSize: 14 }} autoFocus />
+                <button onClick={() => handleFixRound(parseInt(roundEditValue))} style={{ background: "#2e8a50", border: "none", color: "#fff", padding: "4px 8px", fontFamily: "'Cinzel', serif", fontSize: 11, cursor: "pointer" }}>✓</button>
+                <button onClick={() => setShowRoundEdit(false)} style={{ background: "#b82020", border: "none", color: "#fff", padding: "4px 8px", fontFamily: "'Cinzel', serif", fontSize: 11, cursor: "pointer" }}>✕</button>
+              </div>
+            ) : (
+              <button onClick={() => { if (isLead) { setRoundEditValue(String(turnState.round)); setShowRoundEdit(true); } }}
+                style={{ fontFamily: "'Cinzel', serif", fontSize: 11, color: "#3a2808", background: "none", border: "none", cursor: isLead ? "pointer" : "default" }}>
+                RND {turnState.round}{isLead && " ✏"}
+              </button>
+            )}
+            <span style={{ color: "#c0b890", fontSize: 12 }}>·</span>
             <button onClick={handleCopyLink}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-              style={{ background: "rgba(201,151,58,0.1)", border: "1px solid rgba(201,151,58,0.3)", color: "#c9973a" }}>
-              {copied ? "✓ Copied!" : "Share Link"}
+              style={{ fontFamily: "'Cinzel', serif", fontSize: 10, color: copied ? "#2e8a50" : "#c9a84c", background: "none", border: "none", cursor: "pointer", letterSpacing: "1px" }}>
+              {copied ? "✓ COPIED" : "SHARE"}
             </button>
           </div>
         </div>
+
+        {/* ── Not identified banner ── */}
+        {!myPlayer && (
+          <div onClick={() => setShowNamePicker(true)} style={{ background: "#fff8e8", borderBottom: "2px solid #c9a84c", padding: "12px 16px", cursor: "pointer", textAlign: "center" }}>
+            <span style={{ fontFamily: "'Cinzel', serif", fontSize: 12, fontWeight: 700, color: "#c9a84c", letterSpacing: "2px" }}>TAP TO IDENTIFY YOURSELF →</span>
+          </div>
+        )}
 
         {/* ── Identity picker modal — shown to non-creator devices on game start ── */}
         {showNamePicker && (
@@ -1947,133 +1855,64 @@ export default function SessionPage() {
           </div>
         )}
 
-        {/* ══ DOOM & ACT STATUS BAR — always prominent ══ */}
-        <div className="rounded-2xl mb-4 overflow-hidden" style={{ border: `2px solid ${doomDanger ? "rgba(192,57,43,0.5)" : "rgba(112,80,184,0.35)"}`, background: "rgba(236,220,176,0.98)", boxShadow: doomDanger ? "0 0 24px rgba(192,57,43,0.15)" : "0 0 16px rgba(112,80,184,0.08)" }}>
+        {/* ══ DOOM & ACT STATUS BAR ══ */}
+        <div style={{ marginBottom: 2 }}>
 
-          {/* ── Orrery session header ── */}
-          <div className="flex flex-col items-center pt-4 pb-3 px-4 relative overflow-hidden" style={{ borderBottom: `1px solid rgba(200,168,96,0.3)` }}>
-            {/* Orrery SVG — centred illustration */}
-            <svg width="120" height="96" viewBox="0 0 120 96" fill="none" className="mb-2" style={{ opacity: doomDanger ? 0.7 : 1 }}>
-              {/* Base stand */}
-              <rect x="51" y="86" width="18" height="4" rx="2" fill="#c8a860" opacity="0.5"/>
-              <rect x="55" y="78" width="10" height="9" rx="1.5" fill="#c8a860" opacity="0.4"/>
-              <line x1="60" y1="78" x2="60" y2="68" stroke="#c8a860" strokeWidth="1.2" opacity="0.4"/>
-              <circle cx="60" cy="68" r="1.8" fill="#c8a860" opacity="0.5"/>
-              {/* Sun */}
-              <circle cx="60" cy="52" r="10" fill="rgba(201,151,58,0.12)" stroke="#c8a860" strokeWidth="0.7"/>
-              <circle cx="60" cy="52" r="5.5" fill="rgba(201,151,58,0.3)" stroke="#c8a860" strokeWidth="1"/>
-              <circle cx="60" cy="52" r="3" fill={doomDanger ? "rgba(192,57,43,0.7)" : "rgba(201,151,58,0.65)"}/>
-              {/* Sun rays */}
-              {[[60,41,60,38],[60,63,60,66],[50,52,47,52],[70,52,73,52],[53,45,51,43],[67,59,69,61],[67,45,69,43],[53,59,51,61]].map(([x1,y1,x2,y2],i) => (
-                <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#c8a860" strokeWidth="0.9" strokeLinecap="round" opacity={i < 4 ? 0.55 : 0.35}/>
-              ))}
-              {/* Orbit ring 1 — equatorial */}
-              <ellipse cx="60" cy="52" rx="22" ry="8" stroke="#c8a860" strokeWidth="1.1" fill="none" opacity="0.4" transform="rotate(-10 60 52)"/>
-              <circle cx="81" cy="47" r="4" fill="#4a8fd4" opacity="0.85" stroke="#f2e8cc" strokeWidth="0.7"/>
-              {/* Orbit ring 2 — polar tilt */}
-              <ellipse cx="60" cy="52" rx="8" ry="28" stroke="#9070b8" strokeWidth="0.9" fill="none" opacity="0.3" transform="rotate(18 60 52)"/>
-              <circle cx="52" cy="25" r="3.2" fill="#7050b8" opacity="0.85" stroke="#f2e8cc" strokeWidth="0.7"/>
-              {/* Orbit ring 3 — diagonal */}
-              <ellipse cx="60" cy="52" rx="36" ry="13" stroke="#c8a860" strokeWidth="0.8" fill="none" opacity="0.25" transform="rotate(30 60 52)"/>
-              <circle cx="28" cy="64" r="3.5" fill="#c8871a" opacity="0.8" stroke="#f2e8cc" strokeWidth="0.7"/>
-              {/* Orbit ring 4 — inner */}
-              <ellipse cx="60" cy="52" rx="14" ry="5" stroke="#c8a860" strokeWidth="0.7" fill="none" opacity="0.3" transform="rotate(-25 60 52)"/>
-              <circle cx="74" cy="57" r="2.5" fill="#b82020" opacity="0.75" stroke="#f2e8cc" strokeWidth="0.6"/>
-              {/* Outer ring */}
-              <ellipse cx="60" cy="52" rx="50" ry="18" stroke="#c8a860" strokeWidth="0.6" fill="none" opacity="0.18" transform="rotate(8 60 52)"/>
-              <circle cx="12" cy="47" r="3" fill="#2e8a50" opacity="0.75" stroke="#f2e8cc" strokeWidth="0.6"/>
-              {/* Meridian bands */}
-              <path d="M60 18 Q72 35 60 52 Q48 69 60 86" stroke="#c8a860" strokeWidth="0.5" fill="none" opacity="0.2"/>
-              <path d="M60 18 Q48 35 60 52 Q72 69 60 86" stroke="#c8a860" strokeWidth="0.5" fill="none" opacity="0.2"/>
-            </svg>
-            {/* Session info */}
-            <div className="text-center">
-              <div className="text-[8px] font-mono uppercase tracking-[3px] mb-0.5" style={{ color: doomDanger ? "#c03028" : "#8a6820" }}>
-                Round {turnState.round} · {turnState.phase}
+          {/* ── Doom strip ── */}
+          <div className="d-doom-strip" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: "2px solid #c9a84c" }}>
+            {/* AGENDA side */}
+            <div style={{ padding: "12px 14px", borderRight: "1px solid rgba(201,168,76,0.3)" }}>
+              <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "2px", color: doomDanger ? "#ff6050" : "#c9a84c", marginBottom: 4 }}>
+                AGENDA {doomDanger && <span style={{ color: "#ff6050" }}>— ADVANCE!</span>}
               </div>
-              <div className="text-[12px] font-decorative font-bold" style={{ color: "#2a1808" }}>
-                {players.length} Investigator{players.length !== 1 ? "s" : ""} · {turnState.doom}/{turnState.doomThreshold} Doom
+              <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#f2e8cc", marginBottom: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {turnState.agendaName || "—"}
               </div>
-            </div>
-          </div>
-
-          {/* Top strip: Agenda + Act side by side */}
-          <div className="grid grid-cols-2" style={{ borderBottom: `1px solid ${doomDanger ? "rgba(192,57,43,0.25)" : "rgba(112,80,184,0.2)"}` }}>
-            {/* DOOM side */}
-            <div className="px-4 py-3" style={{ borderRight: `1px solid ${doomDanger ? "rgba(192,57,43,0.2)" : "rgba(112,80,184,0.15)"}` }}>
-              <div className="flex items-center gap-1.5 mb-1">
-                <DoomIcon size={12} color={doomDanger ? "#c03028" : "#9070d8"} />
-                <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: doomDanger ? "#c03028" : "#9070d8" }}>Agenda</span>
-                {doomDanger && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(192,57,43,0.2)", color: "#c03028" }}>ADVANCE!</span>}
-              </div>
-              <p className="text-[11px] font-decorative font-bold text-ark-text truncate mb-1.5">{turnState.agendaName}</p>
-              {/* Doom pips — Elder Sign style */}
-              <div className="flex items-center gap-1 flex-wrap">
+              {/* Doom pips */}
+              <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
                 {Array.from({ length: turnState.doomThreshold }).map((_, i) => {
                   const filled = i < turnState.doom;
-                  const pipColor = filled ? (doomDanger ? "#c03028" : "#7050b8") : undefined;
                   return (
                     <button key={i}
                       onClick={() => isLead && pushTurnState({ ...turnState, doom: i < turnState.doom ? i : i + 1 })}
                       disabled={!isLead}
-                      className="transition-all duration-200 flex-shrink-0"
-                      style={{ opacity: isLead ? 1 : 0.85 }}>
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <circle cx="10" cy="10" r="9"
-                          fill={filled ? (doomDanger ? "rgba(192,57,43,0.15)" : "rgba(112,80,184,0.15)") : "rgba(236,220,176,0.8)"}
-                          stroke={filled ? pipColor : "rgba(138,104,32,0.3)"}
-                          strokeWidth="0.9"/>
-                        <line x1="10" y1="1.5" x2="10" y2="18.5" stroke={filled ? pipColor : "rgba(138,104,32,0.2)"} strokeWidth={filled ? "1.1" : "0.8"}/>
-                        <line x1="1.5" y1="10" x2="18.5" y2="10" stroke={filled ? pipColor : "rgba(138,104,32,0.2)"} strokeWidth={filled ? "1.1" : "0.8"}/>
-                        <line x1="3.5" y1="3.5" x2="16.5" y2="16.5" stroke={filled ? pipColor : "rgba(138,104,32,0.2)"} strokeWidth={filled ? "1.1" : "0.8"}/>
-                        <line x1="16.5" y1="3.5" x2="3.5" y2="16.5" stroke={filled ? pipColor : "rgba(138,104,32,0.2)"} strokeWidth={filled ? "1.1" : "0.8"}/>
-                        {filled && (
-                          <>
-                            <ellipse cx="10" cy="10" rx="2" ry="1.3" fill={pipColor}/>
-                            <circle cx="10" cy="10" r="0.7" fill={doomDanger ? "#f2e8cc" : "#f2e8cc"}/>
-                          </>
-                        )}
-                      </svg>
+                      style={{ width: 18, height: 18, border: `2px solid ${filled ? (doomDanger ? "#ff6050" : "#9070d8") : "rgba(242,232,204,0.3)"}`, background: filled ? (doomDanger ? "rgba(255,96,80,0.3)" : "rgba(112,80,184,0.3)") : "transparent", cursor: isLead ? "pointer" : "default", padding: 0 }}>
                     </button>
                   );
                 })}
-                <span className="text-[10px] font-mono font-bold ml-0.5" style={{ color: doomDanger ? "#c03028" : "#9070d8" }}>{turnState.doom}/{turnState.doomThreshold}</span>
+                <span style={{ fontFamily: "'Cinzel', serif", fontSize: 12, fontWeight: 700, color: doomDanger ? "#ff6050" : "#c9a84c", marginLeft: 4 }}>
+                  {turnState.doom}/{turnState.doomThreshold}
+                </span>
               </div>
             </div>
 
             {/* ACT side */}
-            <div className="px-4 py-3">
-              {(() => {
-                const cluesOnAct = turnState.cluesOnAct ?? 0;
-                const needed = turnState.cluesRequired ?? 0;
-                const canAdvance = cluesOnAct >= needed;
-                const myClues = myPlayer?.clues ?? 0;
-                // Tap a filled pip to take back a clue; tap an empty pip to commit one
-                const handlePipTap = async (i: number) => {
-                  if (i < cluesOnAct) {
-                    // remove a clue from act → give back to current player
-                    if (!myPlayer) return;
-                    await updatePlayerStat(myPlayer.id, "clues", myPlayer.clues + 1);
-                    await pushTurnState({ ...turnState, cluesOnAct: cluesOnAct - 1 });
-                  } else {
-                    // commit a clue from current player to act
-                    if (!myPlayer || myPlayer.clues < 1) return;
-                    await updatePlayerStat(myPlayer.id, "clues", myPlayer.clues - 1);
-                    await pushTurnState({ ...turnState, cluesOnAct: cluesOnAct + 1 });
-                  }
-                };
-                return (
-                  <>
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <ClueIcon size={12} color={canAdvance ? "#4a8fd4" : "#4a6a8a"} />
-                      <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: canAdvance ? "#4a8fd4" : "#4a6a8a" }}>Act</span>
-                      {turnState.scenarioNumber && <span className="text-[9px] font-mono" style={{ color: "#6a5840" }}>#{turnState.scenarioNumber}</span>}
-                      {canAdvance && <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded animate-pulse" style={{ background: "rgba(74,143,212,0.2)", color: "#4a8fd4" }}>READY!</span>}
-                    </div>
-                    <p className="text-[11px] font-decorative font-bold text-ark-text truncate mb-1">{turnState.actName}</p>
-                    <p className="text-[9px] text-ark-text-muted mb-1.5">Tap a pip to spend a clue ({myClues} in hand)</p>
-                    {/* Tappable clue pips */}
-                    <div className="flex items-center gap-1 flex-wrap">
+            {(() => {
+              const cluesOnAct = turnState.cluesOnAct ?? 0;
+              const needed = turnState.cluesRequired ?? 0;
+              const canAdvance = needed === 0 || cluesOnAct >= needed;
+              const myClues = myPlayer?.clues ?? 0;
+              const handlePipTap = async (i: number) => {
+                if (i < cluesOnAct) {
+                  if (!myPlayer) return;
+                  await updatePlayerStat(myPlayer.id, "clues", myPlayer.clues + 1);
+                  await pushTurnState({ ...turnState, cluesOnAct: cluesOnAct - 1 });
+                } else {
+                  if (!myPlayer || myPlayer.clues < 1) return;
+                  await updatePlayerStat(myPlayer.id, "clues", myPlayer.clues - 1);
+                  await pushTurnState({ ...turnState, cluesOnAct: cluesOnAct + 1 });
+                }
+              };
+              return (
+                <div style={{ padding: "12px 14px" }}>
+                  <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "2px", color: canAdvance ? "#60e090" : "#c9a84c", marginBottom: 4 }}>
+                    ACT {canAdvance && needed > 0 && <span style={{ color: "#60e090" }}>— READY!</span>}
+                  </div>
+                  <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#f2e8cc", marginBottom: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {turnState.actName || "—"}
+                  </div>
+                  {needed > 0 && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
                       {Array.from({ length: needed }).map((_, i) => {
                         const filled = i < cluesOnAct;
                         const canFill = !filled && myClues > 0;
@@ -2082,29 +1921,26 @@ export default function SessionPage() {
                             onClick={() => handlePipTap(i)}
                             disabled={!filled && myClues < 1}
                             title={filled ? "Tap to take back" : canFill ? "Tap to spend a clue" : "No clues in hand"}
-                            className="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 disabled:opacity-30"
-                            style={filled
-                              ? { background: canAdvance ? "rgba(74,143,212,0.75)" : "rgba(74,138,184,0.5)", border: `1px solid ${canAdvance ? "#4a8fd4" : "#4a8ab8"}`, boxShadow: canAdvance ? "0 0 6px rgba(74,143,212,0.4)" : "none" }
-                              : { background: "rgba(236,220,176,0.75)", border: "1px solid #c8a860", cursor: canFill ? "pointer" : "default" }}>
-                            {filled && <ClueIcon size={10} color={canAdvance ? "#4a8fd4" : "#4a8ab8"} />}
+                            style={{ width: 18, height: 18, border: `2px solid ${filled ? "#4a8fd4" : "rgba(242,232,204,0.3)"}`, background: filled ? "rgba(74,143,212,0.4)" : "transparent", cursor: (filled || canFill) ? "pointer" : "default", padding: 0 }}>
                           </button>
                         );
                       })}
-                      {needed > 0 && <span className="text-[10px] font-mono font-bold ml-1" style={{ color: canAdvance ? "#4a8fd4" : "#4a6a8a" }}>{cluesOnAct}/{needed}</span>}
+                      <span style={{ fontFamily: "'Cinzel', serif", fontSize: 12, fontWeight: 700, color: canAdvance ? "#60e090" : "#4a8fd4", marginLeft: 4 }}>
+                        {cluesOnAct}/{needed}
+                      </span>
                     </div>
-                  </>
-                );
-              })()}
-            </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
 
-          {/* Bottom strip: lead actions */}
+          {/* Lead action bar */}
           {isLead && (
-            <div className="px-3 py-2 flex items-center gap-2 flex-wrap" style={{ background: "rgba(236,220,176,0.65)" }}>
+            <div style={{ background: "#2a1a06", borderBottom: "1px solid rgba(201,168,76,0.3)", padding: "8px 14px", display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
               <button onClick={() => setShowCampaignPicker(true)}
-                className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
-                style={{ background: "rgba(112,80,184,0.12)", border: "1px solid rgba(112,80,184,0.3)", color: "#9070d8" }}>
-                Campaign
+                style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 12px", background: "transparent", border: "1px solid rgba(201,168,76,0.5)", color: "#c9a84c", cursor: "pointer" }}>
+                SCENARIO
               </button>
               {(() => {
                 const _cluesOnAct = turnState.cluesOnAct ?? 0;
@@ -2112,24 +1948,20 @@ export default function SessionPage() {
                 const _canAdvance = _needed === 0 || _cluesOnAct >= _needed;
                 return (
                   <button onClick={handleAdvanceAct} disabled={!_canAdvance}
-                    title={_canAdvance ? "Advance the Act" : `Need ${_needed - _cluesOnAct} more clue(s) on the Act`}
-                    className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all disabled:opacity-35 disabled:cursor-not-allowed"
-                    style={{ background: _canAdvance ? "rgba(74,143,212,0.15)" : "rgba(74,143,212,0.06)", border: `1px solid ${_canAdvance ? "rgba(74,143,212,0.4)" : "rgba(74,143,212,0.15)"}`, color: _canAdvance ? "#4a8fd4" : "#4a6a8a" }}>
-                    Advance Act →
+                    style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 12px", background: _canAdvance ? "rgba(74,143,212,0.2)" : "transparent", border: `1px solid ${_canAdvance ? "#4a8fd4" : "rgba(74,143,212,0.3)"}`, color: _canAdvance ? "#4a8fd4" : "rgba(74,143,212,0.4)", cursor: _canAdvance ? "pointer" : "default" }}>
+                    ADVANCE ACT →
                   </button>
                 );
               })()}
               {turnState.campaignId && turnState.campaignId !== "custom" && (
                 <button onClick={handleAdvanceScenario}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all"
-                  style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.3)", color: "#3aad98" }}>
-                  Next Scenario ↗
+                  style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 12px", background: "transparent", border: "1px solid rgba(46,138,80,0.5)", color: "#2e8a50", cursor: "pointer" }}>
+                  NEXT SCENARIO ↗
                 </button>
               )}
               <button onClick={() => setShowEndScenario(true)}
-                className="px-3 py-1.5 rounded-lg text-xs font-bold font-decorative transition-all ml-auto"
-                style={{ background: "rgba(192,57,43,0.1)", border: "1px solid rgba(192,57,43,0.3)", color: "#c03028" }}>
-                End Scenario
+                style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 12px", background: "transparent", border: "1px solid rgba(184,32,32,0.5)", color: "#b82020", cursor: "pointer", marginLeft: "auto" }}>
+                END SCENARIO
               </button>
             </div>
           )}
@@ -2137,386 +1969,331 @@ export default function SessionPage() {
 
         {/* ── End Scenario modal ── */}
         {showEndScenario && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}>
-            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#e8d8a8", border: "1px solid rgba(192,57,43,0.4)" }}>
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.4)" }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#c03028" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </div>
-                <h3 className="font-decorative font-bold text-lg text-ark-text">End Scenario</h3>
-                <p className="text-xs text-ark-text-muted mt-1">This will lock the session and show the summary to all players.</p>
+          <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.88)" }}>
+            <div style={{ width: "100%", maxWidth: 400, background: "#f5f0e8", border: "2px solid #1a1208", borderTop: "5px solid #b82020" }}>
+              <div style={{ padding: "20px 20px 16px", borderBottom: "2px solid #1a1208" }}>
+                <div style={{ fontFamily: "'Cinzel Decorative', serif", fontSize: 16, fontWeight: 700, color: "#1a1208", marginBottom: 6 }}>End Scenario</div>
+                <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10" }}>This will lock the session and show the summary to all players.</div>
               </div>
-              <div>
-                <label className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted block mb-2">How did it end? (optional)</label>
+              <div style={{ padding: "16px 20px" }}>
+                <label style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "2px", color: "#8a7040", display: "block", marginBottom: 8 }}>HOW DID IT END? (OPTIONAL)</label>
                 <input value={scenarioResolutionText} onChange={e => setScenarioResolutionText(e.target.value)}
                   placeholder="e.g. Victory — Cultist defeated, 3 trauma taken"
-                  className="ark-input w-full px-3 py-2.5 rounded-lg text-sm" />
-              </div>
-              <div className="flex gap-3">
-                <button onClick={() => setShowEndScenario(false)} className="btn-ghost flex-1 py-2.5 text-sm rounded-xl">Cancel</button>
-                <button onClick={handleEndScenario}
-                  className="flex-1 py-2.5 text-sm rounded-xl font-bold font-decorative transition-all"
-                  style={{ background: "linear-gradient(135deg, rgba(192,57,43,0.8), rgba(140,30,20,0.8))", color: "#fff", border: "1px solid rgba(192,48,40,0.4)" }}>
-                  End Scenario
-                </button>
+                  className="d-input" style={{ width: "100%", marginBottom: 16, boxSizing: "border-box" }} />
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={() => setShowEndScenario(false)} className="d-btn-outline" style={{ flex: 1 }}>Cancel</button>
+                  <button onClick={handleEndScenario} style={{ flex: 1, fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, letterSpacing: "1px", padding: "12px 16px", background: "#b82020", border: "2px solid #1a1208", color: "#f2e8cc", cursor: "pointer" }}>
+                    END SCENARIO
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── Scenario Summary screen (shown to all devices) ── */}
+        {/* ── Scenario Summary screen ── */}
         {showScenarioSummary && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" style={{ background: "rgba(0,0,0,0.92)", backdropFilter: "blur(10px)" }}>
-            <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col" style={{ background: "#ecdcb0", border: "1px solid rgba(201,151,58,0.35)", maxHeight: "90vh" }}>
-              <div className="px-5 py-4 text-center flex-shrink-0" style={{ background: "linear-gradient(135deg, rgba(201,151,58,0.12), rgba(248,240,216,0.5))", borderBottom: "1px solid rgba(201,151,58,0.2)" }}>
-                <div className="text-2xl mb-2">📜</div>
-                <h2 className="font-decorative font-bold text-xl text-ark-text">Scenario Complete</h2>
-                {turnState.scenarioResolution && (
-                  <p className="text-sm mt-1" style={{ color: "#c9973a" }}>{turnState.scenarioResolution}</p>
-                )}
-                <p className="text-xs text-ark-text-muted mt-1">Round {turnState.round} · {players.length} investigator{players.length !== 1 ? "s" : ""}</p>
+          <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.92)" }}>
+            <div style={{ width: "100%", maxWidth: 480, background: "#f5f0e8", border: "2px solid #1a1208", borderTop: "5px solid #c9a84c", maxHeight: "90vh", display: "flex", flexDirection: "column" }}>
+              <div style={{ padding: "20px 20px 16px", borderBottom: "2px solid #1a1208", flexShrink: 0, textAlign: "center" }}>
+                <div style={{ fontFamily: "'Cinzel Decorative', serif", fontSize: 18, fontWeight: 700, color: "#1a1208", marginBottom: 4 }}>Scenario Complete</div>
+                {turnState.scenarioResolution && <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#c9a84c", fontStyle: "italic" }}>{turnState.scenarioResolution}</div>}
+                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 10, color: "#8a7040", letterSpacing: "2px", marginTop: 4 }}>ROUND {turnState.round} · {players.length} INVESTIGATOR{players.length !== 1 ? "S" : ""}</div>
               </div>
-              <div className="overflow-y-auto flex-1 px-5 py-4 space-y-3">
+              <div style={{ overflowY: "auto", flex: 1, padding: "16px 16px" }}>
                 {players.map(p => {
                   const inv = investigators.find(i => i.name === p.investigator);
                   const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
                   const isDefeated = p.damage >= (inv?.health ?? 9);
                   const isInsane = p.horror >= (inv?.sanity ?? 7);
                   return (
-                    <div key={p.id} className="rounded-xl p-4" style={{ background: "rgba(236,220,176,0.9)", border: `1px solid ${cls.border}` }}>
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm" style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }}>{p.investigator[0]}</div>
-                        <div>
-                          <p className="font-decorative font-bold text-sm text-ark-text">{p.player_name}</p>
-                          <p className="text-[11px]" style={{ color: cls.hex }}>{p.investigator} · {inv?.class}</p>
+                    <div key={p.id} className="d-player-card" style={{ borderLeft: `5px solid ${cls.hex}`, marginBottom: 8 }}>
+                      <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 36, height: 36, background: "#1a1208", border: `2px solid ${cls.hex}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Cinzel', serif", fontSize: 16, fontWeight: 700, color: cls.hex, flexShrink: 0 }}>{p.investigator[0]}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#1a1208" }}>{p.player_name}</div>
+                          <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>{p.investigator}{inv ? ` · ${inv.class}` : ""}</div>
                         </div>
                         {(isDefeated || isInsane) && (
-                          <span className="ml-auto text-[9px] font-mono font-bold px-2 py-0.5 rounded" style={{ background: isDefeated ? "rgba(192,57,43,0.2)" : "rgba(112,80,184,0.2)", color: isDefeated ? "#c03028" : "#9070d8" }}>
+                          <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", padding: "3px 8px", background: isDefeated ? "#b82020" : "#6a40b8", color: "#f2e8cc" }}>
                             {isDefeated ? "DEFEATED" : "INSANE"}
                           </span>
                         )}
                       </div>
-                      <div className="grid grid-cols-4 gap-2">
+                      <div className="d-stat-strip" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr" }}>
                         {[
-                          { label: "Damage", val: p.damage, max: inv?.health ?? 9, color: "#c03028" },
-                          { label: "Horror", val: p.horror, max: inv?.sanity ?? 7, color: "#9070d8" },
-                          { label: "Resources", val: p.resources, max: null, color: "#c9973a" },
-                          { label: "Clues", val: p.clues, max: null, color: "#4a8fd4" },
-                        ].map(s => (
-                          <div key={s.label} className="text-center py-2 rounded-lg" style={{ background: "rgba(236,220,176,0.65)" }}>
-                            <div className="text-[8px] font-mono text-ark-text-muted">{s.label}</div>
-                            <div className="font-mono font-bold text-sm mt-0.5" style={{ color: s.color }}>{s.val}{s.max ? `/${s.max}` : ""}</div>
+                          { label: "DMG", val: `${p.damage}/${inv?.health ?? 9}`, color: "#ff6050" },
+                          { label: "HOR", val: `${p.horror}/${inv?.sanity ?? 7}`, color: "#c090ff" },
+                          { label: "RES", val: p.resources, color: "#f0c060" },
+                          { label: "CLUES", val: p.clues, color: "#60e090" },
+                        ].map((s, i) => (
+                          <div key={s.label} style={{ padding: "8px 6px", textAlign: "center", borderRight: i < 3 ? "1px solid rgba(201,168,76,0.2)" : "none" }}>
+                            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 700, color: s.color, lineHeight: 1 }}>{s.val}</div>
+                            <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 10, color: "#c9a84c", textTransform: "uppercase" }}>{s.label}</div>
                           </div>
                         ))}
                       </div>
                     </div>
                   );
                 })}
-                {/* Log summary */}
-                <div className="rounded-xl p-3" style={{ background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860" }}>
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-2">{actionLog.length} actions logged this scenario</p>
+                <div style={{ background: "#fff", border: "2px solid #1a1208", padding: "12px 14px", marginTop: 8 }}>
+                  <div style={{ fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 700, letterSpacing: "2px", color: "#8a7040", marginBottom: 4 }}>{actionLog.length} ACTIONS LOGGED</div>
                   {actionLog.filter(e => e.action === "Enemy Defeated").length > 0 && (
-                    <p className="text-xs text-ark-text-muted">Enemies defeated: {actionLog.filter(e => e.action === "Enemy Defeated").map(e => e.detail.split(" defeated")[0]).join(", ")}</p>
+                    <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10" }}>Enemies defeated: {actionLog.filter(e => e.action === "Enemy Defeated").map(e => e.detail.split(" defeated")[0]).join(", ")}</div>
                   )}
                 </div>
               </div>
-              <div className="px-5 py-4 flex-shrink-0 space-y-2" style={{ borderTop: "1px solid rgba(201,151,58,0.2)" }}>
+              <div style={{ padding: "16px 16px", borderTop: "2px solid #1a1208", flexShrink: 0, display: "flex", flexDirection: "column", gap: 8 }}>
                 {isLead && (
-                  <button onClick={() => { setShowScenarioSummary(false); setShowCarryOverModal(true); }}
-                    className="w-full py-3 rounded-xl font-bold font-decorative text-sm"
-                    style={{ background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#2a1808" }}>
-                    Continue to Next Scenario →
+                  <button onClick={() => { setShowScenarioSummary(false); setShowCarryOverModal(true); }} className="d-btn-gold" style={{ width: "100%" }}>
+                    CONTINUE TO NEXT SCENARIO →
                   </button>
                 )}
-                <button onClick={() => setShowScenarioSummary(false)}
-                  className="w-full py-2.5 rounded-xl text-sm btn-ghost">
-                  Close Summary
-                </button>
+                <button onClick={() => setShowScenarioSummary(false)} className="d-btn-outline" style={{ width: "100%" }}>Close Summary</button>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── Carry-Over modal (next session setup) ── */}
+        {/* ── Carry-Over modal ── */}
         {showCarryOverModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}>
-            <div className="w-full max-w-sm rounded-2xl p-6 space-y-4" style={{ background: "#e8d8a8", border: "1px solid rgba(58,173,152,0.3)" }}>
-              <h3 className="font-decorative font-bold text-lg text-ark-text">Next Session Carry-Over</h3>
-              <p className="text-xs text-ark-text-muted">When starting the next session, remind your group which of these carry over between scenarios:</p>
-              <div className="space-y-2">
+          <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.88)" }}>
+            <div style={{ width: "100%", maxWidth: 400, background: "#f5f0e8", border: "2px solid #1a1208", borderTop: "5px solid #2e8a50" }}>
+              <div style={{ padding: "20px 20px 12px", borderBottom: "2px solid #1a1208" }}>
+                <div style={{ fontFamily: "'Cinzel Decorative', serif", fontSize: 16, fontWeight: 700, color: "#1a1208", marginBottom: 4 }}>Next Session Carry-Over</div>
+                <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10" }}>Remind your group which resources carry over between scenarios.</div>
+              </div>
+              <div style={{ padding: "12px 16px" }}>
                 {[
-                  { label: "XP (experience points)", color: "#c9973a", carries: true, note: "Spend between scenarios on upgrades" },
-                  { label: "Trauma (physical + mental)", color: "#c03028", carries: true, note: "Reduce max HP/Sanity permanently" },
-                  { label: "Resources & Clues", color: "#4a8fd4", carries: false, note: "Reset to starting values (5 resources, 0 clues)" },
-                  { label: "Damage & Horror", color: "#9070d8", carries: false, note: "Healed between scenarios (unless defeated/insane)" },
-                  { label: "Cards in hand & deck", color: "#3aad98", carries: true, note: "Keep your deck; some cards may be lost via trauma" },
-                  { label: "Earned campaign items", color: "#c9973a", carries: true, note: "Story items and campaign log entries carry over" },
+                  { label: "XP (experience points)", carries: true, note: "Spend between scenarios on upgrades" },
+                  { label: "Trauma (physical + mental)", carries: true, note: "Reduces max HP/Sanity permanently" },
+                  { label: "Resources & Clues", carries: false, note: "Reset to starting values each scenario" },
+                  { label: "Damage & Horror", carries: false, note: "Healed between scenarios unless defeated" },
+                  { label: "Cards in hand & deck", carries: true, note: "Keep your deck; some may be lost via trauma" },
+                  { label: "Earned campaign items", carries: true, note: "Story items and campaign log entries carry over" },
                 ].map(item => (
-                  <div key={item.label} className="flex items-start gap-2.5 p-2.5 rounded-lg" style={{ background: item.carries ? "rgba(236,220,176,0.75)" : "rgba(200,168,96,0.15)", border: `1px solid ${item.carries ? item.color + "30" : "#3d302010"}` }}>
-                    <span className="text-sm flex-shrink-0">{item.carries ? "✓" : "✗"}</span>
+                  <div key={item.label} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "8px 0", borderBottom: "1px solid #e8e0cc" }}>
+                    <span style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: item.carries ? "#2e8a50" : "#b82020", flexShrink: 0, width: 16, textAlign: "center" }}>{item.carries ? "✓" : "✗"}</span>
                     <div>
-                      <p className="text-xs font-semibold" style={{ color: item.carries ? item.color : "#5a4838" }}>{item.label}</p>
-                      <p className="text-[10px] text-ark-text-muted">{item.note}</p>
+                      <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, fontWeight: 700, color: "#1a1208" }}>{item.label}</div>
+                      <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10" }}>{item.note}</div>
                     </div>
                   </div>
                 ))}
               </div>
-              <button onClick={() => { setShowCarryOverModal(false); handleAdvanceScenario(); }}
-                className="w-full py-3 rounded-xl font-bold font-decorative text-sm"
-                style={{ background: "linear-gradient(135deg, rgba(58,173,152,0.8), rgba(58,158,107,0.8))", color: "#2a1808" }}>
-                Got it — Advance to Next Scenario
-              </button>
-              <button onClick={() => setShowCarryOverModal(false)} className="btn-ghost w-full py-2 text-sm rounded-xl">Close</button>
+              <div style={{ padding: "12px 16px", borderTop: "2px solid #1a1208", display: "flex", flexDirection: "column", gap: 8 }}>
+                <button onClick={() => { setShowCarryOverModal(false); handleAdvanceScenario(); }} className="d-btn-gold" style={{ width: "100%" }}>
+                  GOT IT — ADVANCE TO NEXT SCENARIO
+                </button>
+                <button onClick={() => setShowCarryOverModal(false)} className="d-btn-outline" style={{ width: "100%" }}>Close</button>
+              </div>
             </div>
           </div>
         )}
 
         {/* ── Campaign picker modal ── */}
         {showCampaignPicker && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}>
-            <div className="w-full max-w-md rounded-2xl p-6 space-y-4" style={{ background: "#e8d8a8", border: "1px solid rgba(112,80,184,0.3)" }}>
-              <h3 className="font-decorative font-bold text-lg text-ark-text">Select Campaign &amp; Scenario</h3>
-
-              {/* Step 1 — Campaign list */}
-              {selectedCampaignId === null ? (
-                <div className="space-y-2">
-                  {CAMPAIGNS.map(campaign => (
-                    <button key={campaign.id}
-                      onClick={() => setSelectedCampaignId(campaign.id)}
-                      className="w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left"
-                      style={{ background: "rgba(112,80,184,0.08)", border: "1px solid rgba(112,80,184,0.25)" }}>
-                      <div className="flex-1">
-                        <p className="font-decorative font-bold text-sm text-ark-text">{campaign.name}</p>
-                        <p className="text-xs text-ark-text-muted">{campaign.subtitle}</p>
-                      </div>
-                      <span className="text-ark-text-muted text-xs">→</span>
-                    </button>
-                  ))}
+          <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.88)" }}>
+            <div style={{ width: "100%", maxWidth: 440, background: "#f5f0e8", border: "2px solid #1a1208", borderTop: "5px solid #9070d8", maxHeight: "85vh", display: "flex", flexDirection: "column" }}>
+              <div style={{ padding: "20px 20px 12px", borderBottom: "2px solid #1a1208", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ fontFamily: "'Cinzel Decorative', serif", fontSize: 16, fontWeight: 700, color: "#1a1208" }}>
+                  {selectedCampaignId === null ? "Select Campaign & Scenario" : selectedCampaignId === "custom" ? "Custom Scenario" : CAMPAIGNS.find(c => c.id === selectedCampaignId)?.name ?? "Select Scenario"}
                 </div>
-
-              ) : selectedCampaignId === "custom" ? (
-                /* Step 2b — Custom / Freeform entry form */
-                <div className="space-y-3">
-                  <button onClick={() => setSelectedCampaignId(null)} className="text-xs text-ark-text-muted hover:text-ark-text">
-                    ← Back to campaigns
-                  </button>
-                  <p className="text-xs text-ark-text-muted italic">Fill in the details for your custom scenario. Only the Scenario Name is required.</p>
-
-                  {/* Campaign name */}
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-1">Campaign Name (optional)</label>
-                    <input value={customCampaignName} onChange={e => setCustomCampaignName(e.target.value)}
-                      placeholder="e.g. The Dunwich Legacy"
-                      className="ark-input w-full px-3 py-2 rounded-lg text-sm" />
-                  </div>
-
-                  {/* Scenario name */}
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-1">Scenario Name *</label>
-                    <input value={customScenarioName} onChange={e => setCustomScenarioName(e.target.value)}
-                      placeholder="e.g. Extracurricular Activity"
-                      className="ark-input w-full px-3 py-2 rounded-lg text-sm" />
-                  </div>
-
-                  {/* Agenda name */}
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-1">Agenda Name (optional)</label>
-                    <input value={customAgendaName} onChange={e => setCustomAgendaName(e.target.value)}
-                      placeholder="e.g. Something Stirs…"
-                      className="ark-input w-full px-3 py-2 rounded-lg text-sm" />
-                  </div>
-
-                  {/* Act name */}
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-widest text-ark-text-muted mb-1">Act Name (optional)</label>
-                    <input value={customActName} onChange={e => setCustomActName(e.target.value)}
-                      placeholder="e.g. Investigating the Campus"
-                      className="ark-input w-full px-3 py-2 rounded-lg text-sm" />
-                  </div>
-
-                  {/* Doom threshold + Clues required */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-lg p-2 text-center" style={{ background: "rgba(112,80,184,0.08)", border: "1px solid rgba(112,80,184,0.25)" }}>
-                      <p className="text-[9px] font-mono uppercase tracking-wide text-ark-text-muted mb-1.5">Doom Threshold</p>
-                      <div className="flex items-center justify-center gap-2">
-                        <button onClick={() => setCustomDoomThreshold(v => Math.max(1, v - 1))} className="w-6 h-6 rounded font-bold" style={{ background: "rgba(112,80,184,0.15)", color: "#9070d8" }}>−</button>
-                        <span className="font-mono font-bold text-base text-ark-text w-5 text-center">{customDoomThreshold}</span>
-                        <button onClick={() => setCustomDoomThreshold(v => v + 1)} className="w-6 h-6 rounded font-bold" style={{ background: "rgba(112,80,184,0.15)", color: "#9070d8" }}>+</button>
-                      </div>
-                    </div>
-                    <div className="rounded-lg p-2 text-center" style={{ background: "rgba(58,173,152,0.08)", border: "1px solid rgba(58,173,152,0.25)" }}>
-                      <p className="text-[9px] font-mono uppercase tracking-wide text-ark-text-muted mb-1.5">Clues Required</p>
-                      <div className="flex items-center justify-center gap-2">
-                        <button onClick={() => setCustomCluesRequired(v => Math.max(0, v - 1))} className="w-6 h-6 rounded font-bold" style={{ background: "rgba(58,173,152,0.15)", color: "#3aad98" }}>−</button>
-                        <span className="font-mono font-bold text-base text-ark-text w-5 text-center">{customCluesRequired}</span>
-                        <button onClick={() => setCustomCluesRequired(v => v + 1)} className="w-6 h-6 rounded font-bold" style={{ background: "rgba(58,173,152,0.15)", color: "#3aad98" }}>+</button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={handleSelectCustomScenario}
-                    disabled={!customScenarioName.trim()}
-                    className="w-full py-3 rounded-xl text-sm font-bold font-decorative transition-all disabled:opacity-40"
-                    style={{ background: "linear-gradient(135deg, #5a3a8a, #3a2060)", color: "#fff", border: "1px solid rgba(112,80,184,0.4)" }}>
-                    Begin This Scenario
-                  </button>
-                </div>
-
-              ) : (
-                /* Step 2a — Named campaign scenario list */
-                <div className="space-y-2">
-                  <button onClick={() => setSelectedCampaignId(null)} className="text-xs text-ark-text-muted hover:text-ark-text mb-2">
-                    ← Back to campaigns
-                  </button>
-                  {(() => {
-                    const campaign = CAMPAIGNS.find(c => c.id === selectedCampaignId);
-                    return campaign?.scenarios.map((scenario, idx) => (
-                      <button key={scenario.id}
-                        onClick={() => handleSelectScenario(selectedCampaignId, scenario.id)}
-                        className="w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left"
-                        style={{ background: "rgba(58,173,152,0.08)", border: "1px solid rgba(58,173,152,0.25)" }}>
-                        <div className="flex items-center justify-center rounded-full flex-shrink-0 text-[10px] font-mono font-bold"
-                          style={{ width: 22, height: 22, background: "rgba(58,173,152,0.18)", color: "#3aad98", border: "1px solid rgba(58,173,152,0.35)" }}>
-                          {idx + 1}
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-decorative font-bold text-sm text-ark-text">{scenario.name}</p>
-                          <p className="text-[10px] text-ark-text-muted">{scenario.agendaName} · Doom {scenario.doomThreshold} · {scenario.cluesRequired} clues</p>
-                        </div>
-                      </button>
-                    ));
-                  })()}
-                </div>
-              )}
-
-              <button onClick={() => { setShowCampaignPicker(false); setSelectedCampaignId(null); }} className="btn-ghost w-full py-2 text-sm rounded-lg">Close</button>
-            </div>
-          </div>
-        )}
-
-        {/* ── Phase banner (non-investigation or not-your-turn) ── */}
-        {turnState.phase !== "investigation" && (
-          <div className="rounded-xl p-4 mb-4 relative overflow-hidden"
-            style={{ background: `${currentPhase.color}10`, border: `1px solid ${currentPhase.color}40` }}>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ background: currentPhase.color }} />
-                  <p className="font-decorative font-bold text-base" style={{ color: currentPhase.color }}>{currentPhase.label} Phase</p>
-                  <span className="text-xs text-ark-text-muted">— Round {turnState.round}</span>
-                </div>
-                <p className="text-sm text-ark-text-dim leading-relaxed">{currentPhase.desc}</p>
+                <button onClick={() => { setShowCampaignPicker(false); setSelectedCampaignId(null); }}
+                  style={{ width: 28, height: 28, background: "#f5f0e8", border: "2px solid #1a1208", color: "#1a1208", fontFamily: "'Cinzel', serif", fontSize: 12, cursor: "pointer" }}>✕</button>
               </div>
-              {isLead && (
-                <div className="flex flex-col gap-2 flex-shrink-0">
-                  {/* Phase-specific quick log buttons for lead */}
-                  {turnState.phase === "mythos" && (
-                    <button onClick={async () => { await handleLeadPhaseAction("Doom Placed", `Placed 1 doom — now ${turnState.doom + 1}/${turnState.doomThreshold}`); pushTurnState({ ...turnState, doom: turnState.doom + 1 }); }}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                      style={{ background: "rgba(112,80,184,0.15)", border: "1px solid rgba(112,80,184,0.4)", color: "#9070d8" }}>
-                      + Place Doom
-                    </button>
-                  )}
-                  {turnState.phase === "mythos" && (
-                    <button onClick={() => handleLeadPhaseAction("Encounter Cards Drawn", "All investigators drew encounter cards")}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                      style={{ background: "rgba(112,80,184,0.1)", border: "1px solid rgba(112,80,184,0.3)", color: "#9070d8" }}>
-                      Log Encounter Draw
-                    </button>
-                  )}
-                  {turnState.phase === "enemy" && (
-                    <button onClick={() => handleLeadPhaseAction("Hunter Enemies Moved", "Hunter enemies moved toward nearest investigator")}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                      style={{ background: "rgba(192,48,40,0.12)", border: "1px solid rgba(192,48,40,0.4)", color: "#c03028" }}>
-                      Log Hunter Move
-                    </button>
-                  )}
-                  {turnState.phase === "enemy" && (
-                    <button onClick={() => handleLeadPhaseAction("Enemies Attacked", "All engaged ready enemies attacked")}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                      style={{ background: "rgba(192,48,40,0.1)", border: "1px solid rgba(192,48,40,0.3)", color: "#c03028" }}>
-                      Log Enemy Attacks
-                    </button>
-                  )}
-                  {turnState.phase === "upkeep" && (
-                    <>
-                      {(enemies.some(e => e.exhausted)) && (
-                        <button onClick={handleReadyAllEnemies}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                          style={{ background: "rgba(58,173,152,0.15)", border: "1px solid rgba(58,173,152,0.5)", color: "#3aad98" }}>
-                          ✓ Ready All Enemies
-                        </button>
-                      )}
-                      <button onClick={() => handleLeadPhaseAction("Upkeep Resolved", "All cards readied, each investigator drew 1 card and gained 1 resource")}
-                        className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                        style={{ background: "rgba(58,173,152,0.12)", border: "1px solid rgba(58,173,152,0.4)", color: "#3aad98" }}>
-                        Log Upkeep Done
+              <div style={{ overflowY: "auto", flex: 1, padding: "12px 16px" }}>
+                {selectedCampaignId === null ? (
+                  <div>
+                    {CAMPAIGNS.map(campaign => (
+                      <button key={campaign.id} onClick={() => setSelectedCampaignId(campaign.id)}
+                        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 14px", background: "#fff", border: "none", borderBottom: "2px solid #e8e0cc", textAlign: "left", cursor: "pointer" }}>
+                        <div>
+                          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#1a1208" }}>{campaign.name}</div>
+                          <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>{campaign.subtitle}</div>
+                        </div>
+                        <span style={{ fontFamily: "'Cinzel', serif", fontSize: 14, color: "#c9a84c" }}>→</span>
                       </button>
-                    </>
-                  )}
-                  <button onClick={handleAdvancePhase}
-                    className="px-4 py-2 rounded-xl text-sm font-bold font-decorative transition-all"
-                    style={{ background: `linear-gradient(135deg, ${currentPhase.color}cc, ${currentPhase.color}88)`, color: "#2a1808", boxShadow: `0 0 16px ${currentPhase.color}40` }}>
-                    Advance → {PHASES[(PHASES.findIndex(p=>p.id===turnState.phase)+1)%4].label}
-                  </button>
+                    ))}
+                  </div>
+                ) : selectedCampaignId === "custom" ? (
+                  <div>
+                    <button onClick={() => setSelectedCampaignId(null)}
+                      style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 12px", background: "#f5f0e8", border: "2px solid #1a1208", color: "#1a1208", cursor: "pointer", marginBottom: 12 }}>
+                      ← BACK
+                    </button>
+                    <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic", marginBottom: 16 }}>Fill in the details for your custom scenario. Only the Scenario Name is required.</div>
+                    {[
+                      { label: "Campaign Name (optional)", value: customCampaignName, setter: setCustomCampaignName, placeholder: "e.g. The Dunwich Legacy" },
+                      { label: "Scenario Name *", value: customScenarioName, setter: setCustomScenarioName, placeholder: "e.g. Extracurricular Activity" },
+                      { label: "Agenda Name (optional)", value: customAgendaName, setter: setCustomAgendaName, placeholder: "e.g. Something Stirs…" },
+                      { label: "Act Name (optional)", value: customActName, setter: setCustomActName, placeholder: "e.g. Investigating the Campus" },
+                    ].map(f => (
+                      <div key={f.label} style={{ marginBottom: 10 }}>
+                        <label style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "2px", color: "#8a7040", display: "block", marginBottom: 6 }}>{f.label.toUpperCase()}</label>
+                        <input value={f.value} onChange={e => f.setter(e.target.value)} placeholder={f.placeholder} className="d-input" style={{ width: "100%", boxSizing: "border-box" }} />
+                      </div>
+                    ))}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+                      <div style={{ background: "#fff", border: "2px solid #1a1208", padding: "10px 12px", textAlign: "center" }}>
+                        <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "2px", color: "#8a7040", marginBottom: 8 }}>DOOM THRESHOLD</div>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                          <button onClick={() => setCustomDoomThreshold(v => Math.max(1, v - 1))} className="d-adj-btn">−</button>
+                          <span style={{ fontFamily: "'Cinzel', serif", fontSize: 20, fontWeight: 700, color: "#1a1208" }}>{customDoomThreshold}</span>
+                          <button onClick={() => setCustomDoomThreshold(v => v + 1)} className="d-adj-btn">+</button>
+                        </div>
+                      </div>
+                      <div style={{ background: "#fff", border: "2px solid #1a1208", padding: "10px 12px", textAlign: "center" }}>
+                        <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "2px", color: "#8a7040", marginBottom: 8 }}>CLUES REQUIRED</div>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                          <button onClick={() => setCustomCluesRequired(v => Math.max(0, v - 1))} className="d-adj-btn">−</button>
+                          <span style={{ fontFamily: "'Cinzel', serif", fontSize: 20, fontWeight: 700, color: "#1a1208" }}>{customCluesRequired}</span>
+                          <button onClick={() => setCustomCluesRequired(v => v + 1)} className="d-adj-btn">+</button>
+                        </div>
+                      </div>
+                    </div>
+                    <button onClick={handleSelectCustomScenario} disabled={!customScenarioName.trim()} className="d-btn-ink" style={{ width: "100%", opacity: !customScenarioName.trim() ? 0.4 : 1 }}>
+                      BEGIN THIS SCENARIO
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <button onClick={() => setSelectedCampaignId(null)}
+                      style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 12px", background: "#f5f0e8", border: "2px solid #1a1208", color: "#1a1208", cursor: "pointer", marginBottom: 12 }}>
+                      ← BACK
+                    </button>
+                    {(() => {
+                      const campaign = CAMPAIGNS.find(c => c.id === selectedCampaignId);
+                      return campaign?.scenarios.map((scenario, idx) => (
+                        <button key={scenario.id} onClick={() => handleSelectScenario(selectedCampaignId, scenario.id)}
+                          style={{ width: "100%", display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 14px", background: "#fff", border: "none", borderBottom: "2px solid #e8e0cc", textAlign: "left", cursor: "pointer" }}>
+                          <div style={{ width: 24, height: 24, background: "#1a1208", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Cinzel', serif", fontSize: 12, fontWeight: 700, color: "#c9a84c", flexShrink: 0 }}>{idx + 1}</div>
+                          <div>
+                            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#1a1208" }}>{scenario.name}</div>
+                            <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10" }}>{scenario.agendaName} · Doom {scenario.doomThreshold} · {scenario.cluesRequired} clues</div>
+                          </div>
+                        </button>
+                      ));
+                    })()}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Phase banner (non-investigation) ── */}
+        {turnState.phase !== "investigation" && (
+          <div style={{ background: "#fff", border: "none", borderBottom: "2px solid #e8e0cc", marginBottom: 2 }}>
+            <div style={{ height: 4, background: currentPhase.color }} />
+            <div style={{ padding: "14px 16px" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                <div>
+                  <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "3px", color: "#3a2808", marginBottom: 6 }}>
+                    {currentPhase.label.toUpperCase()} PHASE · ROUND {turnState.round}
+                  </div>
+                  <div style={{ fontFamily: "'Cinzel', serif", fontSize: 16, fontWeight: 700, color: "#1a1208", marginBottom: 4 }}>
+                    {currentPhase.label} Phase
+                  </div>
+                  <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", lineHeight: 1.5 }}>
+                    {currentPhase.desc}
+                  </div>
                 </div>
-              )}
+                {isLead && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+                    {turnState.phase === "mythos" && (
+                      <button onClick={async () => { await handleLeadPhaseAction("Doom Placed", `Placed 1 doom — now ${turnState.doom + 1}/${turnState.doomThreshold}`); pushTurnState({ ...turnState, doom: turnState.doom + 1 }); }}
+                        style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "8px 12px", background: "#1a1208", border: "2px solid #9070d8", color: "#9070d8", cursor: "pointer" }}>
+                        + PLACE DOOM
+                      </button>
+                    )}
+                    {turnState.phase === "mythos" && (
+                      <button onClick={() => handleLeadPhaseAction("Encounter Cards Drawn", "All investigators drew encounter cards")}
+                        style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "8px 12px", background: "transparent", border: "2px solid #9070d8", color: "#1a1208", cursor: "pointer" }}>
+                        LOG ENCOUNTER
+                      </button>
+                    )}
+                    {turnState.phase === "enemy" && (
+                      <button onClick={() => handleLeadPhaseAction("Hunter Enemies Moved", "Hunter enemies moved toward nearest investigator")}
+                        style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "8px 12px", background: "transparent", border: "2px solid #b82020", color: "#1a1208", cursor: "pointer" }}>
+                        LOG HUNTER MOVE
+                      </button>
+                    )}
+                    {turnState.phase === "enemy" && (
+                      <button onClick={() => handleLeadPhaseAction("Enemies Attacked", "All engaged ready enemies attacked")}
+                        style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "8px 12px", background: "transparent", border: "2px solid #b82020", color: "#1a1208", cursor: "pointer" }}>
+                        LOG ATTACKS
+                      </button>
+                    )}
+                    {turnState.phase === "upkeep" && enemies.some(e => e.exhausted) && (
+                      <button onClick={handleReadyAllEnemies}
+                        style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "8px 12px", background: "transparent", border: "2px solid #2e8a50", color: "#1a1208", cursor: "pointer" }}>
+                        READY ENEMIES
+                      </button>
+                    )}
+                    {turnState.phase === "upkeep" && (
+                      <button onClick={() => handleLeadPhaseAction("Upkeep Resolved", "All cards readied, each investigator drew 1 card and gained 1 resource")}
+                        style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "8px 12px", background: "transparent", border: "2px solid #2e8a50", color: "#1a1208", cursor: "pointer" }}>
+                        LOG UPKEEP
+                      </button>
+                    )}
+                    <button onClick={handleAdvancePhase}
+                      className="d-btn-gold"
+                      style={{ fontSize: 11, letterSpacing: "1px", padding: "8px 12px" }}>
+                      ADVANCE → {PHASES[(PHASES.findIndex(p=>p.id===turnState.phase)+1)%4].label.toUpperCase()}
+                    </button>
+                  </div>
+                )}
+              </div>
               {!isLead && (
-                <p className="text-xs text-ark-text-muted font-mono">{leadPlayer?.player_name ?? "Lead"} (Lead) is managing this phase</p>
+                <div style={{ marginTop: 8, fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>
+                  {leadPlayer?.player_name ?? "Lead"} is managing this phase.
+                </div>
               )}
             </div>
           </div>
         )}
 
-        {/* ── Active turn indicator + live recent action feed ── */}
+        {/* ── Active turn indicator ── */}
         {turnState.phase === "investigation" && currentPlayer && !isMyTurn && (
-          <div className="rounded-xl mb-4 overflow-hidden" style={{ border: "1px solid #c8a860" }}>
-            {/* Who's taking their turn */}
+          <div style={{ background: "#fff", borderBottom: "2px solid #e8e0cc", marginBottom: 2 }}>
             {(() => {
               const inv = investigators.find(i => i.name === currentPlayer.investigator);
               const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
               return (
-                <div className="p-3 flex items-center gap-3" style={{ background: "rgba(236,220,176,0.85)" }}>
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0" style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }}>{currentPlayer.investigator[0]}</div>
-                  <div className="flex-1 min-w-0">
-                    <span className="font-decorative font-bold text-sm text-ark-text">{currentPlayer.player_name}</span>
-                    <span className="text-ark-text-muted text-xs ml-2">is taking their turn</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderLeft: `5px solid ${cls.hex}` }}>
+                  <div style={{ width: 40, height: 40, background: "#1a1208", border: `2px solid ${cls.hex}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 700, color: cls.hex }}>
+                    {currentPlayer.investigator[0]}
                   </div>
-                  <div className="flex items-center gap-1 flex-shrink-0">
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 16, fontWeight: 700, color: "#1a1208" }}>{currentPlayer.player_name}</div>
+                    <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>Taking their turn…</div>
+                  </div>
+                  <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
                     {[0,1,2].map(i => (
-                      <div key={i} className="w-5 h-5 rounded-full flex items-center justify-center"
-                        style={i < (3 - turnState.actionsUsed)
-                          ? { background: cls.bg, border: `1px solid ${cls.border}` }
-                          : { background: "rgba(236,220,176,0.8)", border: "1px solid rgba(138,104,32,0.2)", opacity: 0.4 }}>
-                        <ActionSymbol size={10} />
-                      </div>
+                      <div key={i} style={{ width: 20, height: 20, border: `2px solid ${i < (3 - turnState.actionsUsed) ? cls.hex : "#e8e0cc"}`, background: i < (3 - turnState.actionsUsed) ? "#1a1208" : "transparent" }} />
                     ))}
-                    <span className="text-[10px] text-ark-text-muted ml-1">{3 - turnState.actionsUsed} left</span>
                   </div>
                 </div>
               );
             })()}
-            {/* Live recent actions (last 3 actions from current player this round) */}
+            {/* Recent actions from current player */}
             {(() => {
               const recentActions = actionLog
                 .filter(e => e.playerName === currentPlayer.player_name && e.round === turnState.round && e.action !== "End Turn" && e.action !== "Enemy Spawned" && e.action !== "Enemy Attack" && e.action !== "Enemy Defeated")
                 .slice(0, 3);
               if (recentActions.length === 0) return null;
-              const inv = investigators.find(i => i.name === currentPlayer.investigator);
-              const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
               return (
-                <div className="px-3 pb-2 space-y-1" style={{ background: "rgba(236,220,176,0.75)", borderTop: "1px solid rgba(138,104,32,0.2)" }}>
+                <div style={{ padding: "8px 16px 12px", borderTop: "1px solid #e8e0cc" }}>
                   {recentActions.map(e => {
                     const adef = ACTIONS.find(a => a.label === e.action);
                     return (
-                      <div key={e.id} className="flex items-center gap-2 py-1">
-                        <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
-                          style={{ background: adef ? adef.bg : "rgba(61,48,32,0.3)" }}>
+                      <div key={e.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 0" }}>
+                        <div style={{ width: 16, height: 16, background: adef ? adef.bg : "#f5f0e8", border: "1px solid #1a1208", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                           {adef?.skill ? <SkillIcon skill={adef.skill} size={9} /> : <ActionSymbol size={9} />}
                         </div>
-                        <span className="text-[10px] font-semibold flex-shrink-0" style={{ color: adef?.color ?? cls.hex }}>{e.action}</span>
-                        {e.detail && <span className="text-[10px] text-ark-text-muted truncate">{e.detail}</span>}
+                        <span style={{ fontFamily: "'Cinzel', serif", fontSize: 12, fontWeight: 700, color: "#1a1208", flexShrink: 0 }}>{e.action}</span>
+                        {e.detail && <span style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{e.detail}</span>}
                       </div>
                     );
                   })}
@@ -2528,33 +2305,25 @@ export default function SessionPage() {
 
         {/* ── Quick-access bar: enemies count + log shortcut ── */}
         {turnState.gameStarted && (
-          <div className="flex gap-2 mb-4">
+          <div style={{ display: "flex", gap: 2, margin: "0 0 2px", background: "#1a1208" }}>
             <button onClick={() => setActiveTab("enemies")}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all flex-1 justify-center"
-              style={enemies.length > 0
-                ? { background: "rgba(192,48,40,0.1)", border: "1px solid rgba(192,48,40,0.35)", color: "#c03028" }
-                : { background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860", color: "#5a4838" }}>
-              <CombatIcon size={12} color={enemies.length > 0 ? "#c03028" : "#5a4838"} />
-              {enemies.length > 0 ? `${enemies.length} Enem${enemies.length === 1 ? "y" : "ies"} in Play` : "No Enemies"}
+              style={{ flex: 1, fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "10px 12px", background: enemies.length > 0 ? "rgba(184,32,32,0.3)" : "#1a1208", border: "none", borderRight: "1px solid rgba(201,168,76,0.3)", color: enemies.length > 0 ? "#ff6050" : "#c9a84c", cursor: "pointer" }}>
+              {enemies.length > 0 ? `${enemies.length} ENEM${enemies.length === 1 ? "Y" : "IES"} IN PLAY` : "NO ENEMIES"}
             </button>
             <button onClick={() => setActiveTab("log")}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all flex-1 justify-center"
-              style={{ background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860", color: "#6b5840" }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-              {actionLog.length} Action{actionLog.length !== 1 ? "s" : ""} Logged
+              style={{ flex: 1, fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "10px 12px", background: "#1a1208", border: "none", color: "#c9a84c", cursor: "pointer" }}>
+              {actionLog.length} ACTION{actionLog.length !== 1 ? "S" : ""} LOGGED
             </button>
           </div>
         )}
 
         {/* ── Tabs ── */}
-        <div className="flex gap-1 mb-5 p-1 rounded-xl w-fit overflow-x-auto" style={{ background: "rgba(236,220,176,0.9)", border: "1px solid #c8a860" }}>
+        <div className="d-tab-bar" style={{ marginBottom: 2 }}>
           {(["board","enemies","log","reference"] as const).map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold font-decorative tracking-wide transition-all duration-200 whitespace-nowrap"
-              style={activeTab === tab
-                ? { background: "linear-gradient(135deg, #c9973a, #a07828)", color: "#2a1808", boxShadow: "0 2px 8px rgba(201,151,58,0.3)" }
-                : { color: "#6b5840" }}>
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              className={activeTab === tab ? "d-tab-active" : "d-tab-inactive"}
+              style={{ flex: 1, fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "2px", padding: "12px 8px", border: "none", cursor: "pointer", borderBottom: activeTab === tab ? "none" : "2px solid #1a1208" }}>
+              {tab.toUpperCase()}
             </button>
           ))}
         </div>
@@ -2562,48 +2331,36 @@ export default function SessionPage() {
         {/* ══════════════════════════════════════════ */}
         {/* ── BOARD TAB ──────────────────────────── */}
         {activeTab === "board" && (
-          <div className="space-y-5">
+          <div>
 
             {/* Lead panel */}
             {leadPlayer && (
-              <div className="rounded-xl p-4 relative overflow-hidden"
-                style={{ background: "rgba(201,151,58,0.06)", border: "1px solid rgba(201,151,58,0.3)" }}>
-                <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(201,151,58,0.5), transparent)" }} />
-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: "linear-gradient(135deg, #c9973a, #8b6914)", boxShadow: "0 0 16px rgba(201,151,58,0.35)" }}>
-                      <svg viewBox="0 0 20 20" className="w-5 h-5 fill-current" style={{ color: "#2a1808" }}><path d="M10 2L12.4 7.5H18L13.4 11L15.3 17L10 13.5L4.7 17L6.6 11L2 7.5H7.6L10 2Z"/></svg>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-decorative uppercase tracking-widest" style={{ color: "#c9973a" }}>Lead Investigator</p>
-                      <p className="font-decorative font-bold text-base text-ark-text">{leadPlayer.player_name}</p>
-                      <p className="text-xs text-ark-text-muted">{leadPlayer.investigator}</p>
-                    </div>
+              <div style={{ background: "#fff", borderBottom: "2px solid #e8e0cc", marginBottom: 2, padding: "12px 16px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 36, height: 36, background: "#c9a84c", border: "2px solid #1a1208", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <svg viewBox="0 0 20 20" width="18" height="18" fill="#1a1208"><path d="M10 2L12.4 7.5H18L13.4 11L15.3 17L10 13.5L4.7 17L6.6 11L2 7.5H7.6L10 2Z"/></svg>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "2px", color: "#8a7040", marginBottom: 2 }}>LEAD INVESTIGATOR</div>
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 16, fontWeight: 700, color: "#1a1208" }}>{leadPlayer.player_name}</div>
+                    <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>{leadPlayer.investigator}</div>
                   </div>
                   {isCreator && (
-                    <div className="flex flex-col gap-2 sm:ml-auto">
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
                       {players.length > 1 && (
-                        <>
-                          <p className="text-[10px] font-mono uppercase tracking-wider text-ark-text-muted">Change Lead</p>
-                          <div className="flex flex-wrap gap-1">
-                            {players.map((p, idx) => (
-                              <button key={p.id}
-                                onClick={() => pushTurnState({ ...turnState, leadInvestigatorIdx: idx })}
-                                className="px-2 py-1 rounded text-[10px] font-decorative font-semibold transition-all"
-                                style={idx === turnState.leadInvestigatorIdx
-                                  ? { background: "rgba(201,151,58,0.25)", border: "1px solid rgba(201,151,58,0.5)", color: "#c9973a" }
-                                  : { background: "transparent", border: "1px solid #c8a860", color: "#5a4838" }}>
-                                {p.player_name}
-                              </button>
-                            ))}
-                          </div>
-                        </>
+                        <div style={{ display: "flex", gap: 4, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                          {players.map((p, idx) => (
+                            <button key={p.id}
+                              onClick={() => pushTurnState({ ...turnState, leadInvestigatorIdx: idx })}
+                              style={{ fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 700, letterSpacing: "1px", padding: "4px 10px", background: idx === turnState.leadInvestigatorIdx ? "#c9a84c" : "#f5f0e8", border: "2px solid #1a1208", color: "#1a1208", cursor: "pointer" }}>
+                              {p.player_name}
+                            </button>
+                          ))}
+                        </div>
                       )}
                       <button onClick={() => setReorderMode(!reorderMode)}
-                        className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all"
-                        style={{ background: reorderMode ? "rgba(58,173,152,0.15)" : "rgba(201,151,58,0.08)", border: reorderMode ? "1px solid rgba(58,173,152,0.4)" : "1px solid rgba(201,151,58,0.25)", color: reorderMode ? "#3aad98" : "#c9973a" }}>
-                        {reorderMode ? "✓ Done" : "⇅ Reorder Turn"}
+                        style={{ fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 700, letterSpacing: "1px", padding: "6px 10px", background: reorderMode ? "#2e8a50" : "#f5f0e8", border: "2px solid #1a1208", color: reorderMode ? "#f2e8cc" : "#1a1208", cursor: "pointer" }}>
+                        {reorderMode ? "✓ DONE" : "⇅ REORDER TURN"}
                       </button>
                     </div>
                   )}
@@ -2611,88 +2368,66 @@ export default function SessionPage() {
               </div>
             )}
 
-            {/* ── "Acting as" switcher — lead only, Investigation phase ── */}
+            {/* Acting-as switcher — lead only */}
             {isLead && turnState.phase === "investigation" && orderedPlayers.length > 1 && (
-              <div className="rounded-xl px-4 py-3 flex items-center gap-3 flex-wrap"
-                style={{ background: "rgba(112,80,184,0.07)", border: "1px solid rgba(112,80,184,0.25)" }}>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[9px] font-mono uppercase tracking-widest mb-1" style={{ color: "#9070d8" }}>
-                    ★ Lead — Logging actions for:
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {/* "Current player" option (default) */}
-                    <button
-                      onClick={() => setActingAsPlayerId(null)}
-                      className="px-2.5 py-1 rounded-lg text-[11px] font-decorative font-semibold transition-all"
-                      style={actingAsPlayerId === null
-                        ? { background: "rgba(112,80,184,0.22)", border: "1px solid rgba(112,80,184,0.55)", color: "#9070d8" }
-                        : { background: "transparent", border: "1px solid #c8a860", color: "#5a4838" }}>
-                      Current Player
-                    </button>
-                    {/* One button per player */}
-                    {orderedPlayers.map(p => {
-                      const pInv = investigators.find(i => i.name === p.investigator);
-                      const pCls = CLASS_COLORS[pInv?.class ?? "Guardian"];
-                      const isSelected = actingAsPlayerId === p.id;
-                      return (
-                        <button key={p.id}
-                          onClick={() => setActingAsPlayerId(isSelected ? null : p.id)}
-                          className="px-2.5 py-1 rounded-lg text-[11px] font-decorative font-semibold transition-all"
-                          style={isSelected
-                            ? { background: `${pCls.bg}`, border: `1px solid ${pCls.border}`, color: pCls.hex }
-                            : { background: "transparent", border: "1px solid #c8a860", color: "#5a4838" }}>
-                          {p.player_name}
-                        </button>
-                      );
-                    })}
-                  </div>
+              <div style={{ background: "#fff", borderBottom: "2px solid #e8e0cc", marginBottom: 2, padding: "12px 16px" }}>
+                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "2px", color: "#8a7040", marginBottom: 8 }}>★ LEAD — LOGGING ACTIONS FOR:</div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  <button onClick={() => setActingAsPlayerId(null)}
+                    style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 12px", background: actingAsPlayerId === null ? "#1a1208" : "#f5f0e8", border: "2px solid #1a1208", color: actingAsPlayerId === null ? "#f2e8cc" : "#1a1208", cursor: "pointer" }}>
+                    CURRENT PLAYER
+                  </button>
+                  {orderedPlayers.map(p => {
+                    const pInv = investigators.find(i => i.name === p.investigator);
+                    const pCls = CLASS_COLORS[pInv?.class ?? "Guardian"];
+                    const isSelected = actingAsPlayerId === p.id;
+                    return (
+                      <button key={p.id} onClick={() => setActingAsPlayerId(isSelected ? null : p.id)}
+                        style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 12px", background: isSelected ? "#1a1208" : "#f5f0e8", border: `2px solid ${pCls.hex}`, color: isSelected ? pCls.hex : "#1a1208", cursor: "pointer" }}>
+                        {p.player_name}
+                      </button>
+                    );
+                  })}
                 </div>
-                {actingAsPlayerId && (
-                  <div className="text-[10px] font-mono px-2 py-1 rounded flex-shrink-0"
-                    style={{ background: "rgba(112,80,184,0.12)", color: "#9070d8", border: "1px solid rgba(112,80,184,0.25)" }}>
-                    Actions → {players.find(p => p.id === actingAsPlayerId)?.player_name}
-                  </div>
-                )}
               </div>
             )}
 
-            {/* Add investigator */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[10px] font-decorative uppercase tracking-widest text-ark-text-muted">Investigators ({players.length})</h3>
-                {isCreator && (
-                  <button onClick={() => setShowAddPlayer(!showAddPlayer)}
-                    className="text-xs font-semibold font-decorative px-3 py-1.5 rounded-lg transition-all"
-                    style={{ background: "rgba(201,151,58,0.08)", border: "1px solid rgba(201,151,58,0.25)", color: "#c9973a" }}>
-                    + Add Investigator
-                  </button>
-                )}
-              </div>
-
-              {isCreator && showAddPlayer && (
-                <div className="rounded-xl p-4 mb-4 space-y-3" style={{ background: "rgba(236,220,176,0.9)", border: "1px solid rgba(201,151,58,0.2)" }}>
-                  <h4 className="font-decorative font-semibold text-sm text-ark-text">Add Investigator</h4>
-                  <input value={addingName} onChange={e => setAddingName(e.target.value)} placeholder="Player name"
-                    className="ark-input w-full px-3 py-2 rounded-lg text-sm" />
-                  <select value={addingInvestigator} onChange={e => setAddingInvestigator(e.target.value)} className="ark-input w-full px-3 py-2 rounded-lg text-sm">
-                    {investigators.map(inv => <option key={inv.name} value={inv.name}>{inv.name} ({inv.class})</option>)}
-                  </select>
-                  <div className="flex gap-2">
-                    <button onClick={() => setShowAddPlayer(false)} className="btn-ghost flex-1 py-2 text-sm rounded-lg">Cancel</button>
-                    <button onClick={handleAddPlayer} disabled={addingPlayer || !addingName.trim()} className="btn-gold flex-1 py-2 text-sm rounded-lg disabled:opacity-40">
-                      {addingPlayer ? "Adding…" : "Add to Session"}
-                    </button>
-                  </div>
-                </div>
+            {/* Section head + add investigator */}
+            <div className="d-section-head" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span>INVESTIGATORS ({players.length})</span>
+              {isCreator && (
+                <button onClick={() => setShowAddPlayer(!showAddPlayer)}
+                  style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", padding: "4px 10px", background: "#1a1208", border: "none", color: "#c9a84c", cursor: "pointer" }}>
+                  + ADD
+                </button>
               )}
+            </div>
 
-              {players.length === 0 ? (
-                <div className="rounded-xl p-10 text-center" style={{ background: "rgba(236,220,176,0.7)", border: "1px dashed #c8a860" }}>
-                  <p className="text-ark-text-muted text-sm">No investigators yet — add one above.</p>
+            {isCreator && showAddPlayer && (
+              <div style={{ background: "#fff", borderBottom: "2px solid #e8e0cc", padding: "16px 16px", marginBottom: 2 }}>
+                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#1a1208", marginBottom: 12 }}>Add Investigator</div>
+                <input value={addingName} onChange={e => setAddingName(e.target.value)} placeholder="Player name"
+                  className="d-input" style={{ width: "100%", marginBottom: 8, boxSizing: "border-box" }} />
+                <select value={addingInvestigator} onChange={e => setAddingInvestigator(e.target.value)}
+                  className="d-input" style={{ width: "100%", marginBottom: 12, boxSizing: "border-box" }}>
+                  {investigators.map(inv => <option key={inv.name} value={inv.name}>{inv.name} ({inv.class})</option>)}
+                </select>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={() => setShowAddPlayer(false)} className="d-btn-outline" style={{ flex: 1 }}>Cancel</button>
+                  <button onClick={handleAddPlayer} disabled={addingPlayer || !addingName.trim()} className="d-btn-gold" style={{ flex: 1, opacity: (addingPlayer || !addingName.trim()) ? 0.4 : 1 }}>
+                    {addingPlayer ? "Adding…" : "Add to Session"}
+                  </button>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {orderedPlayers.map((player, idx) => {
+              </div>
+            )}
+
+            {players.length === 0 ? (
+              <div style={{ background: "#fff", borderBottom: "2px solid #e8e0cc", padding: "40px 16px", textAlign: "center", marginBottom: 2 }}>
+                <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>No investigators yet — add one above.</div>
+              </div>
+            ) : (
+              <div>
+                {orderedPlayers.map((player, idx) => {
                     const inv = investigators.find(i => i.name === player.investigator);
                     const isActive = idx === turnState.currentPlayerIdx && turnState.phase === "investigation";
                     const isThisLead = idx === turnState.leadInvestigatorIdx;
@@ -2709,184 +2444,109 @@ export default function SessionPage() {
                     const engagedEnemies = enemies.filter(e => e.engagedPlayerIds?.includes(player.id));
 
                     return (
-                      <div key={player.id} className="rounded-xl p-4 relative transition-all duration-300"
-                        style={{
-                          background: "linear-gradient(145deg, #ecdcb0, #e4d4a0)",
-                          border: isMe ? `2px solid ${cls.border}` : isActive ? `1px solid ${cls.border}` : "1px solid #3d3020",
-                          boxShadow: isMe ? `0 0 24px ${cls.glow}, 0 4px 20px rgba(0,0,0,0.5)` : isActive ? `0 0 14px ${cls.glow}` : "none",
-                        }}>
-
-                        {/* Delete button — creator only */}
-                        {isCreator && (
-                          <button onClick={() => handleRemove(player)}
-                            className="absolute top-3 right-3 w-6 h-6 rounded-full text-xs flex items-center justify-center opacity-0 hover:opacity-100 focus:opacity-100 transition-all"
-                            style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#c03028" }}
-                            aria-label={`Remove ${player.player_name}`}>
-                            ✕
-                          </button>
-                        )}
-
-                        {/* Reorder buttons (if in reorderMode and isCreator) */}
-                        {reorderMode && isCreator && (
-                          <div className="absolute left-3 top-3 flex flex-col gap-1">
-                            <button onClick={() => handleReorderPlayer(player.id, "up")}
-                              disabled={orderedPlayers[0]?.id === player.id}
-                              className="w-5 h-5 rounded text-xs flex items-center justify-center transition-all disabled:opacity-30"
-                              style={{ background: "rgba(58,173,152,0.2)", border: "1px solid rgba(58,173,152,0.4)", color: "#3aad98" }}>
-                              ↑
-                            </button>
-                            <button onClick={() => handleReorderPlayer(player.id, "down")}
-                              disabled={orderedPlayers[orderedPlayers.length - 1]?.id === player.id}
-                              className="w-5 h-5 rounded text-xs flex items-center justify-center transition-all disabled:opacity-30"
-                              style={{ background: "rgba(58,173,152,0.2)", border: "1px solid rgba(58,173,152,0.4)", color: "#3aad98" }}>
-                              ↓
-                            </button>
-                          </div>
-                        )}
-
-                        {/* Header */}
-                        <div className="flex items-center gap-2 mb-3" style={{ paddingRight: "28px", paddingLeft: reorderMode ? "48px" : "0" }}>
-                          <div className="w-10 h-10 rounded-lg flex items-center justify-center font-decorative font-bold text-sm flex-shrink-0"
-                            style={{ background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex, boxShadow: `0 0 10px ${cls.glow}` }}>
+                      <div key={player.id} className="d-player-card" style={{ borderLeft: `5px solid ${cls.hex}`, marginBottom: 2 }}>
+                        {/* Header row */}
+                        <div style={{ padding: "14px 16px 10px", display: "flex", alignItems: "center", gap: 12 }}>
+                          {reorderMode && isCreator && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                              <button onClick={() => handleReorderPlayer(player.id, "up")} disabled={orderedPlayers[0]?.id === player.id}
+                                style={{ width: 22, height: 22, background: "#f5f0e8", border: "2px solid #1a1208", color: "#1a1208", fontFamily: "'Cinzel', serif", fontSize: 11, cursor: "pointer", opacity: orderedPlayers[0]?.id === player.id ? 0.3 : 1 }}>↑</button>
+                              <button onClick={() => handleReorderPlayer(player.id, "down")} disabled={orderedPlayers[orderedPlayers.length-1]?.id === player.id}
+                                style={{ width: 22, height: 22, background: "#f5f0e8", border: "2px solid #1a1208", color: "#1a1208", fontFamily: "'Cinzel', serif", fontSize: 11, cursor: "pointer", opacity: orderedPlayers[orderedPlayers.length-1]?.id === player.id ? 0.3 : 1 }}>↓</button>
+                            </div>
+                          )}
+                          <div style={{ width: 44, height: 44, background: "#1a1208", border: `2px solid ${cls.hex}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "'Cinzel', serif", fontSize: 20, fontWeight: 700, color: cls.hex }}>
                             {player.investigator[0]}
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <p className="font-decorative font-bold text-sm text-ark-text truncate">{player.player_name}</p>
-                              {isMe && <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{ background: cls.bg, color: cls.hex, border: `1px solid ${cls.border}` }}>YOU</span>}
-                              {isActive && <span className="text-[9px] font-mono px-1.5 py-0.5 rounded animate-pulse" style={{ background: `${cls.bg}`, color: cls.hex, border: `1px solid ${cls.border}` }}>ACTIVE</span>}
-                              {isThisLead && <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{ background: "rgba(201,151,58,0.15)", color: "#c9973a", border: "1px solid rgba(201,151,58,0.3)" }}>★ LEAD</span>}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                              <span className="d-player-name-lbl">{player.player_name}</span>
+                              {isMe && <span className="d-badge-you" style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", padding: "2px 6px" }}>YOU</span>}
+                              {isThisLead && <span className="d-badge-lead" style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", padding: "2px 6px" }}>★ LEAD</span>}
+                              {isActive && <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", padding: "2px 6px", background: cls.hex, color: "#1a1208" }}>ACTIVE</span>}
                             </div>
-                            <p className="text-[11px] text-ark-text-muted">{player.investigator}</p>
-                            {inv && <p className="text-[10px]" style={{ color: cls.hex }}>{inv.class}</p>}
+                            <div className="d-player-inv-lbl">{player.investigator}{inv ? ` · ${inv.class}` : ""}</div>
                           </div>
+                          {isCreator && (
+                            <button onClick={() => handleRemove(player)}
+                              style={{ width: 28, height: 28, background: "#f5f0e8", border: "2px solid #1a1208", color: "#1a1208", fontFamily: "'Cinzel', serif", fontSize: 12, cursor: "pointer", flexShrink: 0 }}
+                              aria-label={`Remove ${player.player_name}`}>✕</button>
+                          )}
                         </div>
 
-                        {/* Status */}
+                        {/* Status banners */}
                         {(isDefeated || isInsane) && (
-                          <div className="mb-2 px-2 py-1 rounded text-[10px] font-decorative font-bold text-center"
-                            style={{ background: isDefeated ? "rgba(192,57,43,0.15)" : "rgba(112,80,184,0.15)", color: isDefeated ? "#c03028" : "#9070d8", border: `1px solid ${isDefeated ? "rgba(192,57,43,0.3)" : "rgba(112,80,184,0.3)"}` }}>
-                            {isDefeated ? "DEFEATED — Take 1 Physical Trauma" : "INSANE — Take 1 Mental Trauma"}
+                          <div style={{ margin: "0 16px 10px", background: isDefeated ? "#b82020" : "#6a40b8", padding: "8px 12px", fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", color: "#f2e8cc", textAlign: "center" }}>
+                            {isDefeated ? "DEFEATED — TAKE 1 PHYSICAL TRAUMA" : "INSANE — TAKE 1 MENTAL TRAUMA"}
                           </div>
                         )}
 
-                        {/* Engaged enemies */}
+                        {/* Engaged enemies warning */}
                         {engagedEnemies.length > 0 && (
-                          <div className="mb-2 px-2 py-1.5 rounded-lg text-[10px]" style={{ background: "rgba(192,48,40,0.08)", border: "1px solid rgba(192,48,40,0.3)" }}>
-                            <div className="flex items-center gap-1.5 mb-1">
-                              <CombatIcon size={11} color="#c03028" />
-                              <span className="font-decorative font-bold" style={{ color: "#c03028" }}>{engagedEnemies.length} enemy engaged — AoO applies!</span>
+                          <div style={{ margin: "0 16px 10px", background: "#fff", border: "2px solid #b82020", borderLeft: "5px solid #b82020", padding: "8px 12px" }}>
+                            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, color: "#b82020", marginBottom: 4 }}>
+                              {engagedEnemies.length} ENEM{engagedEnemies.length === 1 ? "Y" : "IES"} ENGAGED — AoO APPLIES!
                             </div>
                             {engagedEnemies.map(e => (
-                              <div key={e.id} className="text-[10px] pl-4" style={{ color: "#c08080" }}>
-                                {e.name} • Fght {e.fightVal} / Evd {e.evadeVal} / HP {e.currentDamage}/{e.health}
+                              <div key={e.id} style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10" }}>
+                                {e.name} · Fght {e.fightVal} / Evd {e.evadeVal} / HP {e.currentDamage}/{e.health}
                               </div>
                             ))}
                           </div>
                         )}
 
-                        {/* Health bar */}
-                        <div className="mb-2">
-                          <div className="flex items-center justify-between mb-0.5">
-                            <span className="text-[9px] font-mono text-ark-text-muted">❤ Health</span>
-                            <span className="text-[9px] font-mono" style={{ color: healthPct > 66 ? "#3aad98" : healthPct > 33 ? "#d4922a" : "#c05050" }}>
-                              {healthRemaining}/{maxHealth}
-                            </span>
-                          </div>
-                          <div className="h-1.5 rounded-full overflow-hidden mb-1" style={{ background: "rgba(236,220,176,0.65)" }}>
-                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${healthPct}%`, background: healthPct > 66 ? "linear-gradient(90deg, #2a7048, #3aad98)" : healthPct > 33 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
-                          </div>
-                          <div className="flex gap-1">
-                            <button onClick={() => handleStatChange(player, "damage", 1)}
-                              className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
-                              style={{ background: "rgba(192,48,40,0.15)", color: "#c03028", border: "1px solid rgba(192,48,40,0.3)" }}>
-                              − Hurt
-                            </button>
-                            <button onClick={() => handleStatChange(player, "damage", -1)}
-                              className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
-                              style={{ background: "rgba(58,158,107,0.1)", color: "#3aad98", border: "1px solid rgba(58,158,107,0.25)" }}>
-                              + Heal
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Sanity bar */}
-                        <div className="mb-2">
-                          <div className="flex items-center justify-between mb-0.5">
-                            <span className="text-[9px] font-mono text-ark-text-muted">🧠 Sanity</span>
-                            <span className="text-[9px] font-mono" style={{ color: sanityPct > 66 ? "#3aad98" : sanityPct > 33 ? "#d4922a" : "#c05050" }}>
-                              {sanityRemaining}/{maxSanity}
-                            </span>
-                          </div>
-                          <div className="h-1.5 rounded-full overflow-hidden mb-1" style={{ background: "rgba(236,220,176,0.65)" }}>
-                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${sanityPct}%`, background: sanityPct > 66 ? "linear-gradient(90deg, #4a68b8, #4a8fd4)" : sanityPct > 33 ? "linear-gradient(90deg, #5c6eb5, #8ab3f5)" : "linear-gradient(90deg, #6c4280, #9070d8)" }} />
-                          </div>
-                          <div className="flex gap-1">
-                            <button onClick={() => handleStatChange(player, "horror", 1)}
-                              className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
-                              style={{ background: "rgba(144,112,216,0.15)", color: "#9070d8", border: "1px solid rgba(144,112,216,0.3)" }}>
-                              − Horror
-                            </button>
-                            <button onClick={() => handleStatChange(player, "horror", -1)}
-                              className="flex-1 rounded py-1 text-[10px] font-bold font-mono transition-colors"
-                              style={{ background: "rgba(58,158,107,0.1)", color: "#3aad98", border: "1px solid rgba(58,158,107,0.25)" }}>
-                              + Recover
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Resources — prominent token row */}
-                        <div className="flex items-center justify-between gap-2 mb-2 px-3 py-2 rounded-xl"
-                          style={{ background: "rgba(201,151,58,0.10)", border: "1px solid rgba(201,151,58,0.35)" }}>
-                          <div className="flex items-center gap-2">
-                            <ResourceIcon size={18} color="#c9973a" />
-                            <div>
-                              <div className="text-[9px] font-mono uppercase tracking-widest" style={{ color: "#8a6820" }}>Resources</div>
-                              <div className="font-mono font-bold text-xl leading-none" style={{ color: "#5a3a08" }}>{player.resources}</div>
+                        {/* Stat strip */}
+                        <div className="d-stat-strip" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr" }}>
+                          {/* DMG */}
+                          <div style={{ padding: "10px 12px", borderRight: "1px solid rgba(201,168,76,0.2)", textAlign: "center" }}>
+                            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 22, fontWeight: 700, color: "#ff6050", lineHeight: 1 }}>{player.damage}</div>
+                            <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 10, color: "#c9a84c", textTransform: "uppercase", letterSpacing: "1px", marginTop: 2 }}>/{maxHealth} DMG</div>
+                            <div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 6 }}>
+                              <button onClick={() => handleStatChange(player, "damage", 1)} className="d-adj-btn">+</button>
+                              <button onClick={() => handleStatChange(player, "damage", -1)} disabled={player.damage === 0} className="d-adj-btn" style={{ opacity: player.damage === 0 ? 0.3 : 1 }}>−</button>
                             </div>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <button onClick={() => handleStatChange(player, "resources", -1)} disabled={player.resources === 0}
-                              className="w-7 h-7 rounded-lg font-bold text-sm transition-all disabled:opacity-30"
-                              style={{ background: "rgba(201,151,58,0.18)", border: "1px solid rgba(201,151,58,0.4)", color: "#8a6820" }}>−</button>
-                            <button onClick={() => handleStatChange(player, "resources", 1)}
-                              className="w-7 h-7 rounded-lg font-bold text-sm transition-all"
-                              style={{ background: "rgba(201,151,58,0.28)", border: "1px solid rgba(201,151,58,0.5)", color: "#5a3a08" }}>+</button>
-                          </div>
-                        </div>
-
-                        {/* Clues — compact row */}
-                        <div className="flex items-center justify-between gap-2 mb-2.5 px-3 py-1.5 rounded-xl"
-                          style={{ background: "rgba(58,173,152,0.08)", border: "1px solid rgba(58,173,152,0.25)" }}>
-                          <div className="flex items-center gap-2">
-                            <ClueIcon size={15} color="#3aad98" />
-                            <div>
-                              <div className="text-[9px] font-mono uppercase tracking-widest" style={{ color: "#2a7060" }}>Clues</div>
-                              <div className="font-mono font-bold text-base leading-none" style={{ color: "#1a4038" }}>{player.clues}</div>
+                          {/* HOR */}
+                          <div style={{ padding: "10px 12px", borderRight: "1px solid rgba(201,168,76,0.2)", textAlign: "center" }}>
+                            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 22, fontWeight: 700, color: "#c090ff", lineHeight: 1 }}>{player.horror}</div>
+                            <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 10, color: "#c9a84c", textTransform: "uppercase", letterSpacing: "1px", marginTop: 2 }}>/{maxSanity} HOR</div>
+                            <div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 6 }}>
+                              <button onClick={() => handleStatChange(player, "horror", 1)} className="d-adj-btn">+</button>
+                              <button onClick={() => handleStatChange(player, "horror", -1)} disabled={player.horror === 0} className="d-adj-btn" style={{ opacity: player.horror === 0 ? 0.3 : 1 }}>−</button>
                             </div>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <button onClick={() => handleStatChange(player, "clues", -1)} disabled={player.clues === 0}
-                              className="w-6 h-6 rounded font-bold text-xs transition-all disabled:opacity-30"
-                              style={{ background: "rgba(58,173,152,0.15)", border: "1px solid rgba(58,173,152,0.3)", color: "#3aad98" }}>−</button>
-                            <button onClick={() => handleStatChange(player, "clues", 1)}
-                              className="w-6 h-6 rounded font-bold text-xs transition-all"
-                              style={{ background: "rgba(58,173,152,0.25)", border: "1px solid rgba(58,173,152,0.4)", color: "#1a6050" }}>+</button>
+                          {/* RES */}
+                          <div style={{ padding: "10px 12px", borderRight: "1px solid rgba(201,168,76,0.2)", textAlign: "center" }}>
+                            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 22, fontWeight: 700, color: "#f0c060", lineHeight: 1 }}>{player.resources}</div>
+                            <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 10, color: "#c9a84c", textTransform: "uppercase", letterSpacing: "1px", marginTop: 2 }}>RES</div>
+                            <div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 6 }}>
+                              <button onClick={() => handleStatChange(player, "resources", 1)} className="d-adj-btn">+</button>
+                              <button onClick={() => handleStatChange(player, "resources", -1)} disabled={player.resources === 0} className="d-adj-btn" style={{ opacity: player.resources === 0 ? 0.3 : 1 }}>−</button>
+                            </div>
+                          </div>
+                          {/* CLUES */}
+                          <div style={{ padding: "10px 12px", textAlign: "center" }}>
+                            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 22, fontWeight: 700, color: "#60e090", lineHeight: 1 }}>{player.clues}</div>
+                            <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 10, color: "#c9a84c", textTransform: "uppercase", letterSpacing: "1px", marginTop: 2 }}>CLUES</div>
+                            <div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 6 }}>
+                              <button onClick={() => handleStatChange(player, "clues", 1)} className="d-adj-btn">+</button>
+                              <button onClick={() => handleStatChange(player, "clues", -1)} disabled={player.clues === 0} className="d-adj-btn" style={{ opacity: player.clues === 0 ? 0.3 : 1 }}>−</button>
+                            </div>
                           </div>
                         </div>
 
-                        {/* Skill stats — icon only, no text label */}
+                        {/* Skill stats */}
                         {inv && (
-                          <div className="grid grid-cols-4 gap-1 pt-2.5" style={{ borderTop: "1px solid rgba(138,104,32,0.2)" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", borderTop: "1px solid #e8e0cc" }}>
                             {[
-                              { val: inv.willpower, color: "#9070d8", skill: "WIL", title: "Willpower" },
-                              { val: inv.intellect, color: "#c8871a", skill: "INT", title: "Intellect" },
-                              { val: inv.combat,    color: "#c03028", skill: "COM", title: "Combat"    },
-                              { val: inv.agility,   color: "#3aad98", skill: "AGI", title: "Agility"   },
-                            ].map(s => (
-                              <div key={s.skill} className="text-center py-1.5 rounded" style={{ background: "rgba(236,220,176,0.35)" }} title={s.title}>
-                                <SkillIcon skill={s.skill} size={13} />
-                                <div className="font-bold text-sm mt-0.5" style={{ color: s.color }}>{s.val}</div>
+                              { val: inv.willpower, color: "#9070d8", label: "WIL" },
+                              { val: inv.intellect, color: "#c8871a", label: "INT" },
+                              { val: inv.combat,    color: "#b82020", label: "COM" },
+                              { val: inv.agility,   color: "#2e8a50", label: "AGI" },
+                            ].map((s, i) => (
+                              <div key={s.label} style={{ padding: "8px 0", textAlign: "center", borderRight: i < 3 ? "1px solid #e8e0cc" : "none" }}>
+                                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 16, fontWeight: 700, color: s.color }}>{s.val}</div>
+                                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", color: "#8a7040" }}>{s.label}</div>
                               </div>
                             ))}
                           </div>
@@ -2894,9 +2554,9 @@ export default function SessionPage() {
 
                         {/* Ability */}
                         {inv && (
-                          <div className="mt-2.5 pt-2.5 px-2 py-2 rounded-lg" style={{ borderTop: "1px solid rgba(138,104,32,0.2)", background: `${cls.bg}` }}>
-                            <p className="text-[9px] font-decorative uppercase tracking-wider mb-0.5" style={{ color: cls.hex }}>Ability</p>
-                            <p className="text-[10px] leading-tight" style={{ color: "#8a7860" }}>{inv.ability}</p>
+                          <div style={{ padding: "10px 16px", borderTop: "1px solid #e8e0cc", background: "#f5f0e8" }}>
+                            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "2px", color: "#8a7040", marginBottom: 4 }}>ABILITY</div>
+                            <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic", lineHeight: 1.4 }}>{inv.ability}</div>
                           </div>
                         )}
                       </div>
@@ -2904,7 +2564,6 @@ export default function SessionPage() {
                   })}
                 </div>
               )}
-            </div>
           </div>
         )}
 
@@ -3046,166 +2705,119 @@ export default function SessionPage() {
 
             {/* ── Active enemies ── */}
             {enemies.length === 0 ? (
-              <div className="rounded-xl p-10 text-center" style={{ background: "rgba(236,220,176,0.7)", border: "1px dashed rgba(184,32,32,0.3)" }}>
-                <p className="text-2xl mb-2">🕯</p>
-                <p className="text-ark-text-muted text-sm">No enemies in play.</p>
-                <p className="text-[10px] text-ark-text-muted mt-1">Add one when an encounter card reveals an enemy.</p>
+              <div style={{ background: "#fff", borderBottom: "2px solid #e8e0cc", padding: "40px 16px", textAlign: "center", marginBottom: 2 }}>
+                <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>No enemies in play. Remain vigilant.</div>
               </div>
             ) : enemies.map(enemy => {
               const hpLeft = Math.max(0, enemy.health - enemy.currentDamage);
               const hpPct = Math.min((hpLeft / Math.max(1, enemy.health)) * 100, 100);
               const isMassive = enemy.keywords.includes("Massive");
-              const engagedNames = enemy.engagedPlayerIds.map(id => players.find(p => p.id === id)?.player_name ?? "?").join(", ");
 
               return (
-                <div key={enemy.id} className="rounded-xl overflow-hidden transition-all duration-300"
-                  style={{
-                    border: enemy.exhausted ? "1px solid rgba(74,143,212,0.35)" : "1px solid rgba(192,48,40,0.4)",
-                    opacity: enemy.exhausted ? 0.8 : 1,
-                    background: enemy.exhausted ? "rgba(8,14,22,0.95)" : "rgba(20,8,5,0.95)",
-                  }}>
-
-                  {/* ── Row 1: Name + status badges + defeat button ── */}
-                  <div className="px-4 pt-3 pb-2 flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h4 className="font-decorative font-bold text-base text-ark-text leading-tight">{enemy.name}</h4>
-                        {enemy.exhausted && (
-                          <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full"
-                            style={{ background: "rgba(74,143,212,0.15)", color: "#4a8fd4" }}>EXHAUSTED</span>
-                        )}
-                        {isMassive && (
-                          <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full"
-                            style={{ background: "rgba(232,168,74,0.15)", color: "#c8871a" }}>MASSIVE</span>
-                        )}
+                <div key={enemy.id} className="d-player-card" style={{ borderLeft: `5px solid ${enemy.exhausted ? "#4a8fd4" : "#b82020"}`, marginBottom: 2, opacity: enemy.exhausted ? 0.85 : 1 }}>
+                  {/* Name row */}
+                  <div style={{ padding: "12px 16px 8px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 4 }}>
+                        <span style={{ fontFamily: "'Cinzel', serif", fontSize: 16, fontWeight: 700, color: "#1a1208" }}>{enemy.name}</span>
+                        {enemy.exhausted && <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", padding: "2px 6px", background: "#4a8fd4", color: "#f2e8cc" }}>EXHAUSTED</span>}
+                        {isMassive && <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", padding: "2px 6px", background: "#c8871a", color: "#f2e8cc" }}>MASSIVE</span>}
                       </div>
-                      {/* Keywords inline */}
-                      <div className="flex flex-wrap gap-1">
+                      <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
                         {enemy.keywords.filter(k => k !== "Massive").map(kw => {
                           const kwDef = ENEMY_KEYWORDS.find(k => k.key === kw);
-                          return <span key={kw} className="text-[9px] font-mono px-1.5 py-0.5 rounded"
-                            style={{ background: `${kwDef?.color ?? "#888"}15`, color: kwDef?.color ?? "#888" }}>{kw}</span>;
+                          return <span key={kw} style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", padding: "2px 6px", background: `${kwDef?.color ?? "#888"}20`, color: kwDef?.color ?? "#888", border: `1px solid ${kwDef?.color ?? "#888"}40` }}>{kw}</span>;
                         })}
                       </div>
                     </div>
                     {isLead && (
                       <button onClick={() => handleDefeatEnemy(enemy.id)}
-                        className="text-[11px] font-bold px-3 py-1.5 rounded-lg flex-shrink-0 transition-all"
-                        style={{ background: "rgba(58,158,107,0.12)", border: "1px solid rgba(58,158,107,0.35)", color: "#3aad98" }}>
-                        ✓ Defeat
+                        style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 12px", background: "#2e8a50", border: "2px solid #1a1208", color: "#f2e8cc", cursor: "pointer", flexShrink: 0 }}>
+                        ✓ DEFEAT
                       </button>
                     )}
                   </div>
 
-                  {/* ── Row 2: Key stats — compact, readable ── */}
-                  <div className="mx-4 mb-2 grid grid-cols-4 gap-1.5 rounded-lg overflow-hidden"
-                    style={{ background: "rgba(236,220,176,0.75)", border: "1px solid #c8a860" }}>
-                    {[
-                      { label: "Fight", val: enemy.fightVal, color: "#c03028", hint: "Use Combat" },
-                      { label: "Evade", val: enemy.evadeVal, color: "#c8871a", hint: "Use Agility" },
-                      { label: "Deals", val: `${enemy.damage}💀 ${enemy.horror}🧠`, color: "#c8b090", hint: "Per attack" },
-                      { label: "HP", val: `${hpLeft}/${enemy.health}`, color: hpPct > 50 ? "#3aad98" : hpPct > 25 ? "#d4922a" : "#c05050", hint: "Remaining" },
-                    ].map(s => (
-                      <div key={s.label} className="py-2 text-center" title={s.hint}>
-                        <div className="text-[8px] font-mono text-ark-text-muted uppercase tracking-wide">{s.label}</div>
-                        <div className="font-mono font-bold text-sm mt-0.5 leading-tight" style={{ color: s.color }}>{s.val}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* ── Row 3: HP bar + damage controls (lead only) ── */}
-                  <div className="mx-4 mb-3">
-                    <div className="flex items-center gap-2">
-                      {isLead && (
-                        <button onClick={() => handleEnemyDamage(enemy.id, 1)}
-                          className="text-[11px] font-bold px-2.5 py-1.5 rounded-lg flex-shrink-0 transition-all"
-                          style={{ background: "rgba(192,48,40,0.15)", border: "1px solid rgba(192,48,40,0.3)", color: "#c03028" }}>
-                          + Hit
-                        </button>
-                      )}
-                      <div className="flex-1 h-2.5 rounded-full overflow-hidden" style={{ background: "rgba(236,220,176,0.8)" }}>
-                        <div className="h-full rounded-full transition-all duration-500"
-                          style={{ width: `${hpPct}%`, background: hpPct > 50 ? "linear-gradient(90deg, #2a7048, #3aad98)" : hpPct > 25 ? "linear-gradient(90deg, #8a6010, #d4922a)" : "linear-gradient(90deg, #8e1a0e, #c05050)" }} />
-                      </div>
-                      {isLead && (
-                        <button onClick={() => handleEnemyDamage(enemy.id, -1)}
-                          className="text-[11px] font-bold px-2.5 py-1.5 rounded-lg flex-shrink-0 transition-all"
-                          style={{ background: "rgba(58,158,107,0.1)", border: "1px solid rgba(58,158,107,0.25)", color: "#3aad98" }}>
-                          − Heal
-                        </button>
-                      )}
+                  {/* Stat grid */}
+                  <div className="d-stat-strip" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr" }}>
+                    <div style={{ padding: "8px 10px", borderRight: "1px solid rgba(201,168,76,0.2)", textAlign: "center" }}>
+                      <div style={{ fontFamily: "'Cinzel', serif", fontSize: 20, fontWeight: 700, color: "#ff6050", lineHeight: 1 }}>{enemy.fightVal}</div>
+                      <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 10, color: "#c9a84c", textTransform: "uppercase", letterSpacing: "1px" }}>FIGHT</div>
+                    </div>
+                    <div style={{ padding: "8px 10px", borderRight: "1px solid rgba(201,168,76,0.2)", textAlign: "center" }}>
+                      <div style={{ fontFamily: "'Cinzel', serif", fontSize: 20, fontWeight: 700, color: "#f0c060", lineHeight: 1 }}>{enemy.evadeVal}</div>
+                      <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 10, color: "#c9a84c", textTransform: "uppercase", letterSpacing: "1px" }}>EVADE</div>
+                    </div>
+                    <div style={{ padding: "8px 10px", borderRight: "1px solid rgba(201,168,76,0.2)", textAlign: "center" }}>
+                      <div style={{ fontFamily: "'Cinzel', serif", fontSize: 20, fontWeight: 700, color: "#c090ff", lineHeight: 1 }}>{enemy.damage}/{enemy.horror}</div>
+                      <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 10, color: "#c9a84c", textTransform: "uppercase", letterSpacing: "1px" }}>DMG/HOR</div>
+                    </div>
+                    <div style={{ padding: "8px 10px", textAlign: "center" }}>
+                      <div style={{ fontFamily: "'Cinzel', serif", fontSize: 20, fontWeight: 700, color: hpPct > 50 ? "#60e090" : hpPct > 25 ? "#f0c060" : "#ff6050", lineHeight: 1 }}>{hpLeft}/{enemy.health}</div>
+                      <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 10, color: "#c9a84c", textTransform: "uppercase", letterSpacing: "1px" }}>HP</div>
                     </div>
                   </div>
 
-                  {/* ── Row 4: Engagement (lead = interactive, others = read-only) ── */}
-                  <div className="px-4 pb-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                    <p className="text-[9px] font-mono uppercase tracking-widest text-ark-text-muted mt-2 mb-1.5">
-                      {isMassive ? "Engaged with (Massive)" : "Engaged with"}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5 mb-3">
+                  {/* HP controls */}
+                  {isLead && (
+                    <div style={{ padding: "8px 16px", borderBottom: "1px solid #e8e0cc", display: "flex", gap: 8 }}>
+                      <button onClick={() => handleEnemyDamage(enemy.id, 1)}
+                        style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 16px", background: "#1a1208", border: "2px solid #b82020", color: "#ff6050", cursor: "pointer", flex: 1 }}>
+                        + HIT
+                      </button>
+                      <button onClick={() => handleEnemyDamage(enemy.id, -1)}
+                        style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 16px", background: "#f5f0e8", border: "2px solid #1a1208", color: "#1a1208", cursor: "pointer", flex: 1 }}>
+                        − HEAL
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Engagement */}
+                  <div style={{ padding: "10px 16px" }}>
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "2px", color: "#8a7040", marginBottom: 8 }}>
+                      {isMassive ? "ENGAGED WITH (MASSIVE)" : "ENGAGED WITH"}
+                    </div>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
                       {players.map(p => {
-                        const inv = investigators.find(i => i.name === p.investigator);
-                        const cls = CLASS_COLORS[inv?.class ?? "Guardian"];
+                        const pInv = investigators.find(i => i.name === p.investigator);
+                        const pCls = CLASS_COLORS[pInv?.class ?? "Guardian"];
                         const engaged = enemy.engagedPlayerIds.includes(p.id);
                         return isLead ? (
                           <button key={p.id} onClick={() => handleEnemyEngage(enemy.id, p.id)}
-                            className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                            style={engaged
-                              ? { background: cls.bg, border: `2px solid ${cls.border}`, color: cls.hex, boxShadow: `0 0 8px ${cls.glow}` }
-                              : { background: "rgba(236,220,176,0.75)", border: "1px solid rgba(138,104,32,0.2)", color: "#5a4838" }}>
+                            style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 12px", background: engaged ? "#1a1208" : "#f5f0e8", border: `2px solid ${pCls.hex}`, color: engaged ? pCls.hex : "#1a1208", cursor: "pointer" }}>
                             {engaged ? "⚔ " : ""}{p.player_name}
                           </button>
                         ) : (
-                          <span key={p.id} className="px-3 py-1.5 rounded-lg text-xs font-semibold"
-                            style={engaged
-                              ? { background: cls.bg, border: `1px solid ${cls.border}`, color: cls.hex }
-                              : { background: "rgba(236,220,176,0.55)", border: "1px solid rgba(138,104,32,0.2)", color: "#5a4838" }}>
+                          <span key={p.id}
+                            style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "6px 12px", background: engaged ? "#1a1208" : "#f5f0e8", border: `2px solid ${pCls.hex}`, color: engaged ? pCls.hex : "#1a1208" }}>
                             {engaged ? "⚔ " : ""}{p.player_name}
                           </span>
                         );
                       })}
                       {enemy.engagedPlayerIds.length === 0 && (
-                        <span className="text-[11px] text-ark-text-muted italic self-center">Unengaged</span>
+                        <span style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>Unengaged</span>
                       )}
                     </div>
-
-                    {/* ── Row 5: Exhaust toggle + Attack button (lead only) ── */}
                     {isLead && (
-                      <div className="flex gap-2">
+                      <div style={{ display: "flex", gap: 8 }}>
                         <button onClick={() => handleToggleExhaust(enemy.id)}
-                          className="flex-1 py-2 rounded-lg text-xs font-semibold font-decorative transition-all"
-                          style={enemy.exhausted
-                            ? { background: "rgba(58,173,152,0.12)", border: "1px solid rgba(58,173,152,0.3)", color: "#3aad98" }
-                            : { background: "rgba(74,143,212,0.07)", border: "1px solid rgba(74,143,212,0.25)", color: "#4a8fd4" }}>
-                          {enemy.exhausted ? "✓ Ready" : "Exhaust"}
+                          style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "8px 12px", background: enemy.exhausted ? "#f5f0e8" : "#1a1208", border: `2px solid ${enemy.exhausted ? "#2e8a50" : "#4a8fd4"}`, color: enemy.exhausted ? "#2e8a50" : "#4a8fd4", cursor: "pointer", flex: 1 }}>
+                          {enemy.exhausted ? "✓ READY" : "EXHAUST"}
                         </button>
                         {(() => {
                           const hasTargets = enemy.engagedPlayerIds.length > 0;
-                          const isEnemyPhase = turnState.phase === "enemy";
                           return (
-                            <button
-                              onClick={() => handleEnemyAttack(enemy)}
-                              disabled={!hasTargets || enemy.exhausted}
-                              title={
-                                enemy.exhausted ? "Exhausted enemies can't attack" :
-                                !hasTargets ? "No one is engaged with this enemy" :
-                                `Deal ${enemy.damage} damage + ${enemy.horror} horror to ${enemy.engagedPlayerIds.map(id => players.find(p => p.id === id)?.player_name ?? "?").join(", ")}`
-                              }
-                              className="flex-1 py-2 rounded-lg text-xs font-bold font-decorative transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                              style={hasTargets && !enemy.exhausted
-                                ? { background: isEnemyPhase ? "rgba(192,48,40,0.2)" : "rgba(192,48,40,0.1)", border: `1px solid ${isEnemyPhase ? "rgba(192,48,40,0.6)" : "rgba(192,48,40,0.3)"}`, color: "#c03028", boxShadow: isEnemyPhase ? "0 0 8px rgba(192,48,40,0.2)" : "none" }
-                                : { background: "rgba(236,220,176,0.65)", border: "1px solid rgba(138,104,32,0.2)", color: "#5a4838" }}>
-                              ⚔ Attacks!
+                            <button onClick={() => handleEnemyAttack(enemy)} disabled={!hasTargets || enemy.exhausted}
+                              style={{ fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: "1px", padding: "8px 12px", background: hasTargets && !enemy.exhausted ? "#b82020" : "#f5f0e8", border: "2px solid #1a1208", color: hasTargets && !enemy.exhausted ? "#f2e8cc" : "#8a8070", cursor: hasTargets && !enemy.exhausted ? "pointer" : "default", flex: 1, opacity: enemy.exhausted ? 0.4 : 1 }}>
+                              ⚔ ATTACKS!
                             </button>
                           );
                         })()}
                       </div>
                     )}
-                    {/* ── What this enemy deals — reminder for non-lead too ── */}
                     {enemy.engagedPlayerIds.length > 0 && !isLead && (
-                      <div className="mt-2 px-3 py-2 rounded-lg text-xs"
-                        style={{ background: "rgba(192,48,40,0.07)", border: "1px solid rgba(192,48,40,0.2)", color: "#c8a890" }}>
-                        ⚔ Deals <span style={{ color: "#c03028", fontWeight: "bold" }}>{enemy.damage} damage</span> + <span style={{ color: "#9070d8", fontWeight: "bold" }}>{enemy.horror} horror</span> per attack — lead applies it
+                      <div style={{ background: "#fff8e8", border: "2px solid #b82020", borderLeft: "5px solid #b82020", padding: "8px 12px", fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10" }}>
+                        Deals <strong style={{ color: "#b82020" }}>{enemy.damage} damage</strong> + <strong style={{ color: "#6a40b8" }}>{enemy.horror} horror</strong> per attack — lead applies it.
                       </div>
                     )}
                   </div>
@@ -3213,69 +2825,58 @@ export default function SessionPage() {
               );
             })}
 
-            {/* Keyword reference — collapsible, always available */}
-            <details className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(138,104,32,0.25)" }}>
-              <summary className="px-4 py-2.5 cursor-pointer text-xs font-mono text-ark-text-muted select-none"
-                style={{ background: "rgba(236,220,176,0.8)" }}>
-                ▸ Enemy keyword reference
-              </summary>
-              <div className="divide-y" style={{ borderColor: "rgba(138,104,32,0.2)", background: "rgba(236,220,176,0.8)" }}>
-                {ENEMY_KEYWORDS.map(kw => (
-                  <div key={kw.key} className="flex items-start gap-3 px-4 py-2.5">
-                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold flex-shrink-0 mt-0.5"
-                      style={{ background: `${kw.color}15`, color: kw.color }}>{kw.key}</span>
-                    <p className="text-[11px] text-ark-text-muted leading-relaxed">{kw.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </details>
+            {/* Keyword reference */}
+            <div className="d-section-head" style={{ cursor: "pointer" }}>
+              <span>KEYWORD REFERENCE</span>
+            </div>
+            <div style={{ marginBottom: 2 }}>
+              {ENEMY_KEYWORDS.map(kw => (
+                <div key={kw.key} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 16px", background: "#fff", borderBottom: "1px solid #e8e0cc" }}>
+                  <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", padding: "3px 8px", background: `${kw.color}15`, border: `1px solid ${kw.color}40`, color: kw.color, flexShrink: 0 }}>{kw.key}</span>
+                  <span style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", lineHeight: 1.4 }}>{kw.desc}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
         {/* ══════════════════════════════════════════ */}
         {/* ── LOG TAB ───────────────────────────── */}
         {activeTab === "log" && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-ark-text-muted font-mono">{actionLog.length} action{actionLog.length !== 1 ? "s" : ""} logged</p>
+          <div>
+            <div className="d-section-head" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span>{actionLog.length} ACTION{actionLog.length !== 1 ? "S" : ""} LOGGED</span>
               {actionLog.length > 0 && isLead && (
                 <button onClick={() => { setActionLog([]); if (session) appendActionLog(session.id, [], { id: "clear", playerName: "", investigator: "", action: "Log Cleared", detail: "", timestamp: new Date().toISOString(), round: turnState.round, actionNum: 0, phase: turnState.phase }); }}
-                  className="text-xs text-ark-text-muted hover:text-ark-text transition-colors">Clear log</button>
+                  style={{ fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 700, letterSpacing: "1px", padding: "4px 10px", background: "#1a1208", border: "none", color: "#c9a84c", cursor: "pointer" }}>
+                  CLEAR
+                </button>
               )}
             </div>
             {actionLog.length === 0 ? (
-              <div className="rounded-xl p-10 text-center" style={{ background: "rgba(236,220,176,0.7)", border: "1px dashed #c8a860" }}>
-                <p className="text-ark-text-muted text-sm">No actions logged yet.</p>
+              <div style={{ background: "#fff", borderBottom: "2px solid #e8e0cc", padding: "40px 16px", textAlign: "center" }}>
+                <div style={{ fontFamily: "'IM Fell English', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>No actions logged yet. The chronicle awaits.</div>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div>
                 {actionLog.map(entry => {
                   const actionDef = ACTIONS.find(a => a.label === entry.action);
                   const phaseInfo = PHASES.find(p => p.id === entry.phase);
                   return (
-                    <div key={entry.id} className="flex items-start gap-3 p-3 rounded-xl group" style={{ background: "rgba(236,220,176,0.85)", border: "1px solid rgba(138,104,32,0.2)" }}>
-                      <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
-                        style={{ background: actionDef ? actionDef.bg : "rgba(61,48,32,0.4)", border: `1px solid ${actionDef?.color ?? "#3d3020"}30` }}>
-                        {actionDef?.skill ? <SkillIcon skill={actionDef.skill} size={16} /> : <ActionSymbol size={16} />}
+                    <div key={entry.id} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 16px", background: "#fff", borderBottom: "1px solid #e8e0cc" }}>
+                      <div style={{ width: 32, height: 32, background: "#1a1208", border: `2px solid ${actionDef?.color ?? "#c9a84c"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        {actionDef?.skill ? <SkillIcon skill={actionDef.skill} size={14} /> : <ActionSymbol size={14} />}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-decorative font-bold text-sm text-ark-text">{entry.playerName}</span>
-                          <span className="text-ark-text-muted text-xs">·</span>
-                          <span className="text-xs font-semibold" style={{ color: actionDef?.color ?? "#c9973a" }}>{entry.action}</span>
-                          <span className="text-ark-text-muted text-xs ml-auto text-right">
-                            R{entry.round}
-                            {phaseInfo && <span style={{ color: phaseInfo.color }}> · {phaseInfo.label[0]}</span>}
-                          </span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                          <span style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#1a1208" }}>{entry.playerName}</span>
+                          <span style={{ fontFamily: "'Cinzel', serif", fontSize: 12, fontWeight: 700, color: actionDef?.color ?? "#c9a84c" }}>{entry.action}</span>
+                          <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, color: "#8a7040", marginLeft: "auto" }}>R{entry.round}{phaseInfo ? ` · ${phaseInfo.label[0]}` : ""}</span>
                         </div>
-                        <p className="text-ark-text-muted text-xs mt-0.5 leading-relaxed">{entry.detail}</p>
+                        {entry.detail && <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", marginTop: 2 }}>{entry.detail}</div>}
                       </div>
                       <button onClick={() => handleDeleteLogEntry(entry.id)}
-                        className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
-                        style={{ background: "rgba(192,57,43,0.15)", border: "1px solid rgba(192,57,43,0.3)", color: "#c03028" }}
-                        title="Delete this entry">
-                        ✕
-                      </button>
+                        style={{ width: 24, height: 24, background: "#f5f0e8", border: "2px solid #1a1208", color: "#1a1208", fontFamily: "'Cinzel', serif", fontSize: 11, cursor: "pointer", flexShrink: 0 }}>✕</button>
                     </div>
                   );
                 })}
@@ -3287,91 +2888,64 @@ export default function SessionPage() {
         {/* ══════════════════════════════════════════ */}
         {/* ── REFERENCE TAB ────────────────────── */}
         {activeTab === "reference" && (
-          <div className="space-y-5">
-
+          <div>
             {/* Round structure */}
-            <div className="rounded-xl p-4" style={{ background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860" }}>
-              <h3 className="font-decorative font-bold text-sm text-ark-text mb-3">Round Structure</h3>
-              <div className="flex items-center gap-2 flex-wrap">
-                {PHASES.map((phase, i) => (
-                  <div key={phase.id} className="flex items-center gap-2">
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="px-2 py-1 rounded-lg text-[10px] font-mono font-bold" style={{ background: `${phase.color}12`, border: `1px solid ${phase.color}30`, color: phase.color }}>{i+1}. {phase.label}</span>
-                      <p className="text-[9px] text-ark-text-muted max-w-24 text-center leading-tight">{phase.desc.split(",")[0]}</p>
-                    </div>
-                    {i < 3 && <span className="text-ark-text-muted text-sm">→</span>}
+            <div className="d-section-head"><span>ROUND STRUCTURE</span></div>
+            <div style={{ background: "#fff", borderBottom: "2px solid #e8e0cc", marginBottom: 2 }}>
+              {PHASES.map((phase, i) => (
+                <div key={phase.id} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 16px", borderBottom: i < 3 ? "1px solid #e8e0cc" : "none" }}>
+                  <div style={{ width: 28, height: 28, background: "#1a1208", border: `2px solid ${phase.color}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: phase.color }}>{i+1}</div>
+                  <div>
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#1a1208", marginBottom: 2 }}>{phase.label}</div>
+                    <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10" }}>{phase.desc.split(",")[0]}</div>
                   </div>
-                ))}
-              </div>
-              <p className="text-[10px] text-ark-text-muted mt-3">⚡ Round 1 skips the Mythos Phase entirely.</p>
+                </div>
+              ))}
+              <div style={{ padding: "10px 16px", fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", fontStyle: "italic" }}>Round 1 skips the Mythos Phase entirely.</div>
             </div>
 
-            {/* Skill icons legend */}
-            <div className="rounded-xl p-4" style={{ background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860" }}>
-              <h3 className="font-decorative font-bold text-sm text-ark-text mb-3">Skill Icons</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                  { skill: "WIL", label: "Willpower", color: "#9070d8", desc: "Treacheries, Parley, horror" },
-                  { skill: "INT", label: "Intellect",  color: "#4a8fd4", desc: "Investigate, clue tests" },
-                  { skill: "COM", label: "Combat",     color: "#c03028", desc: "Fight tests, enemies" },
-                  { skill: "AGI", label: "Agility",    color: "#3aad98", desc: "Evade tests, movement" },
-                ].map(s => (
-                  <div key={s.skill} className="flex items-center gap-2 p-2 rounded-lg" style={{ background: `${s.color}08`, border: `1px solid ${s.color}20` }}>
-                    <SkillIcon skill={s.skill} size={20} />
+            {/* Skill icons */}
+            <div className="d-section-head"><span>SKILL ICONS</span></div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, background: "#1a1208", marginBottom: 2 }}>
+              {[
+                { skill: "WIL", label: "Willpower", color: "#9070d8", desc: "Treacheries, Parley, horror tests" },
+                { skill: "INT", label: "Intellect",  color: "#4a8fd4", desc: "Investigate, clue discovery" },
+                { skill: "COM", label: "Combat",     color: "#b82020", desc: "Fight tests, defeating enemies" },
+                { skill: "AGI", label: "Agility",    color: "#2e8a50", desc: "Evade tests, movement" },
+              ].map(s => (
+                <div key={s.skill} style={{ background: "#fff", padding: "14px 14px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <SkillIcon skill={s.skill} size={22} />
                     <div>
-                      <p className="text-xs font-bold" style={{ color: s.color }}>{s.label}</p>
-                      <p className="text-[9px] text-ark-text-muted">{s.desc}</p>
+                      <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#1a1208" }}>{s.label}</div>
+                      <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10" }}>{s.desc}</div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Token legend */}
-            <div className="rounded-xl p-4" style={{ background: "rgba(236,220,176,0.8)", border: "1px solid #c8a860" }}>
-              <h3 className="font-decorative font-bold text-sm text-ark-text mb-3">Token Types</h3>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { Icon: () => <DoomIcon size={20} />, label: "Doom", color: "#9070d8", desc: "Counts toward Agenda threshold" },
-                  { Icon: () => <ClueIcon size={20} />, label: "Clue", color: "#4a8fd4", desc: "Spend to advance Act deck" },
-                  { Icon: () => <ResourceIcon size={20} />, label: "Resource", color: "#c9973a", desc: "Currency to play cards" },
-                ].map(t => (
-                  <div key={t.label} className="flex flex-col items-center gap-1.5 p-3 rounded-lg text-center" style={{ background: `${t.color}08`, border: `1px solid ${t.color}20` }}>
-                    <t.Icon />
-                    <p className="text-xs font-bold" style={{ color: t.color }}>{t.label}</p>
-                    <p className="text-[9px] text-ark-text-muted leading-tight">{t.desc}</p>
-                  </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
 
             {/* Chaos bag */}
-            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #c8a860" }}>
-              <div className="px-4 py-3" style={{ background: "rgba(236,220,176,0.8)", borderBottom: "1px solid #c8a860" }}>
-                <h3 className="font-decorative font-bold text-sm text-ark-text">{turnState.campaignId && CAMPAIGNS.find(c => c.id === turnState.campaignId)?.name ? CAMPAIGNS.find(c => c.id === turnState.campaignId)!.name : "Standard"} Chaos Bag</h3>
-                <p className="text-xs text-ark-text-muted">Standard difficulty</p>
-              </div>
-              <div className="p-4 flex flex-wrap gap-2" style={{ background: "rgba(236,220,176,0.75)" }}>
-                {CHAOS_TOKENS.map((t, i) => (
-                  <span key={i} className="px-2 py-1 rounded font-mono font-bold text-xs" style={{ background: `${t.color}15`, border: `1px solid ${t.color}40`, color: t.color }}>{t.token}</span>
-                ))}
-              </div>
+            <div className="d-section-head"><span>{turnState.campaignId && CAMPAIGNS.find(c => c.id === turnState.campaignId)?.name ? CAMPAIGNS.find(c => c.id === turnState.campaignId)!.name.toUpperCase() : "STANDARD"} CHAOS BAG</span></div>
+            <div style={{ background: "#fff", borderBottom: "2px solid #e8e0cc", padding: "14px 16px", display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 2 }}>
+              {CHAOS_TOKENS.map((t, i) => (
+                <span key={i} style={{ fontFamily: "'Cinzel', serif", fontSize: 12, fontWeight: 700, padding: "4px 10px", background: `${t.color}15`, border: `2px solid ${t.color}40`, color: t.color }}>{t.token}</span>
+              ))}
             </div>
 
             {/* Easily missed rules */}
-            <div>
-              <h3 className="font-decorative font-bold text-sm text-ark-text mb-3">Easily Missed Rules</h3>
-              <div className="space-y-2">
-                {MISSED_RULES.map((r, i) => (
-                  <div key={i} className="px-4 py-3 rounded-xl" style={{ background: "rgba(232,168,74,0.05)", border: "1px solid rgba(232,168,74,0.2)" }}>
-                    <p className="font-bold text-xs mb-1" style={{ color: "#c8871a" }}>{r.title}</p>
-                    <p className="text-xs text-ark-text-muted leading-relaxed">{r.desc}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="d-section-head"><span>EASILY MISSED RULES</span></div>
+            <div style={{ marginBottom: 2 }}>
+              {MISSED_RULES.map((r, i) => (
+                <div key={i} style={{ background: "#fff", borderBottom: "1px solid #e8e0cc", padding: "14px 16px", borderLeft: "5px solid #c9a84c" }}>
+                  <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: "#1a1208", marginBottom: 4 }}>{r.title}</div>
+                  <div style={{ fontFamily: "'Crimson Text', serif", fontSize: 14, color: "#5a3a10", lineHeight: 1.5 }}>{r.desc}</div>
+                </div>
+              ))}
             </div>
           </div>
         )}
+        </div>{/* end maxWidth wrapper */}
       </main>
 
       <style jsx global>{`

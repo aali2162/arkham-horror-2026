@@ -15,6 +15,47 @@
 
 ---
 
+## CURRENT STATUS (Updated: April 9, 2026 — Session 15 COMPLETE)
+
+### Live URL: https://arkham-horror-2026.vercel.app
+### Session 15 changes — OPTION D INVESTIGATOR'S DOSSIER FULL IMPLEMENTATION:
+**Complete visual overhaul of both Play pages to the approved Option D "Investigator's Dossier" design system.**
+
+**Design system (globals.css additions — already in place from previous sessions):**
+- Background `#f5f0e8` (aged paper), Dark ink `#1a1208`, Gold accent `#c9a84c`
+- No border-radius — hard ink-press aesthetic; 2px `#1a1208` borders on all cards
+- 5–6px class-colour left stripe on player cards
+- Cinzel + Cinzel Decorative + Crimson Text + IM Fell English fonts
+- Min readable font size: 14px (≈10.5pt Word); all-caps decorative stamps exempt at 9–10px
+
+**Font fix (Session 15 start):**
+- IM Fell English sub-descriptions on Screen 2/4 replaced with Crimson Text at 14px — same warm italic tone, more legible at small sizes
+- All mixed-case text: 14px minimum enforced across all new JSX
+
+**play/page.tsx — fully rewritten to Option D:**
+- Dark topbar: `PLAY SESSION / INVESTIGATOR'S DOSSIER` + `ARKHAM HORROR` pill
+- Last session rejoin: white card with green left border stripe
+- `BEGIN YOUR INVESTIGATION` section head
+- New Session card: 4px gold top bar, dark icon box, `d-btn-ink` button
+- Join Session card: 4px blue top bar, `d-input` + `d-btn-outline`
+- Feature grid: 2-col, class-colour top borders, inline SVGs
+
+**play/[sessionCode]/page.tsx — JSX visual layer fully replaced:**
+- Doom/Act bar: replaced Orrery SVG + Elder Sign pips with clean `d-doom-strip` showing doom squares (tappable), agenda/act names, advance button
+- Lead action bar: dark `#2a1a06` strip with Cinzel stamp-style buttons
+- Tab bar: `d-tab-bar` / `d-tab-active` / `d-tab-inactive` — flat ink aesthetic
+- Phase banner: white card with 4px phase-colour top bar, Cinzel headings
+- Active turn indicator: white card with class-colour left stripe, action squares
+- Board tab player cards: `d-player-card` with class-colour left stripe, `d-stat-strip` (DMG/HOR/RES/CLUES), skill stats, ability block
+- Enemy cards: `d-player-card` with red/blue left stripe, `d-stat-strip` (FIGHT/EVADE/DMG·HOR/HP), HP controls, engagement buttons
+- Log tab: flat ink list, each entry has icon + action name + detail
+- Reference tab: section heads + flat lists for round structure, skills, chaos bag, missed rules
+- All modals (End Scenario, Scenario Summary, Carry-Over, Campaign Picker): Option D white cards with coloured top borders, Cinzel headings, `d-btn-gold`/`d-btn-outline` buttons
+- Fixed: JSX maxWidth wrapper `<div style={{ maxWidth:540 }}>` now properly closed before `</main>`
+- TypeScript: compiles clean with zero errors
+
+---
+
 ## CURRENT STATUS (Updated: April 3, 2026 — Session 13 COMPLETE)
 
 ### Live URL: https://arkham-horror-2026.vercel.app
